@@ -1,0 +1,49 @@
+html.js .mdc-list-item,
+html.js .mdc-card__media-content {
+    cursor: pointer;
+}
+
+html.no-js :not(.mdc-list--non-interactive)>.mdc-list-item:hover:before {
+    opacity: 0;
+}
+
+@media (max-width: 599px) {
+    .mdc-toolbar__section {
+        padding-bottom: 0;
+    }
+}
+
+.cake-search {
+    border-radius: 0;
+    margin: 0;
+    position: absolute;
+    top: 80px;
+    right: 0;
+}
+
+.cake-search input {
+    background: #222;
+}
+
+.hide {
+    display: none;
+}
+
+html.no-js .jss {
+    display: none !important;
+}
+
+/* Responsive toggle classes */
+@media (min-width: 800px) {
+    .dhide {
+        display: none !important;
+    }
+} 
+@media (max-width: 799px) {
+    html.js .mhide {
+        display: none !important;
+    }
+    html.no-js .dhide {
+        display: none !important;
+    }
+}

@@ -1,0 +1,264 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_modify %}
+{% load raw %}
+{% load staticfiles %}
+
+{% block title %}Multiupload {{ block.super }}{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+{% url 'admin:jsi18n' as jsi18nurl %}
+  <script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+{{ media }}
+
+<script src="{% static 'js/admin/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'js/admin/jquery.ui.widget.js' %}"></script>
+<script src="{% static 'js/admin/csrf.js' %}"></script>
+<script src="{% static 'js/admin/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/admin/tmpl.min.js' %}"></script>
+<script src="{% static 'js/admin/load-image.all.min.js' %}"></script>
+<script src="{% static 'js/admin/canvas-to-blob.min.js' %}"></script>
+<!--<script src="{% static 'js/admin/bootstrap.min.js' %}"></script>-->
+<script src="{% static 'js/admin/jquery.blueimp-gallery.min.js' %}"></script>
+<script src="{% static 'js/admin/jquery.iframe-transport.js' %}"></script>
+<script src="{% static 'js/admin/jquery.fileupload.js' %}"></script>
+<script src="{% static 'js/admin/jquery.fileupload-process.js' %}"></script>
+<script src="{% static 'js/admin/jquery.fileupload-image.js' %}"></script>
+<script src="{% static 'js/admin/jquery.fileupload-validate.js' %}"></script>
+<script src="{% static 'js/admin/jquery.fileupload-jquery-ui.js' %}"></script>
+<script src="{% static 'js/admin/jquery.fileupload-ui.js' %}"></script>
+<script src="{% static 'js/admin/jquery.blueimp-gallery.min.js' %}"></script>
+
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin/jquery-ui.min2.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin/jquery.fileupload-ui.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin/blueimp-gallery.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />
+<!-- TODO: local host -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<style>
+    .fade.in{opacity:1}
+</style>
+
+{% endblock %}
+
+{% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}
+
+{% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+  {% if object %}
+     <a href="../../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     <a href="../../">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+     <a href="../">{{ object }}</a> &rsaquo;
+     {% trans "Multiupload" %}
+  {% else %}
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     <a href="../">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+     {% trans "Multiupload" %}
+  {% endif %}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .submit-row .button {
+        padding: 10px 15px;
+    }
+    @media (max-width: 767px) {
+        .submit-row > * {
+            width: inherit;
+        }
+    }
+    @media (min-width: 768px) {
+        .submit-row .button {
+            height: 35px;
+            line-height: 35px;
+            margin: 0px 0px 0px 5px;
+        }
+        .button.default {
+            float: none;
+        }
+    }
+    .fileinput-button {
+        text-align: center;
+    }
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+        background-color: transparent;
+    }
+</style>
+<form id="page-upload" action="." method="POST" enctype="multipart/form-data">
+    <div class="row fileupload-buttonbar">
+        <div class="submit-row">
+            <a class="button" href="../{%if is_popup %}?pop=1{% endif %}"><i class="fa fa-arrow-left" aria-hidden="true"></i> {% trans 'Back' %}</a>
+            <label class="button fileinput-button" style="margin-bottom: 0;">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                {% trans 'Add files' %}
+                <input type="file" name="files[]" multiple="" hidden>
+            </label>
+            <a type="submit" class="button start default">
+                <i class="fa fa-upload" aria-hidden="true"></i>
+                {% trans 'Start upload' %}
+            </a>
+            <p class="deletelink-box">
+                <a type="reset" class="deletelink cancel" href="#">
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                    {% trans 'Cancel upload' %}
+                </a>
+            </p>
+            <!--<button type="button" class="btn btn-danger delete">
+                <i class="icon-trash icon-white"></i>
+                <span>{% trans 'Delete' %}</span>
+            </button>
+            <input type="checkbox" class="toggle">-->
+        </div>
+        <!-- The global progress state -->
+        <div class="fileupload-progress fade" style="display:none">
+            <!-- The global progress bar -->
+            <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+            <!-- The extended global progress state -->
+            <div class="progress-extended">&nbsp;</div>
+        </div>
+    </div>
+    <!-- The loading indicator is shown during file processing -->
+    <div class="fileupload-loading"></div>
+    <br>
+    <!-- The table listing the files available for upload/download -->
+    <table role="presentation" class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+</form>
+
+
+{% verbatim %}
+<!-- The blueimp Gallery widget -->
+<div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" data-filter=":even">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+<!-- The template to display files available for upload -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td>
+            <span class="preview"></span>
+        </td>
+        <td>
+            <p class="name">{%=file.name%}</p>
+            <strong class="error text-danger"></strong>
+        </td>
+        <td>
+            <p class="size">Processing...</p>
+            <div class="progress"></div>
+        </td>
+        <td>
+            {% if (!i && !o.options.autoUpload) { %}
+                <button class="button start" disabled>
+                    <i class="fa fa-upload"></i>
+                    <span>Upload</span>
+                </button>
+            {% } %}
+            {% if (!i) { %}
+                <button class="button cancel">
+                    <i class="fa fa-ban"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img width="150" height="150"  style="object-fit: contain;" src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+        </td>
+        <td>
+            <p class="name">
+                {% if (file.url) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+                {% } else { %}
+                    <span>{%=file.name%}</span>
+                {% } %}
+            </p>
+            {% if (file.error) { %}
+                <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+        </td>
+        <td>
+            {% if (file.deleteUrl) { %}
+                <button class="button" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                    <i class="fa fa-trash"></i>
+                    <span>Delete</span>
+                </button>
+                <!--<input type="checkbox" name="delete" value="1" class="toggle">-->
+            {% } else { %}
+                <button class="button cancel">
+                    <i class="fa fa-ban"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+{% endverbatim %}
+
+
+<script type="text/javascript">
+$(function () {
+    'use strict';
+    // Initialize the jQuery File Upload widget:
+    $('#page-upload').fileupload({
+      formData: [{ name: "csrfmiddlewaretoken", value: "{{ csrf_token }}"}],
+      acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+      maxFileSize: 10000000,
+      sequentialUploads: true,
+      }).bind('fileuploadsubmit', function (e, data) {
+        var inputs = data.context.find(':input');
+        if (inputs.filter('[required][value=""]').first().focus().length) {
+          return false;
+        }
+        data.formData = inputs.serializeArray();
+      }).bind('fileuploaddestroy', function (e, data) {
+        $.post(data.url, {});
+      });
+});
+window.locale = {
+    "fileupload": {
+        "errors": {
+            "maxFileSize": "{% trans 'File is too big' %}",
+            "minFileSize": "{% trans 'File is too small' %}",
+            "acceptFileTypes": "{% trans 'Filetype not allowed' %}",
+            "maxNumberOfFiles": "{% trans 'Max number of files exceeded' %}",
+            "uploadedBytes": "{% trans 'Uploaded bytes exceed file size' %}",
+            "emptyResult": "{% trans 'Empty file upload result' %}"
+        },
+        "error": "{% trans 'Error' %}",
+        "start": "{% trans 'Start' %}",
+        "cancel": "{% trans 'Cancel' %}",
+        "destroy": "{% trans 'Delete' %}",
+        "titleLabel": "{% trans 'Title' %}"
+    }
+};
+</script>
+{% endblock %}

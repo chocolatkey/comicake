@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n cache %}
+{% block html_prefix %} book: http://ogp.me/ns/book#{% endblock %}
+{% block title %}{% tt comic %}{% endblock %}
+{% cache 600 og_data comic.uniqid %}{% block extra_head %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt comic.name %}" />
+    <meta name="description" content="{{ comic.description }}">
+    <meta property="og:description" content="{{ comic.description }}" />
+    <meta property="og:type" content="book" />
+    {% for person in comic.author.all %}<meta property="book:author" content="{% if person.alt %}{{ person.alt }}{% else %}{{ person.name }}{% endif %}">{% endfor %}
+    {% for tag in comic.tags.all %}<meta property="book:tag" content="{{ tag.name }}">{% endfor %}
+    {% if comic.cover %}
+    <meta property="og:image" content="{{ comic.cover.url }}" />
+    <meta property="og:image:alt" content="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}" />
+    {% endif %}
+    <link rel="alternate" type="application/rss+xml" title="{% blocktrans with comic=comic %}RSS Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_rss_comic' comic.uniqid %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% blocktrans with comic=comic %}Atom Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_atom_comic' comic.uniqid %}" />
+{% endblock %}{% endcache %}
+{% block body %}
+    <main class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary">
+        <div class="mdc-layout-grid">
+            <div class="mdc-layout-grid__inner">
+                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet">
+                    <img src="{% if comic.cover %}{% icdn comic.cover.url %}{% endif %}" style="max-width: 100%;" />
+                </div>
+                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet">
+                    <h1>{{ comic.name }}{% if comic.alt %}<span class="mdc-typography--title">「{{ comic.alt }}」</span>{% endif %}<a href="{% url 'feed_rss_comic' comic.uniqid %}" title="{% blocktrans with item_title=comic.name %}RSS chapter feed for {{ item_title }}{% endblocktrans %}"><i class="material-icons rss-button" aria-hidden="true">rss_feed</i></a></h1>
+                    <table>
+                        {% with comic.author.all as authors %}
+                        {% if authors|length > 0 %}
+                        <tr>
+                            <td>{% if authors|length == 1 %}{% trans 'Author' %}{% else %}{% trans 'Authors' %}{% endif %}:</td>
+                            <td>
+                                {% for person in authors %}
+                                <a class="mdc-chip mdc-theme--secondary-bg" href="{% url 'search' %}?person={{ person.id }}" title="{{ person.name }}{% if person.alt %} ({{ person.alt }}){% endif %}" tabindex="0">
+                                    <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ person.name }}</div>
+                                </a>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endwith %}
+                        {% with comic.artist.all as artists %}
+                        {% if artists|length > 0 %}
+                        <tr>
+                            <td>{% if artists|length == 1 %}{% trans 'Artist' %}{% else %}{% trans 'Artists' %}{% endif %}:</td>
+                            <td>
+                                {% for person in artists %}
+                                <a class="mdc-chip mdc-theme--secondary-bg" href="{% url 'search' %}?person={{ person.id }}" title="{{ person.name }}{% if person.alt %} ({{ person.alt }}){% endif %}" tabindex="0">
+                                    <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ person.name }}</div>
+                                </a>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endwith %}
+                        {% with comic.tags.all as tags %}
+                        {% if tags|length > 0 %}
+                        <tr>
+                            <td>{% trans 'Tags' %}:</td>
+                            <td>
+                                {% for tag in tags %}
+                                <a class="mdc-chip mdc-theme--secondary-bg" href="{% url 'search' %}?tag={{ tag.slug }}" title="{{ tag.description }}" tabindex="0">
+                                    <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ tag.name }}</div>
+                                </a>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endwith %}
+                    </table>
+                    <p class="mdc-typography--body1">
+                        <b class="mdc-typography--subheading2">{% trans 'Synopsis' %}: </b>{{ comic.description }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% for chapter in chapters %}
+        <div class="mdc-list-group">
+            {% ifchanged chapter.volume %}
+            {% if not forloop.first %}
+                </ul>
+            </div>
+            {% endif %}
+            <div class="mdc-list-group" data-controller="clickable">
+                <h3 class="mdc-list-group__subheader">{% if chapter.volume %}{% blocktrans with volume=chapter.volume %}Volume {{ volume }}{% endblocktrans %}{% else %}{% trans 'Chapters' %}{% endif %}</h3>
+                <hr class="mdc-list-divider mdc-list-divider--inset">
+                <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list">
+            {% endifchanged %}
+                    <li class="mdc-list-item" data-action="click->clickable#click">
+                        <span class="mdc-list-item__graphic" role="presentation">
+                                {{ chapter.chapter }}{% if chapter.subchapter %}.{{ chapter.subchapter }}{% endif %}
+                        </span>
+                        <span class="mdc-list-item__text">
+                            <a href="{% cpath chapter %}" data-target="clickable.target">{{ chapter.simple_title }}</a>
+                            <span class="mdc-list-item__secondary-text">{{ chapter.created_at|ago }}
+                                {% with chapter.team.all as teams %}
+                                    {% ifnotequal teams|length 0 %}
+                                        {% trans 'by' %}
+                                        {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                                    {% endifnotequal %}
+                                {% endwith %}
+                            </span>
+                        </span>
+                        <a href="#" class="mdc-list-item__meta material-icons jss" aria-label="Download this chapter" title="Download" onclick="event.preventDefault();">
+                            file_download
+                        </a>
+                    </li>
+        {% if forloop.last %}
+                </ul>
+            </div>
+        {% endif %}
+        {% empty %}
+        <span class="mdc-theme--text-primary-on-primary">{% trans 'No chapters have been released' %}</span>
+        {% endfor %}
+    </main>
+{% endblock %}

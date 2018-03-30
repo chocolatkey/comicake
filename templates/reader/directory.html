@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n %}
+{% block title %}{% tt 'Series List' %}{% endblock %}
+{% block extra_head %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt 'Series List' %}" />
+    <meta property="og:description" content="{% blocktrans with site_name=SITE_TITLE %}Series List for {{ site_name }}{% endblocktrans %}" />
+    <meta property="og:type" content="website" />
+    <meta name="description" content="{% blocktrans with site_name=SITE_TITLE %}Series List for {{ site_name }}{% endblocktrans %}">
+{% endblock %}
+{% block body %}
+    <main class="mdc-toolbar-fixed-adjust">
+        <div class="mdc-layout-grid">
+            <div class="mdc-layout-grid__inner" data-controller="clickable">
+            {% for comic in comics %}
+                <div class="mdc-layout-grid__cell">
+                    <div class="mdc-card mdc-theme--text-primary-on-primary mdc-theme--primary-bg">
+                        <div class="mdc-card__media mdc-card__media--square"{% if comic.cover %} style="background-image:url('{{ comic.cover.url }}');"{% endif %}>
+                            <div class="mdc-card__media-content mdc-card__media-content--with-title" data-action="click->clickable#click">
+                                <div class="mdc-card__media-title mdc-typography--subheading2">
+                                    <a href="{% url 'series' comic.slug %}" data-target="clickable.target">
+                                        {{ comic.name }}{% if comic.alt %}<span class="mdc-typography--caption">「{{ comic.alt }}」</span>{% endif %}
+                                    </a>
+                                    <div class="mdc-typography--caption">
+                                        {% include 'partials/people.html' with people=comic.author.all %}{% if comic.artist.all.count %} | {% endif %}{% include 'partials/people.html' with people=comic.artist.all %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mdc-card__actions">
+                            <div class="mdc-card__action-buttons">
+                                <a href="" class="mdc-button mdc-button--raised mdc-card__action mdc-card__action--button mdc-theme--text-primary-on-primary">{% trans 'Latest Release' %}</a>
+                            </div>
+                            <div class="mdc-card__action-icons">
+                                <a href="{% url 'feed_rss_comic' comic.uniqid %}" class="ripple mdc-ripple-surface mdc-theme--text-primary-on-primary"><i class="rss-here material-icons mdc-card__action mdc-card__action--icon" tabindex="0" role="button" title="{% blocktrans with item_title=comic.name %}RSS chapter feed for {{ item_title }}{% endblocktrans %}">rss_feed</i></a>
+                                <!--<i class="material-icons mdc-card__action mdc-card__action--icon ripple mdc-ripple-surface mdc-theme--text-primary-on-primary" tabindex="0" role="button" title="More options">more_vert</i>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+            <div class="mdc-layout-grid__cell"><span class="mdc-theme--text-primary-on-primary">{% trans 'No series have been published' %}</span></div>
+            {% endfor %}
+            </div>
+        </div>
+        {% include 'partials/pagination.html' with subject=comics %}
+    </main>
+{% endblock %}
