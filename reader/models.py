@@ -4,15 +4,15 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
-from languages.fields import LanguageField
 from django.utils import timezone
 from datetime import timedelta
 import uuid
 import os
 from django.db.models.signals import post_delete
-from .utils import file_cleanup
+from .utils import file_cleanup, LanguageField
 from django.utils.translation import gettext as _
 from django.urls import reverse
+from django.db.models import Q
 #from django_markdown.models import MarkdownField
 
 from django.contrib.sites.models import Site
@@ -37,11 +37,21 @@ class Tag(models.Model):
     #class Meta:
         #permissions
 
+class Licensee(models.Model):
+    name = models.CharField(max_length=50)
+    homepage = models.CharField(max_length=80, blank=True, help_text=_("Link to liscensee's website"))
+    logo = models.ImageField(upload_to='misc', blank=True, help_text=_("Licensee's logo, preferably transparent"))
+    # TODO countries for DMCA maybe?
+    def __str__(self):
+        return self.name
+
 class Person(models.Model):
     class Meta:
         verbose_name_plural = "people"
     name = models.CharField(max_length=100, unique=True)
     alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'))
+    def comics(self):
+        return Comic.objects.filter(Q(published=True), Q(artist=self) | Q(author=self))
     def __str__(self):
         return self.name
 
@@ -57,6 +67,7 @@ class Comic(models.Model):
     published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+    licenses = models.ManyToManyField(Licensee, blank=True)
     COMIC_FORMATS = (
         (0, _('Manga')),
         (1, _('Toon')),
@@ -91,13 +102,19 @@ class Comic(models.Model):
     def __str__(self):
         return self.name
     
+    def get_absolute_url(self):
+        return reverse('series', args=[self.slug])
+
+    def chapters(self):
+        return Chapter.objects.filter(published=True, comic=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic')
+    
     class Meta:
         ordering = ('name',)
 post_delete.connect(file_cleanup, sender=Comic, dispatch_uid="comic.file_cleanup")
 
 class Team(models.Model):
     name = models.CharField(max_length=256)
-    slug = models.SlugField(unique=True, help_text=_("Changing this may break URLs"), max_length=20)
+    #slug = models.SlugField(unique=True, help_text=_("Changing this may break URLs"), max_length=20)
     members = models.ManyToManyField(User, blank=True)
     description = models.TextField(blank=True)   
     def __str__(self):
@@ -161,6 +178,12 @@ class Chapter(models.Model):
         else:
             t = _("Chapter %d") % self.chapter
         return t
+    
+    def decimal(self,):
+        if self.subchapter:
+            return str(self.chapter) + "." + str(self.subchapter)
+        else:
+            return str(self.chapter)
 
     def path(self, filename):
         # file will be uploaded to MEDIA_ROOT/stuff_below
@@ -174,14 +197,34 @@ class Chapter(models.Model):
     def get_absolute_url(self):
         return reverse('read_uuid', args=[self.uniqid])
 
+    #def pages(self):
+    #    return Page.objects.filter(chapter=self)
+
     class Meta:
         ordering = ('-created_at',)
+
+from django.utils.encoding import filepath_to_uri
+from django.utils._os import safe_join
+from urllib.parse import urljoin
+class PageStorage(FileSystemStorage):
+    def path(self, name):
+        return safe_join(self.location, name)
+
+    def url(self, name):
+        if self.base_url is None:
+            raise ValueError("This file is not accessible via a URL.")
+        url = filepath_to_uri(name)
+        if url is not None:
+            url = url.lstrip('/')
+        return urljoin(self.base_url, url)
+    #def get_available_name(self, name):
+    #    return name
 
 class Page(models.Model):
     chapter = models.ForeignKey(Chapter, related_name='pages', on_delete=models.CASCADE)
     def path(self, filename):
         return self.chapter.path(str(self.filename))
-    file = models.ImageField(upload_to=path)
+    file = models.ImageField(storage=PageStorage(), upload_to=path, height_field="height", width_field="width", max_length=200) # I hate that this saves the whole path
     height = models.PositiveSmallIntegerField(null=True, editable=False) # TODO NOT BLANK!
     width = models.PositiveSmallIntegerField(null=True, editable=False) # TODO NOT BLANK!
     mime = models.CharField(max_length=16, null=True, editable=False) # TODO NOT BLANK!
@@ -195,6 +238,17 @@ class Page(models.Model):
     @property
     def filename(self):
         return self.file.name.rsplit('/', 1)[-1]
+
+    def save(self, *args, **kwargs):
+        # from pprint import pprint
+        # pprint(vars(self.file._file.content_type))
+        # print("Mime: " + str(self.mime))
+        if self.mime is None:
+            try:
+                self.mime = self.file._file.content_type
+            except Exception as e:
+                pass
+        super(Page, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ('file',)

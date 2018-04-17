@@ -9,6 +9,10 @@
     color: #000;
 }
 
+:not(.material-icons) {
+    font-family: Roboto, "游ゴシック", YuGothic, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif !important;
+}
+
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -73,4 +77,19 @@ footer {
 
 table td {
     line-height: 2;
+}
+
+body {
+    width: inherit;
+    height: inherit;
+}
+
+.etext {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.etext a:hover {
+    text-decoration: underline;
 }

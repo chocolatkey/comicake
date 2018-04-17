@@ -5,6 +5,7 @@ except ImportError:
     from urllib.parse import urlencode
 
 import json
+import os
 
 from django.contrib import admin
 from django.shortcuts import render, get_object_or_404
@@ -12,6 +13,7 @@ from django.conf.urls import url
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from .utils import cdn_url
 
 
 class MultiUploadAdmin(admin.ModelAdmin):
@@ -40,7 +42,7 @@ class MultiUploadAdmin(admin.ModelAdmin):
     multiupload_list = True
     multiupload_form = True
     # integer in bytes
-    multiupload_maxfilesize = 3 * 2 ** 20  # 3 Mb
+    multiupload_maxfilesize = 20 * 2 ** 20  # 20 Mb
     multiupload_minfilesize = 0
     # tuple with mimetype accepted
     multiupload_acceptedformats = ("image/jpeg",
@@ -157,7 +159,7 @@ class MultiUploadAdmin(admin.ModelAdmin):
         obj = get_object_or_404(self.get_queryset(request), pk=pk)
         return obj.delete()
 
-    @csrf_exempt
+    # @csrf_exempt
     # @user_passes_test(lambda u: u.is_staff)
     def admin_upload_view(self, request, id=None):
         if id:
@@ -165,105 +167,126 @@ class MultiUploadAdmin(admin.ModelAdmin):
         else:
             object = None
         if request.method == 'POST':    # POST data
-            if not ("f" in request.GET.keys()):  # upload file
-                if not request.FILES:
-                    return HttpResponseBadRequest('Must upload a file')
+            if not request.FILES:
+                return HttpResponseBadRequest('Must upload a file')
 
-                # get the uploaded file
-                files = request.FILES.getlist(u'files[]')
-                resp = []
+            # get the uploaded file
+            files = request.FILES.getlist(u'files[]')
+            resp = []
 
-                for f in files:
-                    error = False
+            for f in files:
+                error = False
 
-                    # file size
-                    if f.size > self.upload_options["maxfilesize"]:
-                        error = "maxFileSize"
-                    if f.size < self.upload_options["minfilesize"]:
-                        error = "minFileSize"
-                        # allowed file type
-                    if f.content_type not in \
-                            self.upload_options["acceptedformats"]:
-                        error = "acceptFileTypes"
+                # file size
+                if f.size > self.upload_options["maxfilesize"]:
+                    error = "maxFileSize"
+                if f.size < self.upload_options["minfilesize"]:
+                    error = "minFileSize"
+                    # allowed file type
+                if f.content_type not in \
+                        self.upload_options["acceptedformats"]:
+                    error = "acceptFileTypes"
 
-                    # the response data which will be returned to
-                    # the uploader as json
-                    response_data = {
-                        "name": f.name,
-                        "size": f.size,
-                        "type": f.content_type,
-                        "deleteType": "POST", # TODO: DELETE?
-                    }
+                # the response data which will be returned to
+                # the uploader as json
+                response_data = {
+                    "name": f.name,
+                    "size": f.size,
+                    "type": f.content_type,
+                    "deleteType": "DELETE"
+                }
 
-                    # if there was an error, add error message
-                    # to response_data and return
-                    if error:
-                        # append error message
-                        response_data["error"] = error
-                        # generate json
-                    else:
-                        while 1:
-                            chunk = f.file.read(10000)
-                            if not chunk:
-                                break
-                        f.file.seek(0)
-
-                        # Manipulate file.
-                        data = self.process_uploaded_file(f, object,
-                                                          request)
-
-                        assert 'id' in data, 'Must return id in data'
-                        response_data.update(data)
-                        response_data['deleteUrl'] = request.path + "?"\
-                            + urlencode({'f': data['id']})
-
-                    resp.append(response_data)
-
-                # generate the json data
-                response_data = json.dumps({'files': resp})
-                # response type
-                content_type = "application/json"
-
-                # QUIRK HERE
-                # in jQuey uploader, when it falls back to uploading
-                # using iFrames
-                # the response content type has to be text/html
-                # if json will be send, error will occur
-                # if iframe is sending the request, it's headers are
-                # a little different compared
-                # to the jQuery ajax request
-                # they have different set of HTTP_ACCEPT values
-                # so if the text/html is present, file was uploaded
-                # using jFrame because
-                # that value is not in the set when uploaded by XHR
-                if "text/html" in request.META["HTTP_ACCEPT"]:
-                    content_type = "text/html"
-
-                # return the data to the uploading plugin
-                return HttpResponse(response_data, content_type=content_type)
-
-            else:
-                # file has to be deleted
-                # get the file path by getting it from the query
-                # (e.g. '?f=filename.here')
-                # generate true json result
-                # in this case is it a json True value
-                # if true is not returned, the file will not be
-                # removed from the upload queue
-
-                happened = self.delete_file(request.GET.get("f"), request)
-                print(happened)
-
-                if happened[0]:
-                    response_data = json.dumps({'success': True})
+                # if there was an error, add error message
+                # to response_data and return
+                if error:
+                    # append error message
+                    response_data["error"] = error
+                    # generate json
                 else:
-                    response_data = json.dumps({'success': False})
+                    while 1:
+                        chunk = f.file.read(10000)
+                        if not chunk:
+                            break
+                    f.file.seek(0)
 
-                # return the result data
-                # here it always has to be json
-                return HttpResponse(response_data, content_type="application/json")
+                    # Manipulate file.
+                    data = self.process_uploaded_file(f, object,
+                                                        request)
+
+                    assert 'id' in data, 'Must return id in data'
+                    response_data.update(data)
+                    response_data['deleteUrl'] = request.path + "?"\
+                        + urlencode({'f': data['id']})
+
+                resp.append(response_data)
+
+            # generate the json data
+            response_data = json.dumps({'files': resp})
+            # response type
+            content_type = "application/json"
+
+            # QUIRK HERE
+            # in jQueey uploader, when it falls back to uploading
+            # using iFrames
+            # the response content type has to be text/html
+            # if json will be send, error will occur
+            # if iframe is sending the request, it's headers are
+            # a little different compared
+            # to the jQuery ajax request
+            # they have different set of HTTP_ACCEPT values
+            # so if the text/html is present, file was uploaded
+            # using jFrame because
+            # that value is not in the set when uploaded by XHR
+            if "text/html" in request.META["HTTP_ACCEPT"]:
+                content_type = "text/html"
+
+            # return the data to the uploading plugin
+            return HttpResponse(response_data, content_type=content_type)
+
+        elif request.method == 'DELETE':
+            if not ("f" in request.GET.keys()):  # upload file
+                return HttpResponseBadRequest('Must specify a file to delete')
+            # file has to be deleted
+            # get the file path by getting it from the query
+            # (e.g. '?f=filename.here')
+            # generate true json result
+            # in this case is it a json True value
+            # if true is not returned, the file will not be
+            # removed from the upload queue
+
+            happened = self.delete_file(request.GET.get("f"), request)
+
+            if happened[0]:
+                response_data = json.dumps({'success': True})
+            else:
+                response_data = json.dumps({'success': False})
+
+            # return the result data
+            # here it always has to be json
+            return HttpResponse(response_data, content_type="application/json")
 
         else:
+            if 'HTTP_X_REQUESTED_WITH' in request.META:
+                if request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
+                    # Get objects
+                    resp = []
+                    for page in object.pages.all():
+                        puri = page.file.url
+                        resp.append({
+                            "name": os.path.basename(page.file.name),
+                            "size": page.size,
+                            "type": page.mime,
+                            "deleteType": "DELETE",
+                            "deleteUrl": request.path + "?" + urlencode({'f': page.id}),
+                            "url": puri,
+                            "thumbnailUrl": cdn_url(request, puri, {'thumb': True})
+                        })
+                    # generate the json data
+                    response_data = json.dumps(resp)
+                    content_type = "application/json"
+                    if "text/html" in request.META["HTTP_ACCEPT"]:
+                        content_type = "text/html"
+                    return HttpResponse(response_data, content_type=content_type)
             #GET
             context = {
                 # these two are necessary to generate the jQuery templates

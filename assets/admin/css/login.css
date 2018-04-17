@@ -1,11 +1,18 @@
 /* LOGIN FORM */
 
 body.login {
-    background: #f8f8f8;
+    background: #000;
     background-image: url('/static/img/bg.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    background-position: top;
+    /*
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;*/
+    
 }
 
 .login #header {

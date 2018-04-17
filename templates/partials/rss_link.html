@@ -1,0 +1,4 @@
+{% spaceless %}
+{% load i18n %}
+<a href="{% url 'feed_rss_comic' comic.uniqid %}"{% if class %} class="{{ class }}"{% endif %} title="{% blocktrans with item_title=comic.name %}RSS chapter feed for {{ item_title }}{% endblocktrans %}" data-turbolinks="false"><i class="{% if innerclass %}{{ innerclass }}{% else %}material-icons rss-button{% endif %}" aria-hidden="true" tabindex="0" role="link">rss_feed</i></a>
+{% endspaceless %}

@@ -16,17 +16,20 @@
     <meta name="theme-color" content="#212121">
     <meta name="format-detection" content="telephone=no, email=no"/>
     <meta name="apple-mobile-web-app-title" content="{{ SITE_TITLE }}">
+    <meta name="google" content="notranslate">
     {% compress css %}
     <link rel="stylesheet" href="{% static 'css/vendor/material.css' %}">
     <link rel="stylesheet" href="{% static 'css/material-theme.css' %}">
     <link rel="stylesheet" href="{% static 'css/rich.css' %}">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     {% endcompress %}
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Modernizr has to be synchronously loaded before body/css to prevent FOUC! -->
+    <script src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
     {% if not DEBUG %}{% load raven %}
     <script src="https://cdn.ravenjs.com/3.23.1/raven.min.js" crossorigin="anonymous"></script>
     <script>Raven.config('{% sentry_public_dsn %}').install()</script>
-    <!-- Google Analytics -->
     <script>
         !function(s,u,g,o,i){s.GoogleAnalyticsObject=g;s[g]||(s[g]=function(){
         (s[g].q=s[g].q||[]).push(arguments)});s[g].l=+new Date;o=u.createElement('script');
@@ -35,18 +38,16 @@
         ga('create', '{{ GA_ID }}', 'auto');
         ga('send', 'pageview');
     </script>
-    <!-- End Google Analytics -->
     <link rel="preconnect" href="//i0.wp.com">
     <link rel="preconnect" href="//i1.wp.com">
     <link rel="preconnect" href="//i2.wp.com">
-    {% endif %}
-    <!-- Modernizr has to be loaded before body/css to prevent FOUC! -->
-    <script src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
+    <script src="{% static 'js/bundle.js' %}?v={{ VERSION }}" async></script>
+    {% else %}
     <script data-main="{% static 'js/main' %}" src="{% static 'js/vendor/require.js' %}" async></script>
-    {% endcache %}
+    {% endif %}{% endcache %}
 </head>
-<body class="mdc-typography">
-    <header id="header" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall">
+<body class="mdc-typography"{% block extrabody %}{% endblock %}>
+    {% block header %}<header id="header" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                 <a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle" onclick="event.preventDefault();">menu</a>
@@ -54,11 +55,8 @@
                 <span class="mdc-toolbar__title mhide">{{ SITE_TITLE }}</span>
                 <div class="mhide">
                     <nav id="toolbar-tab-bar" class="mdc-tab-bar custom-tab-bar-in-toolbar">
-                        <a class="mdc-tab{% if request.path == '/' %} ripple mdc-tab--active{% endif %}" href="/">Home</a>
-                        {% for page in flatpages %}
-                        <a class="mdc-tab{% if page.url == request.path %} ripple mdc-tab--active{% endif %}" href="{{ page.url }}">{{ page.title }}<span class="mdc-tab__indicator"></span></a>
-                        {% endfor %}
-                        <span class="mdc-tab-bar__indicator"></span>
+                        <a class="mdc-tab{% if request.path == '/' %} ripple mdc-tab--active{% endif %}" href="/">Home<span class="mdc-tab__indicator"></span></span></a>
+                        {% for page in flatpages %}<a class="mdc-tab{% if page.url == request.path %} ripple mdc-tab--active{% endif %}" href="{{ page.url }}">{{ page.title }}<span class="mdc-tab__indicator"></span></a>{% endfor %}
                     </nav>
                 </div>
             </section>
@@ -67,24 +65,26 @@
                     <nav id="toolbar-tab-bar" class="mdc-tab-bar custom-tab-bar-in-toolbar mdc-tab-bar--icons-with-text">
                         <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %}" href="/r/latest/">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
-                            <span class="mdc-tab__icon-text">Latest</span>
+                            <span class="mdc-tab__icon-text">{% trans 'Latest' %}</span>
                             <span class="mdc-tab__indicator"></span>
                         </a>
                         <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %}" href="/r/directory/">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">view_list</i>
-                            <span class="mdc-tab__icon-text">Directory</span>
+                            <span class="mdc-tab__icon-text">{% trans 'Directory' %}</span>
                             <span class="mdc-tab__indicator"></span>
                         </a>
                         <span class="mdc-tab-bar__indicator"></span>
                     </nav>
                 </div>
-                <a href="/r/search/" class="material-icons mdc-toolbar__icon" onclick="event.preventDefault();" aria-label="Search" alt="Search" data-action="click->search#toggle" data-target="search.toggler">search</a>
-                <form action="/r/search/" class="mdc-text-field mdc-text-field--box mdc-text-field--with-trailing-icon cake-search hide" data-target="search.popup">
-                    <input type="text" name="query" id="ss" class="mdc-text-field__input">
-                    <label for="ss" class="mdc-floating-label">Search comics</label>
-                    <button type="submit"><i class="material-icons mdc-text-field__icon" tabindex="0">send</i></button>
-                    </div>
-                </form>
+                <a href="/r/search/" class="material-icons mdc-toolbar__icon" onclick="event.preventDefault();" aria-label="{% trans 'Search' %}" alt="{% trans 'Search' %}" data-action="click->search#toggle" data-target="search.toggler">search</a>
+                <div data-target="search.popup" class="hide cake-search">
+                    <form action="/r/search/" class="mdc-text-field mdc-text-field--box mdc-text-field--with-trailing-icon">
+                        <input type="text" name="q" id="ss" class="mdc-text-field__input" autocomplete="off" data-target="search.field" data-action="input->search#suggest">
+                        <label for="ss" class="mdc-floating-label">{% trans 'Search comics' %}</label>
+                        <button type="submit"><i class="material-icons mdc-text-field__icon" tabindex="0">send</i></button>
+                    </form>
+                    <div class="mdc--theme-primary" data-target="search.results"></div>
+                </div>
             </section>
         </div>
     </header>
@@ -104,11 +104,11 @@
             </div>
             </nav>
         </nav>
-    </aside>
+    </aside>{% endblock %}
     <!--data-turbolinks="false"-->
     {% block body %}{% endblock %}
-    <footer class="mdc-theme--text-primary-on-primary">
-            <div class="text">{% trans 'All the manga featured in this website are property of their publishers. If you liked any of the manga you obtained here, consider buying the original versions, or the local translation, when available. Thanks for your support.' %}</div>
-    </footer>
+    {% block footer %}<footer class="mdc-theme--text-primary-on-primary noselect">
+            <div class="text">{% trans 'All comics featured on this website are property of their publishers. If you liked any of the comics you obtained here, consider buying the original versions, or the local translation, when available. Thanks for your support.' %}</div>
+    </footer>{% endblock %}
 </body>
 </html>

@@ -20,8 +20,9 @@ from django.contrib.sitemaps.views import sitemap
 from django.contrib.sitemaps import GenericSitemap
 from django.views.decorators.cache import cache_page
 from reader.models import Chapter, Comic
+from . import views
 
-# Finish: https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
+# TODO Finish: https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
 sitemaps = {
     'chapters': GenericSitemap({
         'queryset': Chapter.objects.filter(published=True),
@@ -31,6 +32,7 @@ sitemaps = {
 
 urlpatterns = [
     #re_path(r'^_nested_admin/', include('nested_admin.urls')),
+    path('', views.home),
     path('a/', admin.site.urls),
     path('api/', include('api.urls')),
     path('r/', include('reader.urls')),

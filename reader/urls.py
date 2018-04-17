@@ -17,8 +17,10 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('series/<str:series_slug>/', views.series, name='series'),
     path('team/<int:team_id>/', views.team, name='team'),
+    path('person/<int:person_id>/', views.person, name='person'),
 
     path('read/<uuid:cid>/', views.read_uuid, name='read_uuid'),
+    path('read/<uuid:cid>/manifest.json', views.read_manifest, name='read_uuid_manifest'),
     path('read/<uuid:cid>/<int:page>', views.read_uuid, name='read_uuid_page'),
     re_path(r'^read/(?P<series_slug>[\w-]+)/(?P<language>[a-z]{2,3})/(?P<volume>[\d]{1,9})/(?P<chapter>[\d]{1,9})(?:/(?P<subchapter>[\d]{1,9}))?' + page_regex + r'/$', views.read_pretty, name='read_pretty'),
 

@@ -1,21 +1,30 @@
+# pylint: disable=E1101
+import os
 from django.shortcuts import render
 from django.conf import settings
 from django.utils.translation import gettext as _
-from django.http import HttpResponse, Http404, HttpResponseForbidden, HttpResponseServerError
+from django.http import HttpResponse, Http404, HttpResponseForbidden, HttpResponseServerError, JsonResponse
 from django.shortcuts import get_list_or_404, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+from django.utils.cache import learn_cache_key
 from django.urls import reverse
+from django.db.models import Q
+from .models import Chapter, Comic, Team, Page, Person
+from .utils import cdn_url
+
+zxchapter = set()
+zxcomic = set()
+zxteam = set()
+zxperson = set()
 
 
-from .models import Chapter, Comic, Team
-
+@cache_page(settings.CACHE_LONG)
 def latest(request, page=1):
     chapters = list(Chapter.objects.filter(published=True, comic__published=True).prefetch_related('team', 'comic'))
-
     paginator = Paginator(chapters, 25)
     page_chapters = paginator.get_page(page)
     return render(request, 'reader/latest.html', {'chapters': page_chapters})
@@ -27,53 +36,194 @@ def latest(request, page=1):
     #if not my_objects:
     #    raise Http404("No MyModel matches the given query.")
 
+@cache_page(settings.CACHE_LONG)
 def directory(request, page=1):
     comics = list(Comic.objects.filter(published=True))
     paginator = Paginator(comics, 12)
     page_comics = paginator.get_page(page)
+    print(page_comics)
     return render(request, 'reader/directory.html', {'comics': page_comics})
 
+@cache_page(settings.CACHE_LONG)
 def series(request, series_slug):
     comic = get_object_or_404(Comic.objects.prefetch_related('author', 'artist', 'tags'), published=True, slug=series_slug)
-    chapters = list(Chapter.objects.filter(published=True, comic=comic).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic'))
-    return render(request, 'reader/series.html', {'comic': comic, 'chapters': chapters})
+    return render(request, 'reader/series.html', {'comic': comic})
 
+@cache_page(settings.CACHE_LONG) # todo increase?
 def read_pretty(request, series_slug, language, volume, chapter, subchapter=0, page=1):
-    # TODO Order by subchapter ASCENDING and choose first from it if no subchap defined
     if volume == 0:
         volume = None
     if subchapter is None:
         subchapter = 0
     
     comic = get_object_or_404(Comic, slug=series_slug)
-    chapter = get_object_or_404(Chapter,
+    chapter = get_object_or_404(Chapter, # TODO Order by subchapter ASCENDING and choose first from it if no subchap defined
         comic=comic, published=True, language=language, volume=volume, chapter=chapter, subchapter=subchapter
         )
     return read_uuid(request, chapter.uniqid, page)
 
+@cache_page(settings.CACHE_LONG) # good times?
 def read_uuid(request, cid, page=1):
     # TODO: If logged in show if not published anyway
-    chapter = get_object_or_404(Chapter, published=True, uniqid=cid)
-    return HttpResponseServerError("Reader not ready!")
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
+    print(request)
+    manifest_url = request.build_absolute_uri(reverse('read_uuid_manifest', args=[chapter.uniqid]))
+    return render(request, 'reader/read.html', {'chapter': chapter, 'page': page, 'manifest_url': manifest_url})
 
+@cache_page(settings.CACHE_LONG) # good times?
+def read_manifest(request, cid):
+    # TODO: If logged in show if not published anyway
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
+    pages = chapter.pages.all()
+    '''
+    Reference at https://github.com/readium/webpub-manifest/tree/master/contexts/default
+    https://github.com/HadrienGardeur/comics-manifest
+
+    https://readium2.herokuapp.com/pub/L2FwcC9taXNjL2VwdWJzL2NoaWxkcmVucy1saXRlcmF0dXJlLmVwdWI=/manifest.json
+    https://readium2.herokuapp.com/pub/L2FwcC9taXNjL2VwdWJzL2NoaWxkcmVucy1saXRlcmF0dXJlLmVwdWI%3D/manifest.json/show/all
+    https://gist.github.com/HadrienGardeur/03ab96f5770b0512233a
+    https://github.com/readium/webpub-manifest/blob/master/contexts/default/context.jsonld
+    https://github.com/readium/webpub-manifest/tree/master/contexts/default
+
+    '''
+    manifest = {
+        "@context": "http://readium.org/webpub/default.jsonld",
+        "metadata": {
+            "@type": "ComicIssue",
+            "identifier": "urn:uuid:" + str(chapter.uniqid),
+            "issueNumber": chapter.decimal(),
+            "name": chapter.simple_title(),
+            "subtitle": chapter.full_title(),
+            "author": [],
+            "artist": [],
+            "accessMode": "visual",
+            "accessibilityControl": ["fullKeyboardControl", "fullMouseControl", "fullTouchControl"],
+            "isAccessibleForFree": True,
+            "isProtected": chapter.protected,
+            "accessibilitySummary":  _("Protected content") if chapter.protected else _("Sequence of images containing drawings with text"),
+            "provider": settings.GENERATOR,
+            "publisher": [],
+            "description": chapter.comic.description,
+            # if chapter.comic.alt %}"alternateName": "{{ chapter.comic.alt }}",{% endif %}
+            "published": chapter.created_at.isoformat(),
+            "modified": chapter.modified_at.isoformat(),
+            "language": chapter.language,
+            "subject": [],
+            "belongs_to": {
+                "series": {
+                    "name": chapter.comic.name,
+                    "slug": chapter.comic.slug,
+                    "identifier": request.build_absolute_uri(chapter.comic.get_absolute_url()),
+                    "position": chapter.decimal()
+                }
+            },
+            "numberOfPages": len(pages)
+        },
+        "links": [
+            {"rel": "self", "href": request.build_absolute_uri(), "type": "application/webpub+json"},
+            {"rel": "alternate", "href": request.build_absolute_uri(reverse('read_uuid', args=[chapter.uniqid])), "type": "text/html"},
+            #{"rel": "alternate", "href": "TODO", "type": "application/vnd.comicbook+zip"}
+        ],
+        "spine": []
+    }
+
+    if chapter.comic.cover:
+        manifest['metadata']['image'] = cdn_url(request, chapter.comic.cover.url),
+        manifest['metadata']['thumbnailUrl'] = cdn_url(request, chapter.comic.cover.url, {'thumb': True}),
+
+    # Pages
+    for page in pages:
+        manifest['spine'].append({
+            "href": cdn_url(request, page.file.url, {'hq': True}),
+            "type": page.mime,
+            "height": page.height,
+            "width": page.width,
+            # "properties": {"page": "right"},
+            # "title": "Cover"
+        })
+
+    # Volume
+    if chapter.volume:
+        manifest['metadata']['belongs_to']['collection'] = {
+            "name": _("Volume %d") % chapter.volume,
+            "identifier": chapter.volume # TODO IMPROVE
+        }
+    
+    # Artists
+    for person in chapter.comic.author.all():
+        pjson = {
+            "@type": "Person",
+            "name": person.name,
+            "identifier": str(person.id),
+            "url": request.build_absolute_uri(reverse('person', args=[person.id]))
+        }
+        if person.alt:
+            pjson['alternateName'] = person.alt
+        manifest['metadata']['author'].append(pjson)
+
+    # Artists
+    for person in chapter.comic.artist.all():
+        pjson = {
+            "@type": "Person",
+            "name": person.name,
+            "identifier": str(person.id),
+            "url": request.build_absolute_uri(reverse('person', args=[person.id]))
+        }
+        if person.alt:
+            pjson['alternateName'] = person.alt
+        manifest['metadata']['artist'].append(pjson)
+
+    # "Publishers"
+    for team in chapter.team.all():
+        manifest['metadata']['publisher'].append({
+            "name": team.name,
+            "identifier": request.build_absolute_uri(reverse('team', args=[team.id]))
+        })
+    
+    # Subjects a.k.a Tags/Genres
+    for tag in chapter.comic.tags.all():
+        manifest['metadata']['subject'].append(tag.name)
+    #print(manifest)
+    return JsonResponse(manifest)
+
+@cache_page(settings.CACHE_MEDIUM)
 def search(request):
+    zxcomic.add(learn_cache_key(request, response))
+    zxperson.add(learn_cache_key(request, response))
     return HttpResponseServerError("Search not ready!")
 
+@cache_page(settings.CACHE_LONG)
 def team(request, team_id):
-    return HttpResponseServerError("Team page not ready!")
+    response = HttpResponseServerError("Team page not ready!")
+    zxchapter.add(learn_cache_key(request, response))
+    zxteam.add(learn_cache_key(request, response))
+    return response
+
+@cache_page(settings.CACHE_LONG)
+def person(request, person_id):
+    person = get_object_or_404(Person, pk=person_id)
+    response = render(request, 'reader/person.html', {'person': person})
+    zxcomic.add(learn_cache_key(request, response))
+    return response
 
 class RssChapterFeed(Feed):
     def __call__(self, request, *args, **kwargs):
-        return cache.get_or_set(self.__class__.__name__, super(RssChapterFeed, self).__call__(request, *args, **kwargs), 60)
+        keyname = self.__class__.__name__
+        zxchapter.add(keyname)
+        return cache.get_or_set(keyname , super(RssChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_LONG)
+
     title = settings.SITE_TITLE
-    link = "/feeds/rss.xml"
+
+    def link(self, obj):
+        return reverse('feed_rss')
+
     description = _("RSS Feed for %s") % settings.SITE_TITLE
 
     def ttl(self):
         return 60
 
     def items(self):
-        return Chapter.objects.prefetch_related('team', 'comic').all()[:25]
+        return Chapter.objects.filter(published=True).prefetch_related('team', 'comic')[:25]
     
     def item_title(self, item):
         return "{} {}".format(item.comic.name, item.full_title())
@@ -97,13 +247,19 @@ class RssChapterFeed(Feed):
         return item.comic.tags.all()
 
 class AtomChapterFeed(RssChapterFeed):
-    link = "/feeds/atom.xml"
-    feed_type = Atom1Feed
+    def link(self, obj):
+        return reverse('feed_atom')
+
     subtitle = _("Atom Feed for %s") % settings.SITE_TITLE
+
+    feed_type = Atom1Feed
 
 class RssComicChapterFeed(RssChapterFeed):
     def __call__(self, request, *args, **kwargs):
-        return cache.get_or_set("%s-%s" % (self.__class__.__name__, kwargs['cid']) , super(RssComicChapterFeed, self).__call__(request, *args, **kwargs), 60)
+        keyname = "%s-%s" % (self.__class__.__name__, kwargs['cid'])
+        zxchapter.add(keyname)
+        zxcomic.add(keymame)
+        return cache.get_or_set(keyname , super(RssComicChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_LONG)
 
     def title(self, obj):
         return obj.name
@@ -112,7 +268,7 @@ class RssComicChapterFeed(RssChapterFeed):
         return reverse('feed_rss_comic', args=[obj.uniqid])
 
     def description(self, obj):
-        description = _("RSS Feed for %s") % obj.name
+        return _("RSS Feed for %s") % obj.name
 
     def get_object(self, request, cid):
         return get_object_or_404(Comic, published=True, uniqid=cid)
@@ -121,7 +277,7 @@ class RssComicChapterFeed(RssChapterFeed):
         return 60
 
     def items(self, obj):
-        return Chapter.objects.filter(comic=obj)
+        return Chapter.objects.filter(comic=obj, published=True)
     
     def item_title(self, item):
         return "{} {}".format(item.comic.name, item.full_title())
@@ -149,6 +305,6 @@ class AtomComicChapterFeed(RssComicChapterFeed):
         return reverse('feed_atom_comic', args=[obj.uniqid])
 
     def subtitle(self, obj):
-        description = _("Atom Feed for %s") % obj.name
+        return _("Atom Feed for %s") % obj.name
 
     feed_type = Atom1Feed

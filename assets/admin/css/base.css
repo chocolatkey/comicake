@@ -774,7 +774,7 @@ table#change-history tbody th {
 }
 
 .dashboard #content {
-    width: 600px;
+    /*width: 600px;*/
 }
 
 #content-main {

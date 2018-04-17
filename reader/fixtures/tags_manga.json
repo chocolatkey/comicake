@@ -1,0 +1,297 @@
+[{
+    "model": "reader.tag",
+    "fields": {
+        "name": "4-Koma",
+        "slug": "yonkoma",
+        "description": "A comic-strip format, generally consists of gag comic strips within four panels of equal size ordered from top to bottom."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Action",
+        "slug": "action",
+        "description": "A work typically depicting fighting, violence, chaos, and fast paced motion."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Adventure",
+        "slug": "adventure",
+        "description": "If a character in the story goes on a trip or along that line, your best bet is that it is an adventure manga. Otherwise, it's up to your personal prejudice in this case."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Award Winning",
+        "slug": "awarded",
+        "description": "A comic that has won an award. The award must be given by an acknowledged awarding body."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Comedy",
+        "slug": "comedy",
+        "description": "A dramatic work that is light and often humorous or satirical in tone and that usually contains a happy resolution of the thematic conflict."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Cooking",
+        "slug": "cooking",
+        "description": "Comic involving cooking as a major theme"
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Doujinshi",
+        "slug": "doujin",
+        "description": "Fan based work inspired by official anime or manga. Original works DO NOT fall under this category"
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Drama",
+        "slug": "drama",
+        "description": "A work meant to bring on an emotional response, such as instilling sadness or tension."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Ecchi",
+        "slug": "ecchi",
+        "description": "Ecchi is used to describe a category of manga and anime with sexually oriented content, that is common in works aimed at a predominantly male audience."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Fantasy",
+        "slug": "fantasy",
+        "description": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Gender Bender",
+        "slug": "bender",
+        "description": "Girls dressing up as guys, guys dressing up as girls... Guys turning into girls, girls turning into guys... I think you get the picture."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Harem",
+        "slug": "harem",
+        "description": "A series involving one male character and many female characters (usually attracted to the male character). A Reverse Harem is when the genders are reversed."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Historical",
+        "slug": "historical",
+        "description": "Having to do with old or ancient times."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Horror",
+        "slug": "horror",
+        "description": "A painful emotion of fear, dread, and abhorrence; a shuddering with terror and detestation; the feeling inspired by something frightful and shocking."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Josei",
+        "slug": "josei",
+        "description": "Literally \"Woman\". Targets women 18-30. Female equivalent to seinen. Unlike shoujo the romance is more realistic and less idealized. The storytelling is more explicit and mature."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Martial Arts",
+        "slug": "martial",
+        "description": "As the name suggests, anything martial arts related. Any of several arts of combat or self-defense, such as aikido, karate, judo, or tae kwon do, kendo, fencing, and so on and so forth."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Mecha",
+        "slug": "mecha",
+        "description": "A work involving and usually concentrating on all types of large robotic machines."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Medical",
+        "slug": "medical",
+        "description": "Comics about doctors, nurses, etc. around the field of medicine."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Music",
+        "slug": "music",
+        "description": "Stories where a large emphasis is placed on music"
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Mystery",
+        "slug": "mystery",
+        "description": "Usually an unexplained event occurs, and the main protagonist attempts to find out what caused it."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Oneshot",
+        "slug": "oneshot",
+        "description": "A one-shot is a comic book that is a pilot or a stand-alone story created as a single issue, rather than the more typical series format."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Psychological",
+        "slug": "psycho",
+        "description": "Usually deals with the philosophy of a state of mind, in most cases detailing abnormal psychology."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Romance",
+        "slug": "romance",
+        "description": "Do you remember love? We will define love as between man and woman in this case. Other than that, it is up to your own imagination of what love is."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "School Life",
+        "slug": "school",
+        "description": "Having a major setting of the story be some type of school."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Sci-Fi",
+        "slug": "scifi",
+        "description": "Short for science fiction, these works involve twists on technology and other science related phenomena which are contrary or stretches of the modern day scientific world."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Seinen",
+        "slug": "seienen",
+        "description": "Seinen means \"Young Man.\" Manga and anime that specifically targets young adult males around the ages of 18 to 25 are seinen titles. The stories in seinen works appeal to university students and those in the working world. Typically the story lines deal with the issues of adulthood."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Shōjo",
+        "slug": "shoujo",
+        "description": "A work intended and primarily written for females. Usually involves a lot of romance and strong character development."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Shōjo Ai",
+        "slug": "shoujoai",
+        "description": "Often synonymous with yuri, this can be thought of as somewhat less extreme. \"Girl's Love\", so to speak."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Shōnen",
+        "slug": "shounen",
+        "description": "A work intended and primarily written for males. These works usually involve fighting and/or violence."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Shōunen Ai",
+        "slug": "shounenai",
+        "description": "Often synonymous with yaoi, this can be thought of as somewhat less extreme. \"Boy's Love\", so to speak."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Slice of Life",
+        "slug": "sliceoflife",
+        "description": "As the name suggests, this genre represents day-to-day tribulations of one/many character(s). These challenges/events could technically happen in real life and are often -if not all the time- set in the present timeline in a world that mirrors our own."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Smut",
+        "slug": "smut",
+        "description": "Comics that are considered profane or offensive, particularly with regards to sexual content"
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Sports",
+        "slug": "sports",
+        "description": "As the name suggests, anything sports related. Baseball, basketball, hockey, soccer, golf, and racing just to name a few."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Supernatural",
+        "slug": "supernatural",
+        "description": "Usually entails amazing and unexplained powers or events which defy the laws of physics."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Tragedy",
+        "slug": "tragedy",
+        "description": "Contains events resulting in great loss and misfortune."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Yaoi",
+        "slug": "yaoi",
+        "description": "This work usually involves intimate relationships between men."
+    }
+},
+{
+    "model": "reader.tag",
+    "fields": {
+        "name": "Yuri",
+        "slug": "yuri",
+        "description": "This work usually involves intimate relationships between women."
+    }
+}
+]

@@ -1,0 +1,22 @@
+    {# TODO: Make a django tag instead that generates all this shit for me #}
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebPage",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ BASE_URL }}{% url 'search' %}?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        },
+        "breadcrumb":{
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "item": "{{ SITE_TITLE }}"
+            },{% block listItems %}{% endblock %}]
+        },	
+        "mainEntity":{{% block mainEntity %}{% endblock %}
+        }
+    }
+    </script>

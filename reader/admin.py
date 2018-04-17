@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Comic, Tag, Chapter, Team, Page, Person
+from .models import Comic, Tag, Chapter, Team, Page, Person, Licensee
 
 from django.utils.translation import gettext as _
 from django.utils.safestring import mark_safe
@@ -13,6 +13,25 @@ from django.utils.html import format_html
 from django.shortcuts import redirect
 
 from django.urls import reverse
+
+def make_published(modeladmin, request, queryset):
+    updates = queryset.update(published=True)
+    if updates == 1:
+        message_bit = _("item was")
+    else:
+        message_bit = _("%s items were") % updates
+    modeladmin.message_user(request, _("%s successfully published.") % message_bit)
+make_published.short_description = _("Publish selected items")
+
+def make_unpublished(modeladmin, request, queryset):
+    updates = queryset.update(published=False)
+    if updates == 1:
+        message_bit = _("item was")
+    else:
+        message_bit = _("%s items were") % updates
+    modeladmin.message_user(request, _("%s successfully unpublished.") % message_bit)
+
+make_unpublished.short_description = _("Unpublish selected items")
 
 class AdminImageWidget(AdminFileWidget):
     def render(self, name, value, attrs=None):
@@ -42,12 +61,18 @@ class PageInlineAdmin(admin.TabularInline):
     extra = 0
     model = Page
     formfield_overrides = {models.ImageField: {'widget': AdminThumbWidget}}
+    template = "admin/edit_inline/pages.html"
 
 class ChapterMultiuploadMixing(object):
     def process_uploaded_file(self, uploaded, chapter, request):
+        '''
+        from pprint import pprint
+        pprint(vars(uploaded))
+        '''
         if chapter:
-            page = chapter.pages.create(file=uploaded)
+            page = chapter.pages.create(file=uploaded, mime=uploaded.content_type, size=uploaded._size)
         else:
+            # Something went horribly wrong. TODO: Raie some kind of exception
             page = Page.objects.create(file=uploaded, chapter=None)
         return {
             'url': page.file.url,
@@ -62,6 +87,9 @@ class ChapterAdmin(ChapterMultiuploadMixing, MultiUploadAdmin):
     multiupload_list = False
     multiupload_maxfilesize = 50 * 2 ** 20 # 50 Mb max image size
     ordering = ('-modified_at',)
+    actions = [make_published, make_unpublished]
+    save_on_top = True
+
 
     def comic_link(self, obj):
         url = reverse('admin:reader_comic_change', args=[obj.comic_id])
@@ -121,7 +149,9 @@ class ComicAdmin(admin.ModelAdmin):
         ChapterInlineAdmin,
     ]
     readonly_fields = ('uniqid',)
-    ordering = ('-id',)
+    ordering = ('-created_at',)
+    actions = [make_published, make_unpublished]
+
     list_display = ('thumb', 'name', 'authors', 'artists', 'published')
     #list_editable = ('published',)
     list_display_links = ('thumb', 'name')
@@ -129,7 +159,7 @@ class ComicAdmin(admin.ModelAdmin):
     formfield_overrides = {models.ImageField: {'widget': AdminImageWidget}}
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
-    autocomplete_fields = ['author', 'artist', 'tags']
+    autocomplete_fields = ['author', 'artist', 'tags', 'licenses']
     def get_formsets_with_inlines(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
             if isinstance(inline, ChapterInlineAdmin) and obj is None:
@@ -142,6 +172,10 @@ class PersonAdmin(admin.ModelAdmin):
     search_fields = ['name', 'alt']
 admin.site.register(Person, PersonAdmin)
 
+class LicenseeAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+admin.site.register(Licensee, LicenseeAdmin)
+
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
     search_fields = ['name', 'description']
@@ -151,6 +185,7 @@ admin.site.register(Tag, TagAdmin)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
     search_fields = ['name', 'description']
+    autocomplete_fields = ['members']
 admin.site.register(Team, TeamAdmin)
 '''
 class JointAdmin(admin.ModelAdmin):

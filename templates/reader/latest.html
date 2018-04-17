@@ -9,7 +9,7 @@
 {% endblock %}
 {% block body %}{% cache 60 latest chapters.number %}
     <main class="mdc-toolbar-fixed-adjust">
-        <h1 class="mdc-typography--headline">Latest Releases</h1>
+        <h1 class="mdc-typography--headline">Latest Releases <a href="{% url 'feed_rss' %}" title="{% blocktrans %}RSS Feed{% endblocktrans %}" data-turbolinks="false"><i class="material-icons rss-button" aria-hidden="true">rss_feed</i></a></h1>
         {% for chapter in chapters %}
         {% ifchanged chapter.comic %}
         {% if not forloop.first %}
@@ -30,7 +30,7 @@
                         {% endif %}
                     </span>
                     <span class="mdc-list-item__text">
-                        <a href="{% cpath chapter %}" data-target="clickable.target">{{ chapter }}</a>
+                        <a href="{% cpath chapter %}" data-target="clickable.target" data-turbolinks="false">{{ chapter }}</a>
                         <span class="mdc-list-item__secondary-text">{{ chapter.created_at|ago }}
                             {% with chapter.team.all as teams %}
                                 {% ifnotequal teams|length 0 %}

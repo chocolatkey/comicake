@@ -1,10 +1,7 @@
 from django import template
-from reader.models import Comic, Chapter
+from reader.models import Comic, Chapter, Person
 from django.urls import reverse
 from django.conf import settings
-import random
-import binascii
-from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime
 from django.utils.translation import gettext as _
 register = template.Library()
@@ -12,6 +9,9 @@ register = template.Library()
 from datetime import date, datetime
 from django.utils.timezone import is_aware, utc
 from django.utils.dateformat import format
+from reader.utils import cdn_url
+
+import json
 
 class SetVarNode(template.Node):
 
@@ -89,6 +89,10 @@ def tt(item):
         title = item.name
         if item.alt:
             title += " ({})".format(item.alt)
+    if type(item) is Chapter:
+        title = "{} :: {}".format(item.comic.name, _("Chapter %d") % item.chapter) # TODO: handle chap is a vol.
+    elif type(item) is Person:
+        title = item.name
     elif type(item) is str:
         title = _(item)
     else:
@@ -97,19 +101,16 @@ def tt(item):
 
 #############
 
-def cdn_url(path):
-    # https://github.com/Automattic/jetpack/blob/master/functions.photon.php#L151
-    random.seed(binascii.crc32(str(path).encode('utf-8')))
-    subdomain = random.randrange(0, 3) # 0-2
-    return "https://i{}.wp.com/{}".format(subdomain, path) # TODO FIX STATIC!
-
-@register.simple_tag(name='icdn')
-def icdn(item):
+@register.simple_tag(name='icdn', takes_context=True)
+def icdn(context, item, *args, **kwargs):
     """
     Image CDN
     Example: {% icdn '/static/static_img.png' %}
     """
-    if settings.DEBUG:
-        return item
+    if 'options' in kwargs:
+        options = json.loads(kwargs['options'])
     else:
-        return cdn_url(get_current_site(None).domain + item)
+        options = {}
+    return cdn_url(context['request'], item, options)
+
+#############

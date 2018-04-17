@@ -1,8 +1,15 @@
 from django.contrib.auth.models import User, Group
-from reader.models import Comic
+from rest_framework.pagination import PageNumberPagination
+from reader.models import Comic, Chapter, Team
 from rest_framework import viewsets
-from .serializers import UserSerializer, GroupSerializer, ComicSerializer
+from .serializers import UserSerializer, GroupSerializer, ComicSerializer, ChapterSerializer, TeamSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
 
+class PageSetPagination(PageNumberPagination):
+    page_size = 25
+    #page_size_query_param = 'page_size'
+    ordering = '-created_at' # '-creation' is default
 
 class UserViewSet(viewsets.ModelViewSet):
     '''mixins.CreateModelMixin, 
@@ -25,6 +32,23 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
+class TeamViewSet(viewsets.ModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamSerializer
+
 class ComicViewSet(viewsets.ModelViewSet):
     queryset = Comic.objects.all()
     serializer_class = ComicSerializer
+    pagination_class = PageSetPagination
+    filter_backends = (DjangoFilterBackend,SearchFilter,)
+    filter_fields = ('slug', 'uniqid')
+    search_fields = ('name', 'alt')
+    #lookup_field = 'uniqid'
+
+class ChapterViewSet(viewsets.ModelViewSet):
+    queryset = Chapter.objects.all()
+    serializer_class = ChapterSerializer
+    pagination_class = PageSetPagination
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('comic',)
+    #lookup_field = 'uniqid'
