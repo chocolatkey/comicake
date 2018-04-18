@@ -41,8 +41,6 @@ STATIC_URL = '/static/' # Set to absolute path of nginx/apache mapped static dir
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_URL = os.path.join(STATIC_URL, 'comics/')
 MEDIA_ROOT = BASE_DIR + MEDIA_URL
-COMPRESS_OUTPUT_DIR = 'assets/cache' # Compressed JS/CSS
-COMPRESS_OFFLINE = True
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),
     #os.path.join(BASE_DIR, 'static'),
@@ -74,6 +72,11 @@ else:
 ###########################################
 ### Don't touch anything below this! ######
 ###########################################
+# Get settings from the file users should be using
+try:
+    from local_settings import *
+except ImportError:
+    pass
 
 APP_NAME = 'ComiCake' # Pls no change kthx
 admin.site.site_title = APP_NAME
@@ -153,7 +156,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'django_cleanup',
-    'compressor',
+    #'compressor',
+    'webpack_loader',
     #'django_markdown' not d2 compatible
     'dynamic_preferences',
     'dynamic_preferences.users.apps.UserPreferencesConfig',
@@ -317,8 +321,18 @@ USE_TZ = True
 INTERNAL_IPS = '127.0.0.1'
 SITE_ID = 1
 
-# Get settings from the file users should be using
-try:
-    from local_settings import *
-except ImportError:
-    pass
+## DEPRECATED FOR WEBPACK
+COMPRESS_OUTPUT_DIR = 'assets/cache' # Compressed JS/CSS
+COMPRESS_OFFLINE = True
+
+# Assets integration w/ webpack
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'bundles/', # must end with slash
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
+}

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns#{% block html_prefix %}{% endblock %}" class="no-js">
-<head>{% load static flatpages i18n cache compress %}{% get_flatpages as flatpages %}
+<head>{% load static flatpages i18n cache %}{% load render_bundle from webpack_loader %}{% get_flatpages as flatpages %}
     <title>{% block title %}{% endblock %}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -17,14 +17,9 @@
     <meta name="format-detection" content="telephone=no, email=no"/>
     <meta name="apple-mobile-web-app-title" content="{{ SITE_TITLE }}">
     <meta name="google" content="notranslate">
-    {% compress css %}
-    <link rel="stylesheet" href="{% static 'css/vendor/material.css' %}">
-    <link rel="stylesheet" href="{% static 'css/material-theme.css' %}">
-    <link rel="stylesheet" href="{% static 'css/rich.css' %}">
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-    {% endcompress %}
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {% render_bundle 'comicake' 'css' %}
     <!-- Modernizr has to be synchronously loaded before body/css to prevent FOUC! -->
     <script src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
     {% if not DEBUG %}{% load raven %}
@@ -41,9 +36,8 @@
     <link rel="preconnect" href="//i0.wp.com">
     <link rel="preconnect" href="//i1.wp.com">
     <link rel="preconnect" href="//i2.wp.com">
-    <script src="{% static 'js/bundle.js' %}?v={{ VERSION }}" async></script>
     {% else %}
-    <script data-main="{% static 'js/main' %}" src="{% static 'js/vendor/require.js' %}" async></script>
+    {% render_bundle 'comicake' 'js' %}
     {% endif %}{% endcache %}
 </head>
 <body class="mdc-typography"{% block extrabody %}{% endblock %}>

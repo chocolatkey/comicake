@@ -188,9 +188,10 @@ def read_manifest(request, cid):
 
 @cache_page(settings.CACHE_MEDIUM)
 def search(request):
+    response = HttpResponseServerError("Search not ready!")
     zxcomic.add(learn_cache_key(request, response))
     zxperson.add(learn_cache_key(request, response))
-    return HttpResponseServerError("Search not ready!")
+    return response
 
 @cache_page(settings.CACHE_LONG)
 def team(request, team_id):

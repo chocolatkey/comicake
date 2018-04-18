@@ -392,22 +392,26 @@ define(["vendor/stimulus.umd", "vendor/turbolinks", "constants", "vendor/axios",
                 //var discPageNum = Object.keys(B.Package.Manifest.items).length + 1;
                 //console.log("DPN: " + discPageNum);
                 //var n = "item-" + sML.String.pad(discPageNum, 0, 3);
-                B.Package.Manifest.items["extra"] = {
-                    href: ""
-                };
-                B.Package.Spine.itemrefs.push({
-                    idref: "extra",
-                    linear: "yes",
-                    "page-spread": "center",
-                    "rendition:layout": "pre-paginated",
-                    "rendition:orientation": "landscape",
-                    "rendition:page-spread": "center",
-                    "rendition:spread": "landscape", // TODO
-                    viewport: {
-                        height: 600,
-                        width: 800
-                    }
-                });
+                if(constants.COMMENTS && false) {
+                    B.Package.Manifest.items["extra"] = {
+                        href: ""
+                    };
+                    B.Package.Spine.itemrefs.push({
+                        idref: "extra",
+                        linear: "yes",
+                        "page-spread": "center",
+                        "rendition:layout": "pre-paginated",
+                        "rendition:orientation": "landscape",
+                        "rendition:page-spread": "center",
+                        "rendition:spread": "landscape", // TODO
+                        viewport: {
+                            height: 600,
+                            width: 800
+                        }
+                    });
+                }
+                
+                
                 //if(constants.CREDITS)
                 //    L.LoadedSpreads ++;
                 
@@ -575,7 +579,7 @@ define(["vendor/stimulus.umd", "vendor/turbolinks", "constants", "vendor/axios",
                 e.Content.onload = function() {};
                 e.Content.src = e.ImageSource;
                 //this.layOut();
-                e.ItemIndex + 1 < R.Items.length - 1 && setTimeout(function() {
+                e.ItemIndex + 1 < R.Items.length && setTimeout(function() { //  - 1 for old comments idea
                     this.loadImage(R.Items[e.ItemIndex + 1]);
                 }.bind(this), 10),
                 0 == e.ItemIndex && setTimeout(function() {
@@ -699,7 +703,11 @@ define(["vendor/stimulus.umd", "vendor/turbolinks", "constants", "vendor/axios",
                             SpreadBox.PaddingBefore = 64;
                         else
                             SpreadBox.PaddingBefore = 0;
-                        SpreadBox.PaddingAfter = 0;
+
+                        if(Spread.SpreadIndex + 1 == R.Spreads.length)
+                            SpreadBox.PaddingAfter = 64;
+                        else
+                            SpreadBox.PaddingAfter = 0;
                     }
                 } else if(S.RVM == "paged") {
                     if(Spread.SpreadIndex == 0) {
