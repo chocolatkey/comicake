@@ -1,4 +1,17 @@
-@import "material-components-web/material-components-web";
+@import "@material/tabs/mdc-tabs";
+@import "@material/button/mdc-button";
+@import "@material/toolbar/mdc-toolbar";
+@import "@material/textfield/mdc-text-field";
+@import "@material/layout-grid/mdc-layout-grid";
+@import "@material/list/mdc-list";
+@import "@material/drawer/mdc-drawer";
+@import "@material/chips/mdc-chips";
+@import "@material/card/mdc-card";
+
+
+
+@import "@material/typography/mdc-typography";
+@import "@material/theme/mdc-theme";
 
 html, body {
     background: #111111;

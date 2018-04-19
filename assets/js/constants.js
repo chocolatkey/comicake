@@ -1,14 +1,12 @@
-define({
-    API_BASE: "/api",
-    STATIC_BASE: "/static",
-    READER_BASE: "/r",
-    seriesLink: function(slug) {
-        return "/r/series/" + slug + "/";
-    },
-    READER_VERSION: "0.0.1",
-    PLACEHOLDER: "/static/img/placeholder.svg",
-    CREDITS: true,
-    COMMENTS: true,
-    useCDN: false,
-    DEBUG: true
-});
+export const API_BASE = "/api";
+export const STATIC_BASE = "/static";
+export const READER_BASE = "/r";
+export function seriesLink(slug) {
+    return "/r/series/" + slug + "/";
+}
+export const READER_VERSION = "0.0.1";
+export const PLACEHOLDER = "/static/img/placeholder.svg";
+export const CREDITS = true;
+export const COMMENTS = true;
+export const useCDN = false;
+export const DEBUG = true;

@@ -2,7 +2,8 @@ var path = require("path");
 var webpack = require("webpack");
 var BundleTracker = require("webpack-bundle-tracker");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-var pp = "http://localhost:3000/assets/bundles/";
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+var pp = "/static/bundles/";
 
 // 4 hotreload: node server.js
 module.exports = {
@@ -10,8 +11,6 @@ module.exports = {
     //mode: "development",
     entry: {
         comicake: [
-            "webpack-dev-server/client?http://localhost:3000",
-            "webpack/hot/only-dev-server",
             "./assets/js/index",
             "./assets/css/main.scss"
         ],
@@ -81,32 +80,29 @@ module.exports = {
             test: /\.js$/,
             loader: "babel-loader",
             query: {
-                presets: ["es2015"]
+                presets: ["@babel/preset-env"]
+            }
+        },
+        {
+            test: /\.(html)$/,
+            use: {
+                loader: "html-loader",
+                options: {
+                    attrs: [":data-src"]
+                }
             }
         }],
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin(), // don't reload if there is an error
         new BundleTracker({filename: "./webpack-stats.json"}),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
             filename: "[name]-[hash].css",
             chunkFilename: "[id].css"
+        }),
+        new UglifyJsPlugin({
+            parallel: true
         })
-    ],
-    devServer: {
-        publicPath: pp,
-        //contentBase: __dirname,
-        historyApiFallback: true,
-        hot: true,
-        inline: true,
-        port: 3000,
-        progress: true,
-        stats: {
-            cached: false
-        },
-        headers: { "Access-Control-Allow-Origin": "*" }
-    }
+    ]
 };

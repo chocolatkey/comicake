@@ -259,7 +259,7 @@ class RssComicChapterFeed(RssChapterFeed):
     def __call__(self, request, *args, **kwargs):
         keyname = "%s-%s" % (self.__class__.__name__, kwargs['cid'])
         zxchapter.add(keyname)
-        zxcomic.add(keymame)
+        zxcomic.add(keyname)
         return cache.get_or_set(keyname , super(RssComicChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_LONG)
 
     def title(self, obj):

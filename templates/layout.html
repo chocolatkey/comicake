@@ -19,11 +19,11 @@
     <meta name="google" content="notranslate">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    {% render_bundle 'comicake' 'css' %}
     <!-- Modernizr has to be synchronously loaded before body/css to prevent FOUC! -->
     <script src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
+    {% render_bundle 'comicake' 'css' %}
     {% if not DEBUG %}{% load raven %}
-    <script src="https://cdn.ravenjs.com/3.23.1/raven.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" crossorigin="anonymous"></script>
     <script>Raven.config('{% sentry_public_dsn %}').install()</script>
     <script>
         !function(s,u,g,o,i){s.GoogleAnalyticsObject=g;s[g]||(s[g]=function(){
@@ -72,7 +72,7 @@
                 </div>
                 <a href="/r/search/" class="material-icons mdc-toolbar__icon" onclick="event.preventDefault();" aria-label="{% trans 'Search' %}" alt="{% trans 'Search' %}" data-action="click->search#toggle" data-target="search.toggler">search</a>
                 <div data-target="search.popup" class="hide cake-search">
-                    <form action="/r/search/" class="mdc-text-field mdc-text-field--box mdc-text-field--with-trailing-icon">
+                    <form action="/r/search/" class="mdc-text-field mdc-text-field--box mdc-text-field--with-trailing-icon" data-target="search.wrapper">
                         <input type="text" name="q" id="ss" class="mdc-text-field__input" autocomplete="off" data-target="search.field" data-action="input->search#suggest">
                         <label for="ss" class="mdc-floating-label">{% trans 'Search comics' %}</label>
                         <button type="submit"><i class="material-icons mdc-text-field__icon" tabindex="0">send</i></button>
