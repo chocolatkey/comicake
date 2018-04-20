@@ -67,11 +67,11 @@ export default class Search extends Controller {
             params: {
                 search: query
             }
-        }).then(function (response) {
+        }).then(response => {
             if(response.data.count > 0) {
                 const suggestions = response.data.results;
                 let mdata = {"results": []};
-                suggestions.forEach(function(comic) {
+                suggestions.forEach(comic => {
                     mdata["results"].push({
                         "link": constants.seriesLink(comic.slug),
                         "name": comic.name,
@@ -83,9 +83,9 @@ export default class Search extends Controller {
             } else {
                 this.clear();
             }
-        }.bind(this)).catch(function (error) {
+        }).catch(error => {
             console.error(error);
             this.suggestionAllowed = false; // Kill to prevent hammering with errors
-        }.bind(this));
+        });
     }
 }

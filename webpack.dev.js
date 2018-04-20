@@ -8,7 +8,6 @@ var pp = "http://localhost:3000/assets/bundles/";
 // 4 hotreload: node server.js
 module.exports = {
     //context: __dirname,
-    //mode: "development",
     entry: {
         comicake: [
             "webpack-dev-server/client?http://localhost:3000",
@@ -17,17 +16,17 @@ module.exports = {
             "./assets/css/main.scss"
         ],
         reader: [
-            "./assets/js/reader/index"
-        ],/*
-        styles: [
-            "./assets/css/main.scss"
-        ]*/
-        //styles: "./assets/css/main.scss"
+            "./assets/js/reader/sML",
+            "./assets/js/reader/index",
+            "./assets/bibi/styles/-header.scss",
+            "./assets/bibi/styles/bibi.heart.scss"
+        ]
     },
     resolve: {
         modules: [
             "./assets/js",
             "./assets/css",
+            "./assets/bibi",
             "node_modules",
             "bower_components"
         ]

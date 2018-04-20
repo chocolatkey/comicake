@@ -1,7 +1,7 @@
 import { MDCRipple } from "@material/ripple";
 import { MDCTemporaryDrawer } from "@material/drawer/temporary";
 export function onLoadMDC() {
-    [].forEach.call(document.querySelectorAll(".ripple"), function(surface) {
+    Array.prototype.slice.call(document.querySelectorAll(".ripple")).forEach(surface => {
         MDCRipple.attachTo(surface);
     });
 

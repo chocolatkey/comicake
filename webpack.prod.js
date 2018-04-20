@@ -11,21 +11,22 @@ module.exports = {
     //mode: "development",
     entry: {
         comicake: [
+            //"@babel/polyfill",
             "./assets/js/index",
             "./assets/css/main.scss"
         ],
         reader: [
-            "./assets/js/reader/index"
-        ],/*
-        styles: [
-            "./assets/css/main.scss"
-        ]*/
-        //styles: "./assets/css/main.scss"
+            "./assets/js/reader/sML",
+            "./assets/js/reader/index",
+            "./assets/bibi/styles/-header.scss",
+            "./assets/bibi/styles/bibi.heart.scss"
+        ]
     },
     resolve: {
         modules: [
             "./assets/js",
             "./assets/css",
+            "./assets/bibi",
             "node_modules",
             "bower_components"
         ]
@@ -80,7 +81,13 @@ module.exports = {
             test: /\.js$/,
             loader: "babel-loader",
             query: {
-                presets: ["@babel/preset-env"]
+                presets: [
+                    ["@babel/preset-env", {
+                        /*targets: {
+                            ie: 11
+                        }*/
+                    }]
+                ]
             }
         },
         {
