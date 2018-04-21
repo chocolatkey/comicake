@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% load flatpages common humanize i18n cache static %}
+{% load render_bundle from webpack_loader %}
 {% block html_prefix %} article: http://ogp.me/ns/article#{% endblock %}
 {% block title %}{% tt chapter %}{% endblock %}
 {% cache 600 og_data chapter.uniqid %}{% block extra_head %}{# TODO: make into template tag you can pass objects #}
@@ -21,12 +22,10 @@
     <noscript>
         <meta http-equiv="refresh" content="0;url={% url 'read_uuid_page' chapter.uniqid 0 %}">
     </noscript>
-    <!--<script id="bibi-script" src="{% static 'bib/i/res/scripts/bibi.js' %}"></script>-->
-    <!--<script id="bibi-preset" src="{% static 'bib/i/presets/comicake.js' %}"></script>-->
-    <!--<script id="bibi-preset" src="{% static 'bib/i/res/scripts/comics.brain.js' %}"></script>-->
-    <link rel="stylesheet" id="bibi-style" href="{% static 'bib/i/res/styles/bibi.css' %}" />{% endif %}
-    <!--<link rel="stylesheet" id="bibi-style" href="http://localhost:3000/bib/i/res/styles/bibi.css" />-->
-{% include 'partials/json-ld-chapter.html' with item=chapter %}{% endblock %}{% endcache %}
+    {% render_bundle 'reader' 'css' %}
+    {% render_bundle 'reader' 'js' %}{% endif %}
+    <script type="application/ld+json">{% jsonld request chapter %}</script>
+{% endblock %}{% endcache %}
 {% block extrabody %}{% if page > 0 %} data-bibi-book="{{ manifest_url }}" data-controller="reader"{% endif %}{% endblock %}
 {% block header %}<div id="bibi-menu" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall" data-turbolinks="false">
     <div class="mdc-toolbar__row">

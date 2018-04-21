@@ -15,7 +15,7 @@
     {% endif %}
     <link rel="alternate" type="application/rss+xml" title="{% blocktrans with comic=comic %}RSS Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_rss_comic' comic.uniqid %}" />
     <link rel="alternate" type="application/atom+xml" title="{% blocktrans with comic=comic %}Atom Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_atom_comic' comic.uniqid %}" />
-{% include 'partials/json-ld-comic.html' with comic=comic %}
+    <script type="application/ld+json">{% jsonld request comic %}</script>
 {% endblock %}{% endcache %}
 {% block body %}
     <main class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary">
@@ -27,8 +27,7 @@
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet">
                     <h1>{{ comic.name }}{% if comic.alt %}<span class="mdc-typography--title">「{{ comic.alt }}」</span>{% endif %}{% include 'partials/rss_link.html' with comic=comic %}</h1>
                     <table>
-                        {% with comic.author.all as authors %}
-                        {% if authors|length > 0 %}
+                        {% with comic.author.all as authors %}{% if authors|length > 0 %}
                         <tr>
                             <td>{% if authors|length == 1 %}{% trans 'Author' %}{% else %}{% trans 'Authors' %}{% endif %}:</td>
                             <td>
@@ -39,10 +38,8 @@
                                 {% endfor %}
                             </td>
                         </tr>
-                        {% endif %}
-                        {% endwith %}
-                        {% with comic.artist.all as artists %}
-                        {% if artists|length > 0 %}
+                        {% endif %}{% endwith %}
+                        {% with comic.artist.all as artists %}{% if artists|length > 0 %}
                         <tr>
                             <td>{% if artists|length == 1 %}{% trans 'Artist' %}{% else %}{% trans 'Artists' %}{% endif %}:</td>
                             <td>
@@ -53,10 +50,21 @@
                                 {% endfor %}
                             </td>
                         </tr>
-                        {% endif %}
-                        {% endwith %}
-                        {% with comic.tags.all as tags %}
-                        {% if tags|length > 0 %}
+                        {% endif %}{% endwith %}
+                        {% with comic.licenses.all as licensees %}{% if licensees|length > 0 %}
+                        <tr>
+                            <td>{% trans 'Licensed by' %}:</td>
+                            <td>
+                                {% for licensee in licensees %}
+                                <a class="mdc-chip mdc-theme--secondary-bg" href="{{ licensee.homepage }}" title="{{ licensee.name }}" tabindex="0">
+                                    {% if licensee.logo %}<img class="mdc-chip__icon mdc-chip__icon--leading" src="{% icdn licensee.logo.url %}" />{% endif %}
+                                    <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ licensee.name }}</div>
+                                </a>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}{% endwith %}
+                        {% with comic.tags.all as tags %}{% if tags|length > 0 %}
                         <tr>
                             <td>{% trans 'Tags' %}:</td>
                             <td>

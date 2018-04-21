@@ -14,7 +14,7 @@ from django.utils.cache import learn_cache_key
 from django.urls import reverse
 from django.db.models import Q
 from .models import Chapter, Comic, Team, Page, Person
-from .utils import cdn_url
+from .jsonld import chapterManifest
 
 zxchapter = set()
 zxcomic = set()
@@ -74,117 +74,7 @@ def read_uuid(request, cid, page=1):
 def read_manifest(request, cid):
     # TODO: If logged in show if not published anyway
     chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
-    pages = chapter.pages.all()
-    '''
-    Reference at https://github.com/readium/webpub-manifest/tree/master/contexts/default
-    https://github.com/HadrienGardeur/comics-manifest
-
-    https://readium2.herokuapp.com/pub/L2FwcC9taXNjL2VwdWJzL2NoaWxkcmVucy1saXRlcmF0dXJlLmVwdWI=/manifest.json
-    https://readium2.herokuapp.com/pub/L2FwcC9taXNjL2VwdWJzL2NoaWxkcmVucy1saXRlcmF0dXJlLmVwdWI%3D/manifest.json/show/all
-    https://gist.github.com/HadrienGardeur/03ab96f5770b0512233a
-    https://github.com/readium/webpub-manifest/blob/master/contexts/default/context.jsonld
-    https://github.com/readium/webpub-manifest/tree/master/contexts/default
-
-    '''
-    manifest = {
-        "@context": "http://readium.org/webpub/default.jsonld",
-        "metadata": {
-            "@type": "ComicIssue",
-            "identifier": "urn:uuid:" + str(chapter.uniqid),
-            "issueNumber": chapter.decimal(),
-            "name": chapter.simple_title(),
-            "subtitle": chapter.full_title(),
-            "author": [],
-            "artist": [],
-            "accessMode": "visual",
-            "accessibilityControl": ["fullKeyboardControl", "fullMouseControl", "fullTouchControl"],
-            "isAccessibleForFree": True,
-            "isProtected": chapter.protected,
-            "accessibilitySummary":  _("Protected content") if chapter.protected else _("Sequence of images containing drawings with text"),
-            "provider": settings.GENERATOR,
-            "publisher": [],
-            "description": chapter.comic.description,
-            # if chapter.comic.alt %}"alternateName": "{{ chapter.comic.alt }}",{% endif %}
-            "published": chapter.created_at.isoformat(),
-            "modified": chapter.modified_at.isoformat(),
-            "language": chapter.language,
-            "subject": [],
-            "belongs_to": {
-                "series": {
-                    "name": chapter.comic.name,
-                    "slug": chapter.comic.slug,
-                    "identifier": request.build_absolute_uri(chapter.comic.get_absolute_url()),
-                    "position": chapter.decimal()
-                }
-            },
-            "numberOfPages": len(pages)
-        },
-        "links": [
-            {"rel": "self", "href": request.build_absolute_uri(), "type": "application/webpub+json"},
-            {"rel": "alternate", "href": request.build_absolute_uri(reverse('read_uuid', args=[chapter.uniqid])), "type": "text/html"},
-            #{"rel": "alternate", "href": "TODO", "type": "application/vnd.comicbook+zip"}
-        ],
-        "spine": []
-    }
-
-    if chapter.comic.cover:
-        manifest['metadata']['image'] = cdn_url(request, chapter.comic.cover.url),
-        manifest['metadata']['thumbnailUrl'] = cdn_url(request, chapter.comic.cover.url, {'thumb': True}),
-
-    # Pages
-    for page in pages:
-        manifest['spine'].append({
-            "href": cdn_url(request, page.file.url, {'hq': True}),
-            "type": page.mime,
-            "height": page.height,
-            "width": page.width,
-            # "properties": {"page": "right"},
-            # "title": "Cover"
-        })
-
-    # Volume
-    if chapter.volume:
-        manifest['metadata']['belongs_to']['collection'] = {
-            "name": _("Volume %d") % chapter.volume,
-            "identifier": chapter.volume # TODO IMPROVE
-        }
-    
-    # Artists
-    for person in chapter.comic.author.all():
-        pjson = {
-            "@type": "Person",
-            "name": person.name,
-            "identifier": str(person.id),
-            "url": request.build_absolute_uri(reverse('person', args=[person.id]))
-        }
-        if person.alt:
-            pjson['alternateName'] = person.alt
-        manifest['metadata']['author'].append(pjson)
-
-    # Artists
-    for person in chapter.comic.artist.all():
-        pjson = {
-            "@type": "Person",
-            "name": person.name,
-            "identifier": str(person.id),
-            "url": request.build_absolute_uri(reverse('person', args=[person.id]))
-        }
-        if person.alt:
-            pjson['alternateName'] = person.alt
-        manifest['metadata']['artist'].append(pjson)
-
-    # "Publishers"
-    for team in chapter.team.all():
-        manifest['metadata']['publisher'].append({
-            "name": team.name,
-            "identifier": request.build_absolute_uri(reverse('team', args=[team.id]))
-        })
-    
-    # Subjects a.k.a Tags/Genres
-    for tag in chapter.comic.tags.all():
-        manifest['metadata']['subject'].append(tag.name)
-    #print(manifest)
-    return JsonResponse(manifest)
+    return JsonResponse(chapterManifest(request, chapter))
 
 @cache_page(settings.CACHE_MEDIUM)
 def search(request):

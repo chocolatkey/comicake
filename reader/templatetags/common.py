@@ -4,12 +4,14 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime
 from django.utils.translation import gettext as _
+from django.utils.safestring import mark_safe
 register = template.Library()
 
 from datetime import date, datetime
 from django.utils.timezone import is_aware, utc
 from django.utils.dateformat import format
 from reader.utils import cdn_url
+from reader.jsonld import chapterLd, comicLd
 
 import json
 
@@ -56,6 +58,24 @@ def cpath(item):
         return reverse('read_uuid', kwargs={'cid': item.uniqid})
     else:
         raise template.TemplateSyntaxError("cpath argument not of type Comic or Chapter")
+
+@register.simple_tag(name='jsonld')
+def jsonld(request, item):
+    """
+    {% jsonld comic %}
+    or
+    {% jsonld chapter %}
+    """
+    jsonld: dict
+    if type(item) is Comic:
+        jsonld = comicLd(request, item)
+    elif type(item) is Chapter:
+        jsonld = chapterLd(request, item)
+    else:
+        raise template.TemplateSyntaxError("jsonld argument not of type Comic or Chapter")
+    print(type(jsonld))
+    indent = 4 if settings.DEBUG else None
+    return mark_safe(json.dumps(jsonld, indent=indent))
 
 @register.filter(name='ago')
 def ago(value):
