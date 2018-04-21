@@ -158,25 +158,45 @@ class Chapter(models.Model):
     #published_at = models.DateTimeField(default=timezone.now)
     modified_at = models.DateTimeField(auto_now=True)
 
+    def chapter_decimal(self,):
+        chapdig = str(self.chapter)
+        if self.subchapter:
+            chapdig += "." + str(self.subchapter)
+        return chapdig
+
+    def custom_title(self,):
+        t = ""
+        if self.comic.chapter_title: # FoOlSlide chapter title formatting
+            # Generate Ordinal Numbers Suffix (English)
+            ordinal = 'th'
+            if not (self.chapter % 100) in [11, 12, 13]:
+                rem = self.chapter % 10
+                if rem is 1:
+                    ordinal = 'st'
+                elif rem is 2:
+                    ordinal = 'nd'
+                elif rem is 3:
+                    ordinal = 'rd'
+            t = self.comic.chapter_title.replace("{num}", self.chapter_decimal()).replace("{ord}", ordinal)
+        else:
+           t += _("Chapter %s") % self.chapter_decimal()
+        return t
+
+
     def full_title(self,):
-        #t = self.comic.name + " -"
         t = ""
         if self.volume:
-            t += _("Vol. %d ") % int(self.volume)
-        t += _("Chapter %s") % self.chapter
-        if self.subchapter:
-            t += "." + str(self.subchapter)
+            t += _("Vol. %d") % int(self.volume) + " "
+        t += _("Chapter %s") % self.chapter_decimal()
         if self.name:
             t += ": " + self.name
         return t
     full_title.short_description = _("Title")
 
     def simple_title(self,):
-        t = ""
+        t = self.custom_title()
         if self.name:
-            t = self.name
-        else:
-            t = _("Chapter %d") % self.chapter
+            t += ": " + self.name
         return t
     
     def decimal(self,):
