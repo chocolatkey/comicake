@@ -610,7 +610,9 @@ button::-moz-focus-inner {
         -ms-user-select: none;
 }
 
-
+.mdc-chip__icon {
+    border-radius: 0;
+}
 
 .mdc-toolbar__title {
     padding: 0;
