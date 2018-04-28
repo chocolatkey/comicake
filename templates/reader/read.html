@@ -21,11 +21,13 @@
     {% if page > 0 %}<!-- Fallback for users without JavaScript -->
     <noscript>
         <meta http-equiv="refresh" content="0;url={% url 'read_uuid_page' chapter.uniqid 0 %}">
-    </noscript>
-    {% render_bundle 'reader' 'css' %}
-    {% render_bundle 'reader' 'js' %}{% endif %}
+    </noscript>{% endif %}
     <script type="application/ld+json">{% jsonld request chapter %}</script>
-{% endblock %}{% endcache %}
+{% endblock %}{% block final_head %}
+    {% render_bundle 'comicake' 'css' %}
+    {% render_bundle 'reader' 'css' %}
+    {% render_bundle 'reader' 'js' %}
+{% endblock%}{% endcache %}
 {% block extrabody %}{% if page > 0 %} data-bibi-book="{{ manifest_url }}" data-controller="reader"{% endif %}{% endblock %}
 {% block header %}<div id="bibi-menu" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall" data-turbolinks="false">
     <div class="mdc-toolbar__row">
@@ -36,13 +38,13 @@
         <section class="mdc-toolbar__section mdc-toolbar__section--align-end" data-controller="search">
             <div>
                 <nav id="toolbar-tab-bar" class="mdc-tab-bar custom-tab-bar-in-toolbar mdc-tab-bar--icons-tabs">
-                    <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %}" title="{% trans 'Latest' %}" href="/r/latest/">
+                    <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Latest' %}" href="/r/latest/">
                         <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
                     </a>
-                    <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %}" title="{% trans 'Directory' %}" href="/r/directory/">
+                    <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Directory' %}" href="/r/directory/">
                         <i class="material-icons mdc-tab__icon" aria-hidden="true">view_list</i>
                     </a>
-                    <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %}" title="{% trans 'Search' %}" href="/r/search/">
+                    <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Search' %}" href="/r/search/">
                         <i class="material-icons mdc-tab__icon" aria-hidden="true">search</i>
                     </a>
                 </nav>

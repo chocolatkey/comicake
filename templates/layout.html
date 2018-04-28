@@ -17,13 +17,12 @@
     <meta name="format-detection" content="telephone=no, email=no"/>
     <meta name="apple-mobile-web-app-title" content="{{ SITE_TITLE }}">
     <meta name="google" content="notranslate">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" integrity="sha256-mzxyfaynYU2CrUjCJgtUEq1OIQjwgHIUf/I5ujQuM0s=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" integrity="sha256-hQR4D2npJxQs/vK9Y/N7qVWP4DbDwTBdcoejjX30Qz4=" crossorigin="anonymous">
     <!-- Modernizr has to be synchronously loaded before body/css to prevent FOUC! -->
     <script src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
-    {% render_bundle 'comicake' 'css' %}
     {% if not DEBUG %}{% load raven %}
-    <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" integrity="sha256-RcIeVDrPyqnlpQMijRlDyHaxHYCgchqk4VnDr/627eA=" crossorigin="anonymous"></script>
     <script>Raven.config('{% sentry_public_dsn %}').install()</script>
     <script>
         !function(s,u,g,o,i){s.GoogleAnalyticsObject=g;s[g]||(s[g]=function(){
@@ -36,9 +35,10 @@
     <link rel="preconnect" href="//i0.wp.com">
     <link rel="preconnect" href="//i1.wp.com">
     <link rel="preconnect" href="//i2.wp.com">
-    {% else %}
+    {% endif %}{% block final_head %}
+    {% render_bundle 'comicake' 'css' %}
     {% render_bundle 'comicake' 'js' %}
-    {% endif %}{% endcache %}
+{% endblock%}{% endcache %}
 </head>
 <body class="mdc-typography"{% block extrabody %}{% endblock %}>
     {% block header %}<header id="header" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall">
