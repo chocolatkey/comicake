@@ -137,6 +137,7 @@ RAVEN_CONFIG = { # Sentry config for error reports
     'release': raven.fetch_git_sha(BASE_DIR),
 }
 INSTALLED_APPS = [
+     #'debug_toolbar',
     'raven.contrib.django.raven_compat',
     'reader.apps.ReaderConfig',
     'admin_menu',
@@ -151,7 +152,6 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.sitemaps',
     #'languages',
-    #'debug_toolbar',
     'rest_framework',
     'django_filters',
     'django_cleanup',
@@ -321,8 +321,13 @@ INTERNAL_IPS = '127.0.0.1'
 SITE_ID = 1
 
 ## DEPRECATED FOR WEBPACK
-COMPRESS_OUTPUT_DIR = 'assets/cache' # Compressed JS/CSS
-COMPRESS_OFFLINE = True
+#COMPRESS_OUTPUT_DIR = 'assets/cache' # Compressed JS/CSS
+#COMPRESS_OFFLINE = True
+
+if DEBUG:
+    import mimetypes
+    # Some scripts get triggered if they they have text/plain django dev server gives them
+    mimetypes.add_type("text/javascript", ".js", True)
 
 # Assets integration w/ webpack
 WEBPACK_LOADER = {

@@ -85,6 +85,7 @@ db.sqlite3
 static/*
 *.old
 assets/bundles/*
+sw.js
 
 ### Node ###
 

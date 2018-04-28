@@ -152,7 +152,7 @@ class Chapter(models.Model):
     volume = models.PositiveSmallIntegerField(blank=True, default=0)
     language = LanguageField(default="en")
     name = models.CharField(max_length=200, blank=True)
-    published = models.BooleanField(default=True)
+    published = models.BooleanField(default=False)
     protected = models.BooleanField(default=False) # TODO get default from settings
     created_at = models.DateTimeField(auto_now_add=True)
     #published_at = models.DateTimeField(default=timezone.now)

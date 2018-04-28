@@ -21,6 +21,8 @@ from django.contrib.sitemaps import GenericSitemap
 from django.views.decorators.cache import cache_page
 from reader.models import Chapter, Comic
 from . import views
+from django.views.generic import TemplateView
+from django.views.decorators.cache import cache_page
 
 # TODO Finish: https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
 sitemaps = {
@@ -33,6 +35,10 @@ sitemaps = {
 urlpatterns = [
     #re_path(r'^_nested_admin/', include('nested_admin.urls')),
     path('', views.home),
+    path('sw.js', cache_page(None)(TemplateView.as_view(
+    template_name="sw.js",
+    content_type='application/javascript',
+    )), name='sw.js'),
     path('a/', admin.site.urls),
     path('api/', include('api.urls')),
     path('r/', include('reader.urls')),
