@@ -3,6 +3,7 @@ var webpack = require("webpack");
 var BundleTracker = require("webpack-bundle-tracker");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const WorkboxPlugin = require("workbox-webpack-plugin");
 var pp = "/static/bundles/";
 
 // 4 hotreload: node server.js
@@ -32,7 +33,7 @@ module.exports = {
         ]
     },
     output: {
-        path: path.resolve("./assets/bundles/"),
+        path: path.resolve("./static/bundles/"),
         filename: "[name]-[hash].js",
         publicPath: pp
     },
@@ -110,6 +111,30 @@ module.exports = {
         }),
         new UglifyJsPlugin({
             parallel: true
+        }),
+        new WorkboxPlugin.GenerateSW({
+            swDest: "../../templates/sw.js",
+            importWorkboxFrom: "local",
+            importsDirectory: "sw",
+            clientsClaim: true,
+            skipWaiting: true,
+            // Exclude images from the precache
+            exclude: [/\.(?:png|jpg|jpeg|webp|gif|tiff)$/],
+            // Define runtime caching rules.
+            runtimeCaching: [{
+                // Match any request ends with .png, .jpg, .jpeg or .svg. \.(?:png|jpg|jpeg|webp|gif|tiff)$
+                urlPattern: /\/static\/.*\.(?:png|jpg|jpeg|webp|gif|tiff)$/g, //
+                // Apply a cache-first strategy.
+                handler: "cacheFirst",
+                options: {
+                    cacheName: "img-cache",
+                    // Cache 50 imgs
+                    expiration: {
+                        maxEntries: 50,
+                        maxAgeSeconds: 3600,
+                    }
+                },
+            }],
         })
     ]
 };

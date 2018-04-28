@@ -32,7 +32,7 @@ module.exports = {
         ]
     },
     output: {
-        path: path.resolve("./assets/bundles/"),
+        path: path.resolve("./static/bundles/"),
         filename: "[name]-[hash].js",
         publicPath: pp
     },
