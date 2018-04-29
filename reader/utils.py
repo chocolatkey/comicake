@@ -91,7 +91,6 @@ def cdn_url(request, path, options={}):
     Options: thumb, blur, ...
     """
     if settings.DEBUG:
-        #print(path)
         return request.build_absolute_uri(path)
     else:
         return photon(request, path, options)

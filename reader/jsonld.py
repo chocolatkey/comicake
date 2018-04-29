@@ -59,8 +59,10 @@ def chapterManifest(request, chapter):
     }
 
     if chapter.comic.cover:
-        manifest['metadata']['image'] = cdn_url(request, chapter.comic.cover.url),
-        manifest['metadata']['thumbnailUrl'] = cdn_url(request, chapter.comic.cover.url, {'thumb': True}),
+        manifest['metadata'].update({
+            "image": cdn_url(request, chapter.comic.cover.url),
+            "thumbnailUrl": cdn_url(request, chapter.comic.cover.url, {'thumb': True})
+        })
 
     # Pages
     for page in pages:
