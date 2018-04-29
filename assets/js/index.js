@@ -15,7 +15,7 @@ import "core-js/fn/set";
 import "element-closest";
 import "mutation-observer-inner-html-shim";
 
-import { READER_VERSION } from "./constants";
+import { READER_VERSION, DEBUG } from "./constants";
 import { Application } from "stimulus";
 import { definitionsFromContext } from "stimulus/webpack-helpers";
 import { onLoadMDC } from "./mdc";
@@ -27,6 +27,18 @@ application.load(definitionsFromContext(context));
 document.addEventListener("DOMContentLoaded",function(){
     onLoadMDC();
 });
+
+// Check that service workers are registered
+if ("serviceWorker" in navigator && !DEBUG) {
+// Use the window load event to keep the page load performant
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").then(reg => {
+            console.log("SW registered: ", reg);
+        }).catch(registrationError => {
+            console.error("SW registration failed: ", registrationError);
+        });
+    });
+}
 
 //Turbolinks.start(); TODO: why not working!!
 /* Take care of Google Analytics page views with turbolinks */

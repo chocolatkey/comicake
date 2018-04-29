@@ -250,7 +250,7 @@ html.InternetExplorer .extra-spread-box .item-content.extra-content,html.Interne
 }
 
 .extra-spread-box .item-content.extra-content nav ul.volumes li:nth-child(2) a:after,.extra-spread-box .item-content.extra-content nav ul.volumes li:nth-child(2) a:before,.extra-spread-box .item-content.extra-content nav ul.volumes li:nth-child(3) a:after,.extra-spread-box .item-content.extra-content nav ul.volumes li:nth-child(3) a:before {
-    font-family: FontAwesome;
+    font-family: FontAwesome; // PROBLEM TODO
     font-style: normal;
     font-weight: 400;
     font-feature-settings: normal;

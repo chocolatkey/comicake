@@ -1,6 +1,7 @@
 // parseUri 1.2.2
 // (c) Steven Levithan <stevenlevithan.com>
 // MIT License
+// Modified by chocolatkey to be es6-compatible
 export const options = {
     strictMode: false,
     key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],

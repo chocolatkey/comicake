@@ -6,6 +6,21 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 var pp = "/static/bundles/";
 
+let getBuildNumber = function() {
+    var now = "", date = new Date();
+    [
+        date.getYear() + 1900,
+        date.getMonth() + 1,
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()/*,
+        date.getSeconds()*/
+    ].forEach(function(d) {
+        now += (d < 10 ? "0" : "") + d;
+    });
+    return now;
+};
+
 // 4 hotreload: node server.js
 module.exports = {
     //context: __dirname,
@@ -77,6 +92,14 @@ module.exports = {
                     }
                 },
             ]
+        },
+        {
+            test: /Bibi\.js$/,
+            loader: "string-replace-loader",
+            options: {
+                search: "198106091234",
+                replace: getBuildNumber(),
+            }
         },
         {
             test: /\.js$/,

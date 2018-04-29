@@ -16,7 +16,7 @@ module.exports = {
             "./assets/css/main.scss"
         ],
         reader: [
-            "./assets/js/reader/sML",
+            "./assets/js/vendor/sML",
             "./assets/js/reader/index",
             "./assets/bibi/styles/-header.scss",
             "./assets/bibi/styles/bibi.heart.scss"
@@ -76,6 +76,14 @@ module.exports = {
                     }
                 },
             ]
+        },
+        {
+            test: /Bibi\.js$/,
+            loader: "string-replace-loader",
+            options: {
+                search: "198106091234",
+                replace: "666",
+            }
         },
         {
             test: /\.js$/,

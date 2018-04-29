@@ -28,6 +28,7 @@
     "webpack-bundle-tracker": "^0.4.0-beta"
   },
   "devDependencies": {
+    "string-replace-loader": "^2.1.1",
     "webpack-cli": "^2.0.14",
     "webpack-dev-server": "^3.1.3",
     "workbox-webpack-plugin": "^3.1.0"
