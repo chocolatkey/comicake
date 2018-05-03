@@ -32,7 +32,7 @@ module.exports = {
             "./assets/css/main.scss"
         ],
         reader: [
-            "./assets/js/reader/sML",
+            "./assets/js/vendor/sML",
             "./assets/js/reader/index",
             "./assets/bibi/styles/-header.scss",
             "./assets/bibi/styles/bibi.heart.scss"
