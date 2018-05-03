@@ -67,7 +67,7 @@ def chapterManifest(request, chapter):
     # Pages
     for page in pages:
         manifest['spine'].append({
-            "href": cdn_url(request, page.file.url, {'hq': True}),
+            "href": request.build_absolute_uri(page.file.url), # Leave CDN issue up to JS: cdn_url(request, page.file.url, {'hq': True})
             "type": page.mime,
             "height": page.height,
             "width": page.width,

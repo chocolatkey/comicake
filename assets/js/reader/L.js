@@ -197,7 +197,7 @@ class L { // Bibi.Loader
         B.Package.Metadata["rendition:orientation"] = "portrait", // I think this is right?
         B.Package.Metadata["rendition:spread"] = "landscape", // TODO
         B.Package.Spine["page-progression-direction"] = "rtl", // TODO
-        B.Package.Manifest["cover-image"].Path = Doc.metadata.image;
+        B.Package.Manifest["cover-image"].Path = cdn.image(Doc.metadata.image);
         B.Language = Doc.metadata.language;
         B.ID = Doc.metadata.identifier,
         B.Title = Doc.metadata.subtitle;
@@ -390,7 +390,7 @@ class L { // Bibi.Loader
                 //O.log('Loading Cover Image: ' + B.Path + B.PathDelimiter + R.CoverImage.Path + ' ...', "*:");
                 var Img = this.CoverImageObj;
                 Img.src = B.Files[R.CoverImage.Path] ? O.getDataURI(R.CoverImage.Path, B.Files[R.CoverImage.Path]) : R.CoverImage.Path;
-                Img.timeout = setTimeout(() => { console.dir(Img); Img.ontimeout(); }, 3000);
+                Img.timeout = setTimeout(() => { Img.ontimeout(); }, 3000);
             };
             this.CoverImageObj.onload = () => {
                 if(this.CoverImageObj.TimedOut) return false;
@@ -801,7 +801,7 @@ class L { // Bibi.Loader
         sML.addClass(e.ItemBox, "image-item-box");
         sML.addClass(e, "image-item");
         e.Content.onload = function() {};
-        e.Content.src = e.ImageSource;
+        e.Content.src = cdn.image(e.ImageSource);
         //this.layOut();
         e.ItemIndex + 1 < R.Items.length && setTimeout(() => { //  - 1 for old comments idea
             this.loadImage(R.Items[e.ItemIndex + 1]);
@@ -1217,7 +1217,7 @@ class L { // Bibi.Loader
     
         window.removeEventListener("resize", this.listenResizingWhileLoading);
         delete this.listenResizingWhileLoading;
-    
+
         R.updateOrientation();
         R.layOut({
             Destination: (() => {

@@ -15,7 +15,7 @@ export const options = {
     }
 };
 export function parse (str) {
-    var	o   = this.options,
+    var	o   = options,
         m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
         uri = {},
         i   = 14;
