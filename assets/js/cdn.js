@@ -10,16 +10,15 @@ export default {
     },
     // For now just Photon
     image: function(item/*, options*/) {
+        if(!item) return null;
         if(typeof item == "string") {
-            if(!USECDN)
-                return item;
+            if(!USECDN) return item;
             const url = item;
             item = new Object;
             item.ImageSource = url;
             item.ImageIndex = 0;
         }
-        if(!USECDN)
-            return item.ImageSource;
+        if(!USECDN) return item.ImageSource;
         const ele = parse(item.ImageSource);
         let hash = item.ItemIndex;
         for (var i = 0; i < ele.host.length; i++) {
