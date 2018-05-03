@@ -23,6 +23,13 @@ class I { // Bibi.UserInterfaces
         /*isPointerStealth.addChecker(fun) {
             if(typeof fun == "function" && !I.isPointerStealth.Checkers.includes(fun)) this.isPointerStealth.Checkers.push(fun);
         }*/
+        this.s_ontouchstart = event => this.Swiper.ontouchstart(event);
+        this.s_ontouchmove = event => this.Swiper.ontouchmove(event);
+        this.s_ontouchend = event => this.Swiper.ontouchend(event);
+        this.s_onwheel = event => R.onwheel(event);
+
+        this.s_nombreshow = () => this.Nombre.show;
+        this.s_nombrehide = () => this.Nombre.hide;        
     }
 
     initialize() {
@@ -492,7 +499,6 @@ class I { // Bibi.UserInterfaces
                 I'm just gonna end up fighting bibi more
                 window.removeEventListener(O["resize"], R.catchOnresize);
                 R.Main.removeEventListener("scroll", R.catchOnscroll);
-                //console.warn(this);
                 this.Panel.close();
                 this.SubPanels.forEach((SubPanel) => {
                     SubPanel.close();
@@ -805,8 +811,8 @@ class I { // Bibi.UserInterfaces
                 },
                 activate: () => {
                     if(this.Nombre) {
-                        this.Slider.Current.addEventListener(O["pointerover"], () => this.Nombre.show);
-                        this.Slider.Current.addEventListener(O["pointerout"],  () => this.Nombre.hide);
+                        this.Slider.Current.removeEventListener(O["pointerover"], this.s_nombreshow);
+                        this.Slider.Current.removeEventListener(O["pointerout"],  this.s_nombrehide);
                     }
                     O.HTML.addEventListener(O["pointerdown"], this.Slider.startSliding);
                     R.Items.concat(O).forEach((Item) => { Item.HTML.addEventListener(O["pointerup"], this.Slider.endSliding); });
@@ -815,8 +821,8 @@ class I { // Bibi.UserInterfaces
                 },
                 deactivate: () => {
                     if(this.Nombre) {
-                        this.Slider.Current.removeEventListener(O["pointerover"], () => this.Nombre.show);
-                        this.Slider.Current.removeEventListener(O["pointerout"],  () => this.Nombre.hide);
+                        this.Slider.Current.removeEventListener(O["pointerover"], this.s_nombreshow);
+                        this.Slider.Current.removeEventListener(O["pointerout"],  this.s_nombrehide);
                     }
                     O.HTML.removeEventListener(O["pointerdown"], this.Slider.startSliding);
                     R.Items.concat(O).forEach((Item) => { Item.HTML.removeEventListener(O["pointerup"], this.Slider.endSliding); });
@@ -1189,20 +1195,20 @@ class I { // Bibi.UserInterfaces
                 return this.Swiper.State;
             },
             activateElement: (Ele) => {
-                Ele.addEventListener("touchstart", event => this.Swiper.ontouchstart(event));
-                Ele.addEventListener("touchmove", event => this.Swiper.ontouchmove(event));
-                Ele.addEventListener("touchend", event => this.Swiper.ontouchend(event));
+                Ele.addEventListener("touchstart", this.s_ontouchstart);
+                Ele.addEventListener("touchmove", this.s_ontouchmove);
+                Ele.addEventListener("touchend", this.s_ontouchend);
                 if(!O.Mobile) {
-                    Ele.addEventListener("wheel", event => R.onwheel(event));
+                    Ele.addEventListener("wheel", this.s_onwheel);
                     sML.each(Ele.querySelectorAll("img"), function(){ this.addEventListener(O["pointerdown"], O.preventDefault); });
                 }
             },
             deactivateElement: (Ele) => {
-                Ele.removeEventListener("touchstart", this.Swiper.ontouchstart);
-                Ele.removeEventListener("touchmove", this.Swiper.ontouchmove);
-                Ele.removeEventListener("touchend", this.Swiper.ontouchend);
+                Ele.removeEventListener("touchstart", this.s_ontouchstart);
+                Ele.removeEventListener("touchmove", this.s_ontouchmove);
+                Ele.removeEventListener("touchend", this.s_ontouchend);
                 if(!O.Mobile) {
-                    Ele.removeEventListener("wheel", R.onwheel);
+                    Ele.removeEventListener("wheel", this.s_onwheel);
                     sML.each(Ele.querySelectorAll("img"), function(){ this.removeEventListener(O["pointerdown"], O.preventDefault); });
                 }
             },
@@ -1473,7 +1479,6 @@ class I { // Bibi.UserInterfaces
     
     
     setFeedback(Ele, Opt) {
-        //console.warn(Ele);
         if(!Opt) Opt = {};
         Ele.Labels = this.distillLabels(Ele.Labels);
         if(Ele.Labels) {
