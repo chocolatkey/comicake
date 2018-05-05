@@ -228,15 +228,17 @@ class L { // Bibi.Loader
             B.WritingMode = "lr-tb";
         }
         this.LoadedSpreads = 0;
+        let findex = 0;
         Bibi.forEach(Doc.spine, (e, t) => {
             let humanIndex = t + 1;
             let n = "item-" + sML.String.pad(humanIndex, 0, 3);
             //console.log(n);
             //var o = t % 2 ? "right" : "left";
-            var o = CREDITS ? (t % 2 ? "left" : "right") : (t % 2 ? "right" : "left");
+            var o = CREDITS ? (findex % 2 ? "left" : "right") : (findex % 2 ? "right" : "left");
             let isCredits = (CREDITS && humanIndex == CREDITS) ? true : false; // Credits page
             let isLandscape = ((e.width > e.height) && !isCredits) ? true : false; // Spreads 'n stuff
             if((settings.S.FSP && settings.S.RVM != "vertical") || isLandscape) {
+                findex++;
                 o = "center";
             }
             B.Package.Manifest.items[n] = e;
@@ -265,7 +267,8 @@ class L { // Bibi.Loader
                 }
             });
             if(!(t % 2) || (settings.S.FSP && settings.S.RVM != "vertical") || isLandscape) 
-                this.LoadedSpreads ++;
+                this.LoadedSpreads++;
+            findex++;
         });
         //var discPageNum = Object.keys(B.Package.Manifest.items).length + 1;
         //console.log("DPN: " + discPageNum);
