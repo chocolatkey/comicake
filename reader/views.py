@@ -38,7 +38,7 @@ def latest(request, page=1):
 
 @cache_page(settings.CACHE_LONG)
 def directory(request, page=1):
-    comics = list(Comic.objects.filter(published=True))
+    comics = list(Comic.objects.filter(published=True).prefetch_related('author', 'artist'))
     paginator = Paginator(comics, 12)
     page_comics = paginator.get_page(page)
     return render(request, 'reader/directory.html', {'comics': page_comics})
@@ -65,7 +65,6 @@ def read_pretty(request, series_slug, language, volume, chapter, subchapter=0, p
 def read_uuid(request, cid, page=1):
     # TODO: If logged in show if not published anyway
     chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
-    print(request)
     manifest_url = request.build_absolute_uri(reverse('read_uuid_manifest', args=[chapter.uniqid]))
     return render(request, 'reader/read.html', {'chapter': chapter, 'page': page, 'manifest_url': manifest_url})
 
@@ -167,7 +166,7 @@ class RssComicChapterFeed(RssChapterFeed):
         return 60
 
     def items(self, obj):
-        return Chapter.objects.filter(comic=obj, published=True)
+        return Chapter.objects.filter(comic=obj, published=True).prefetch_related('team', 'comic')[:50]
     
     def item_title(self, item):
         return "{} {}".format(item.comic.name, item.full_title())

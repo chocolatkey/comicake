@@ -108,6 +108,9 @@ class Comic(models.Model):
     def chapters(self):
         return Chapter.objects.filter(published=True, comic=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic')
     
+    def latest_chapter(self):
+        return Chapter.objects.filter(published=True, comic=self).order_by('-volume', '-chapter', '-subchapter')[:1].get()
+    
     class Meta:
         ordering = ('name',)
 post_delete.connect(file_cleanup, sender=Comic, dispatch_uid="comic.file_cleanup")
