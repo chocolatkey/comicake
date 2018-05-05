@@ -56,7 +56,7 @@
                             <td>{% trans 'Licensed by' %}:</td>
                             <td>
                                 {% for licensee in licensees %}
-                                <a class="mdc-chip mdc-theme--secondary-bg" href="{{ licensee.homepage }}" title="{{ licensee.name }}" tabindex="0">
+                                <a class="mdc-chip mdc-theme--secondary-bg" href="{{ licensee.homepage }}" target="_blank" title="{{ licensee.name }}" tabindex="0">
                                     {% if licensee.logo %}<img class="mdc-chip__icon mdc-chip__icon--leading" src="{% icdn licensee.logo.url options='{"thumb": true}' %}" />{% endif %}
                                     <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ licensee.name }}</div>
                                 </a>
