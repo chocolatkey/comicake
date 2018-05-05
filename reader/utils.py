@@ -39,7 +39,7 @@ def global_settings(request):
         'VERSION': settings.VERSION,
         'GENERATOR': settings.GENERATOR,
         'BASE_URL': "http://localhost:8000" if settings.DEBUG else request.scheme + "://" + get_current_site(None).domain, # baka, this is so bad
-        'LANGUAGE_CODE': settings.LANGUAGE_CODE
+        'OG_LOCALE': settings.LANGUAGE_CODE.replace("-", "_")
     }
 
 class LanguageField(CharField):

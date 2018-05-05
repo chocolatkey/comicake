@@ -41,7 +41,6 @@ def directory(request, page=1):
     comics = list(Comic.objects.filter(published=True))
     paginator = Paginator(comics, 12)
     page_comics = paginator.get_page(page)
-    print(page_comics)
     return render(request, 'reader/directory.html', {'comics': page_comics})
 
 @cache_page(settings.CACHE_LONG)
@@ -85,8 +84,8 @@ def search(request):
 
 @cache_page(settings.CACHE_LONG)
 def team(request, team_id):
-    response = HttpResponseServerError("Team page not ready!")
-    zxchapter.add(learn_cache_key(request, response))
+    team = get_object_or_404(Team, pk=team_id)
+    response = render(request, 'reader/team.html', {'team': team})
     zxteam.add(learn_cache_key(request, response))
     return response
 

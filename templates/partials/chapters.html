@@ -1,0 +1,42 @@
+{% load common i18n %}
+{% for chapter in chapters %}
+{% ifchanged chapter.comic %}
+{% if not forloop.first %}
+    </ul>
+</div>
+{% endif %}
+<div class="mdc-list-group" data-controller="clickable">
+    <h3 class="mdc-list-group__subheader"><a href="{% cpath chapter.comic %}">{{ chapter.comic }}</a></h3>
+    <hr class="mdc-list-divider mdc-list-divider--inset">
+    <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list">
+{% endifchanged %}
+        <li class="mdc-list-item ripple" data-action="click->clickable#click">
+            <span class="mdc-list-item__graphic" role="presentation">
+                {% if chapter.volume %}
+                    {{ chapter.volume }}:{{ chapter.chapter }}{% if chapter.subchapter %}.{{ chapter.subchapter }}{% endif %}
+                {% else %}
+                    {{ chapter.chapter }}{% if chapter.subchapter %}.{{ chapter.subchapter }}{% endif %}
+                {% endif %}
+            </span>
+            <span class="mdc-list-item__text">
+                <a href="{% cpath chapter %}" data-target="clickable.target" data-turbolinks="false">{{ chapter }}</a>
+                <span class="mdc-list-item__secondary-text">{{ chapter.created_at|ago }}
+                    {% with chapter.team.all as teams %}
+                        {% ifnotequal teams|length 0 %}
+                            {% trans 'by' %}
+                            {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                        {% endifnotequal %}
+                    {% endwith %}
+                </span>
+            </span>
+            <a href="#" class="mdc-list-item__meta material-icons" aria-label="Download this chapter" title="Download" onclick="event.preventDefault();">
+                file_download
+            </a>
+        </li>
+{% if forloop.last %}
+    </ul>
+</div>
+{% endif %}
+{% empty %}
+<span class="mdc-theme--text-primary-on-primary">{% trans 'No chapters have been released' %}</span>
+{% endfor %}

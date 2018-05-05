@@ -1,5 +1,6 @@
 from django import template
-from reader.models import Comic, Chapter, Person
+from reader.models import Comic, Chapter, Person, Team
+from django.contrib.auth.models import User
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime
@@ -11,9 +12,11 @@ from datetime import date, datetime
 from django.utils.timezone import is_aware, utc
 from django.utils.dateformat import format
 from reader.utils import cdn_url
-from reader.jsonld import chapterLd, comicLd
+from reader.jsonld import chapterLd, comicLd, teamLd
+from django.contrib.sites.shortcuts import get_current_site
 
 import json
+import hashlib
 
 class SetVarNode(template.Node):
 
@@ -62,17 +65,17 @@ def cpath(item):
 @register.simple_tag(name='jsonld')
 def jsonld(request, item):
     """
-    {% jsonld comic %}
-    or
-    {% jsonld chapter %}
+    {% jsonld object %}
     """
     jsonld: dict
     if type(item) is Comic:
         jsonld = comicLd(request, item)
     elif type(item) is Chapter:
         jsonld = chapterLd(request, item)
+    elif type(item) is Team:
+        jsonld = teamLd(request, item)
     else:
-        raise template.TemplateSyntaxError("jsonld argument not of type Comic or Chapter")
+        raise template.TemplateSyntaxError("Object of type {} does not have a JSON-LD equivalent".format(type(item).__name__))
     print(type(jsonld))
     indent = 4 if settings.DEBUG else None
     return mark_safe(json.dumps(jsonld, indent=indent))
@@ -104,7 +107,7 @@ class ValueFromSettings(template.Node):
         return settings.__getattr__(str(self.arg))
 
 @register.simple_tag(name='tt')
-def tt(item):
+def tt(request, item):
     if type(item) is Comic:
         title = item.name
         if item.alt:
@@ -113,11 +116,28 @@ def tt(item):
         title = "{} :: {}".format(item.comic.name, _("Chapter %d") % item.chapter) # TODO: handle chap is a vol.
     elif type(item) is Person:
         title = item.name
+    elif type(item) is Team:
+        title = "{} :: {}".format(_("Teams"), item.name)
     elif type(item) is str:
         title = _(item)
     else:
         title = str(item)
-    return "{} :: {}".format(title, settings.SITE_TITLE)
+    return "{} :: {}".format(title, get_current_site(request).name)
+
+@register.simple_tag(name='gravatar')
+def gravatar(user):
+    gravatar_url = "https://www.gravatar.com/avatar/{}?s=300&d=mm&r=g" # Size 300, mysteryman fallback, g-rated pics
+    if type(user) is not User:
+        raise template.TemplateSyntaxError("Gravatar tag requires a user")
+    if user.email:
+        # Yes, I am aware that this exposes staff user emails in md5 hashed form,
+        # but if you are truly concerned about your email being compromised, either
+        # don't add it to your profile or...don't use that private email with your account!
+        # (also there's really no other service out there that does what gravatar does ;()
+        return gravatar_url.format(hashlib.md5(user.email.lower().strip().encode('utf-8')).hexdigest())
+    else:
+        # Blank email, returns "Myster Man"
+        return gravatar_url.format("")
 
 #############
 

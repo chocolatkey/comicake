@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% load flatpages common humanize i18n %}
-{% block title %}{% tt 'Series List' %}{% endblock %}
+{% block title %}{% tt request 'Series List' %}{% endblock %}
 {% block extra_head %}{# TODO: make into template tag you can pass objects #}
-    <meta property="og:title" content="{% tt 'Series List' %}" />
+    <meta property="og:title" content="{% tt request 'Series List' %}" />
     <meta property="og:description" content="{% blocktrans with site_name=SITE_TITLE %}Series list for {{ site_name }}{% endblocktrans %}" />
     <meta property="og:type" content="website" />
     <meta name="description" content="{% blocktrans with site_name=SITE_TITLE %}Series List for {{ site_name }}{% endblocktrans %}">
@@ -28,7 +28,7 @@
                         </div>
                         <div class="mdc-card__actions" data-turbolinks="false">
                             <div class="mdc-card__action-buttons">
-                                {% with comic.chapters.first as chapter %}{% if chapter %}<a href="{% cpath comic.chapters.first %}" class="mdc-button mdc-button--raised mdc-card__action mdc-card__action--button mdc-theme--text-primary-on-primary">{% trans 'Latest Release' %}</a>{% endif %}{% endwith %}
+                                {% with comic.chapters.first as chapter %}{% if chapter %}<a href="{% cpath comic.chapters.first %}" class="mdc-button mdc-button--raised mdc-card__action mdc-card__action--button mdc-theme--text-primary-on-primary ripple">{% trans 'Latest Release' %}</a>{% endif %}{% endwith %}
                             </div>
                             <div class="mdc-card__action-icons">
                                 {% include 'partials/rss_link.html' with comic=comic class="ripple mdc-ripple-surface mdc-theme--text-primary-on-primary" innerclass="rss-here material-icons mdc-card__action mdc-card__action--icon" %}
@@ -42,6 +42,6 @@
             {% endfor %}
             </div>
         </div>
-        {% include 'partials/pagination.html' with subject=comics %}
+        {% include 'partials/pagination.html' with subject=comics page="directory_page" %}
     </main>
 {% endblock %}

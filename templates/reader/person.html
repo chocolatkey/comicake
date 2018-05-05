@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% load common %}
-{% block title %}{% tt person %}{% endblock %}
+{% block title %}{% request tt person %}{% endblock %}
 {% block body %}
 <main role="main" class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary" >
     <h1>{{ person.name }}</h1>

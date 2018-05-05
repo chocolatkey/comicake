@@ -1,6 +1,7 @@
 from django.utils.translation import gettext as _
 from django.conf import settings
 from django.urls import reverse
+from django.contrib.sites.shortcuts import get_current_site
 from .utils import cdn_url
 
 # TODO: make this a nice class sometime
@@ -30,7 +31,7 @@ def chapterManifest(request, chapter):
             "accessMode": "visual",
             "accessibilityControl": ["fullKeyboardControl", "fullMouseControl", "fullTouchControl"],
             "isAccessibleForFree": True,
-            "isProtected": chapter.protected,
+            "isProtected": chapter.is_protected(),
             "accessibilitySummary":  _("Protected content") if chapter.protected else _("Sequence of images containing drawings with text"),
             "provider": settings.GENERATOR,
             "publisher": [],
@@ -133,11 +134,40 @@ def websiteBase(request):
             "itemListElement": [{
                 "@type": "ListItem",
                 "position": 1,
-                "item": "{{ SITE_TITLE }}"
+                "item": get_current_site(request).name
             }]
         },	
         "mainEntity":{}
     }
+
+def teamLd(request, team):
+    me = websiteBase(request)
+    me["breadcrumb"]["itemListElement"].append({
+        "@type": "ListItem",
+        "position": 2,
+        "item": team.name
+    })
+
+    members = [] # muh nakama
+    for user in team.members.all():
+        members.append({
+            "@type": "Person",
+            "name": user.username
+        })
+
+    me["mainEntity"] = {
+        "@type" : "Organization",
+        "@id" : request.build_absolute_uri(),
+        "name": team.name,
+        "description": team.description,
+        "members": members,
+        #"seeks": {
+        #    "@type": "Demand",
+        #    "name": "Members",
+        #    "sameAs": "https://en.wikipedia.org/wiki/Slave" # Triggered?
+        #}
+    }
+    return me
 
 def comicLd(request, comic):
     me = websiteBase(request)
@@ -171,17 +201,17 @@ def comicLd(request, comic):
             dta["alternateName"] = person.alt
         artists.append(dta)
 
-    publishers = []
+    copyrightHolders = []
     for licensee in comic.licenses.all():
-        publisher = {
+        copyrightHolder = {
             "@type": "Organization",
             "name": licensee.name,
         }
         if licensee.homepage:
-            publisher["url"] = licensee.homepage
+            copyrightHolder["url"] = licensee.homepage
         if licensee.logo:
-            publisher["logo"] = cdn_url(request, licensee.logo.url)
-        publishers.append(publisher)
+            copyrightHolder["logo"] = cdn_url(request, licensee.logo.url)
+        copyrightHolders.append(copyrightHolder)
 
     genres = []
     for tag in comic.tags.all():
@@ -198,7 +228,7 @@ def comicLd(request, comic):
         "dateCreated": comic.created_at.isoformat(),
         "dateModified": comic.modified_at.isoformat(),
         "genre": genres,
-        "publisher": publishers
+        "copyrightHolder": copyrightHolders
     }
 
     if comic.alt:
@@ -255,17 +285,17 @@ def chapterLd(request, chapter):
             dta["alternateName"] = person.alt
         artists.append(dta)
     
-    publishers = []
+    copyrightHolders = []
     for licensee in chapter.comic.licenses.all():
-        publisher = {
+        copyrightHolder = {
             "@type": "Organization",
             "name": licensee.name,
         }
         if licensee.homepage:
-            publisher["url"] = licensee.homepage
+            copyrightHolder["url"] = licensee.homepage
         if licensee.logo:
-            publisher["logo"] = cdn_url(request, licensee.logo.url)
-        publishers.append(publisher)
+            copyrightHolder["logo"] = cdn_url(request, licensee.logo.url)
+        copyrightHolders.append(copyrightHolder)
 
     genres = []
     for tag in chapter.comic.tags.all():
@@ -282,7 +312,8 @@ def chapterLd(request, chapter):
         "accessibilityControl": ["fullKeyboardControl", "fullMouseControl", "fullTouchControl"],
         "isAccessibleForFree": True,
         "provider": settings.GENERATOR,
-        "publisher": publishers,
+        "copyrightHolders": copyrightHolders,
+        "publisher": [],
         "description": chapter.comic.description,
         "dateCreated": chapter.comic.created_at.isoformat(),
         "dateModified": chapter.comic.modified_at.isoformat(),
@@ -293,6 +324,12 @@ def chapterLd(request, chapter):
     if chapter.comic.cover:
         me["mainEntity"]["image"] = cdn_url(request, chapter.comic.cover.url)
         me["mainEntity"]["thumbnailUrl"] = cdn_url(request, chapter.comic.cover.url, {'thumb': True})
+
+    for team in chapter.team.all():
+        me['mainEntity']['publisher'].append({
+            "name": team.name,
+            "identifier": request.build_absolute_uri(reverse('team', args=[team.id]))
+        })
     
     
 

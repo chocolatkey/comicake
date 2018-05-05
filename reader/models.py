@@ -116,7 +116,9 @@ class Team(models.Model):
     name = models.CharField(max_length=256)
     #slug = models.SlugField(unique=True, help_text=_("Changing this may break URLs"), max_length=20)
     members = models.ManyToManyField(User, blank=True)
-    description = models.TextField(blank=True)   
+    description = models.TextField(blank=True)
+    def chapters(self):
+        return Chapter.objects.filter(published=True, team=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic')  
     def __str__(self):
         return self.name
 '''
@@ -157,6 +159,11 @@ class Chapter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     #published_at = models.DateTimeField(default=timezone.now)
     modified_at = models.DateTimeField(auto_now=True)
+
+    def is_protected(self):
+        if self.protected and self.protection:
+            return True
+        return False
 
     def chapter_decimal(self,):
         chapdig = str(self.chapter)

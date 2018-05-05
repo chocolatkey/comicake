@@ -2,9 +2,9 @@
 {% load flatpages common humanize i18n cache static %}
 {% load render_bundle from webpack_loader %}
 {% block html_prefix %} article: http://ogp.me/ns/article#{% endblock %}
-{% block title %}{% tt chapter %}{% endblock %}
+{% block title %}{% tt request chapter %}{% endblock %}
 {% cache 600 og_data chapter.uniqid %}{% block extra_head %}{# TODO: make into template tag you can pass objects #}
-    <meta property="og:title" content="{% tt chapter %}" />
+    <meta property="og:title" content="{% tt request chapter %}" />
     <meta property="og:type" content="article" />
     <meta property="article:published_time" content="{{ chapter.created_at|date:'c' }}">
     <meta property="article:modified_time" content="{{ chapter.modified_at|date:'c' }}">

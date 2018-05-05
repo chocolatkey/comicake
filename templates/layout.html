@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <!-- OpenGraph -->
     <meta property="og:site_name" content="{{ SITE_TITLE }}" />
+    <meta property="og:locale" content="{{ OG_LOCALE }}">
     {% block extra_head %}{% endblock %}{% cache None head %}
     <link rel="sitemap" type="application/xml" title="Sitemap" href="{% url 'django.contrib.sitemaps.views.sitemap' %}" />
     <link rel="alternate" type="application/rss+xml" title="{% trans 'RSS Feed' %}" href="{% url 'feed_rss' %}" />
@@ -44,7 +45,7 @@
     {% block header %}<header id="header" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-                <a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle" onclick="event.preventDefault();">menu</a>
+                <a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle ripple" onclick="event.preventDefault();">menu</a>
                 <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
                 <span class="mdc-toolbar__title mhide">{{ SITE_TITLE }}</span>
                 <div class="mhide">
@@ -57,12 +58,12 @@
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end" data-controller="search">
                 <div>
                     <nav id="toolbar-tab-bar" class="mdc-tab-bar custom-tab-bar-in-toolbar mdc-tab-bar--icons-with-text">
-                        <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %}" href="/r/latest/">
+                        <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" href="/r/latest/">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
                             <span class="mdc-tab__icon-text">{% trans 'Latest' %}</span>
                             <span class="mdc-tab__indicator"></span>
                         </a>
-                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %}" href="/r/directory/">
+                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" href="/r/directory/">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">view_list</i>
                             <span class="mdc-tab__icon-text">{% trans 'Directory' %}</span>
                             <span class="mdc-tab__indicator"></span>
@@ -91,9 +92,9 @@
             </header>
             <nav class="mdc-drawer__content mdc-list-group">
             <div class="mdc-list">
-                <a class="mdc-list-item{% if page.url == request.path %} mdc-list-item--selected{% endif %}" href="/">Home</a>
+                <a class="mdc-list-item{% if page.url == request.path %} mdc-list-item--selected{% endif %} ripple" href="/">Home</a>
                 {% for page in flatpages %}
-                <a class="mdc-list-item{% if page.url == request.path %} mdc-list-item--selected{% endif %}" href="{{ page.url }}">{{ page.title }}</a>
+                <a class="mdc-list-item{% if page.url == request.path %} mdc-list-item--selected{% endif %} ripple" href="{{ page.url }}">{{ page.title }}</a>
                 {% endfor %}
             </div>
             </nav>

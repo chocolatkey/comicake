@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% load flatpages common humanize i18n cache %}
 {% block html_prefix %} book: http://ogp.me/ns/book#{% endblock %}
-{% block title %}{% tt comic %}{% endblock %}
+{% block title %}{% tt request comic %}{% endblock %}
 {% cache 600 og_data comic.uniqid %}{% block extra_head %}{# TODO: make into template tag you can pass objects #}
-    <meta property="og:title" content="{% tt comic.name %}" />
+    <meta property="og:title" content="{% tt request comic.name %}" />
     <meta name="description" content="{{ comic.description }}">
     <meta property="og:description" content="{{ comic.description }}" />
     <meta property="og:type" content="book" />
@@ -120,7 +120,7 @@
             </div>
         {% endif %}
         {% empty %}
-        <span class="mdc-theme--text-primary-on-primary">{% trans 'No chapters have been released' %}</span>
+        <span class="mdc-theme--text-primary-on-primary">{% trans 'No chapters available' %}</span>
         {% endfor %}
     </main>
 {% endblock %}
