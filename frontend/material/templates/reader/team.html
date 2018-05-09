@@ -17,7 +17,7 @@
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
                     <h1 class="mdc-typography--headline3 mdc-theme--text-primary-on-primary">{{ team.name }}</h1>
                     <p class="mdc-typography--body1 mdc-theme--text-primary-on-primary">{{ team.description }}</p>
-                    <h2 class="mdc-typography--headline2 mdc-theme--text-primary-on-primary">Members</h2>
+                    <h2 class="mdc-typography--headline2 mdc-theme--text-primary-on-primary">{% trans 'Members' %}</h2>
                     {% for member in team.members.all %}
                     {% if forloop.first %}
                     <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list">

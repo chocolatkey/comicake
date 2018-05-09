@@ -1,0 +1,14 @@
+{% extends "error.html" %}
+{% load i18n %}
+{% block error_literally %}{% blocktrans with code=500  %}Error {{ code }}{% endblocktrans %}{% endblock %}
+{% block error_message %}{% trans 'Server Error' %}{% endblock %}
+{% block leds %}
+        <div class="leds">
+            <div class="green led"></div>
+            <div class="red led"></div>
+        </div>
+        <div class="leds">
+            <div class="green active led"></div>
+            <div class="red active blink led"></div>
+        </div>
+{% endblock %}

@@ -25,6 +25,22 @@ below in the "Important configuration" section to start with. Leave out stuff yo
 ###########################################
 ### Important configuration vars ##########
 ###########################################
+# Frontend config. Should be declared in frontend_settings.ini!
+FRONTEND_CONFIG = {
+    "theme": {
+        "name": "material" # Site's template theme directory
+    }
+}
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+try:
+    import configparser
+    config = configparser.ConfigParser()
+    config.read(os.path.join(BASE_DIR, 'frontend_settings.ini'))
+    FRONTEND_CONFIG = config
+except Exception as e:
+    print("Error reading frontend settings file!")
+    print(e)
+
 DEBUG = True # SECURITY WARNING: don't run with debug turned on in production!
 SITE_TITLE = 'ComiCake' # Your site's title
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]'] # Add your domain
@@ -36,13 +52,13 @@ GA_ID = None # Google Analytics ID (starts with "UA-")
 SENTRY_DSN = None # e.g. https://abc:123@sentry.example.com/1
 SECRET_KEY = 'GENERATE_YOUR_OWN_VERY_IMPORTANT!' # SECURITY WARNING: keep the secret key used in production secret!
 ## Paths & Static files # https://docs.djangoproject.com/en/2.0/howto/static-files/
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 STATIC_URL = '/static/' # Set to absolute path of nginx/apache mapped static dir!
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_URL = os.path.join(STATIC_URL, 'comics/')
 MEDIA_ROOT = BASE_DIR + MEDIA_URL
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'assets'),
+    os.path.join(BASE_DIR, 'frontend', '_common', 'assets'),
+    os.path.join(BASE_DIR, 'frontend', FRONTEND_CONFIG["theme"]["name"], 'assets')
     #os.path.join(BASE_DIR, 'static'),
 )
 STATICFILES_FINDERS = (
@@ -68,12 +84,19 @@ else:
     CACHE_SHORT = 60
     CACHE_MEDIUM = 300
     CACHE_LONG = 3600
+
+## Comic stuff
+PROTECTION = {
+    "download": False, # False for no DL, true for always DL, otherwise a time in seconds after publish date to allow
+    "captcha": False, # ReCaptcha key or False for no captcha required
+}
+
 ###########################################
 ### Don't touch anything below this! ######
 ###########################################
-# Get settings from the file users should be using
+# Get settings from the backend settings file users should be using
 try:
-    from local_settings import *
+    from backend_settings import *
 except ImportError:
     pass
 
@@ -125,6 +148,7 @@ CACHES = {
         'LOCATION': APP_NAME,
     }
 }
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
@@ -136,8 +160,8 @@ RAVEN_CONFIG = { # Sentry config for error reports
     # release based on the git info.
     'release': raven.fetch_git_sha(BASE_DIR),
 }
+
 INSTALLED_APPS = [
-     #'debug_toolbar',
     'raven.contrib.django.raven_compat',
     'reader.apps.ReaderConfig',
     'admin_menu',
@@ -153,16 +177,15 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     #'languages',
     'rest_framework',
+    'rest_framework_cache',
     'django_filters',
     'django_cleanup',
     #'compressor',
     'webpack_loader',
     #'django_markdown' not d2 compatible
-    'dynamic_preferences',
-    'dynamic_preferences.users.apps.UserPreferencesConfig',
+    #'dynamic_preferences',
+    #'dynamic_preferences.users.apps.UserPreferencesConfig',
 ]
-
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -172,27 +195,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 ]
 
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
 ROOT_URLCONF = 'comicake.urls'
 
-'''{
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'templates/reader'),
-        ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'environment': 'comicake.jinja2.environment',
-        },
-    },'''
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates'), #/site
+            os.path.join(BASE_DIR, 'frontend', '_common', 'templates'), #/site
+            os.path.join(BASE_DIR, 'frontend', FRONTEND_CONFIG["theme"]["name"], 'templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -201,17 +218,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'dynamic_preferences.processors.global_preferences',
+                #'dynamic_preferences.processors.global_preferences',
                 'reader.utils.global_settings'
             ],
         },
     },
 ]
-'''
-REST_FRAMEWORK = {
-    'PAGE_SIZE': 25
-}
-'''
+
 # Django Preferences addon settings
 DYNAMIC_PREFERENCES = {
 
@@ -260,8 +273,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Logging
 if not DEBUG:
+    # Application Logging
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': True,
@@ -304,6 +317,15 @@ if not DEBUG:
                 'propagate': False,
             },
         },
+    }
+    # Not debug means we should be over https!!
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    # Disable HTML rendering of API
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        )
     }
 
 # Internationalization

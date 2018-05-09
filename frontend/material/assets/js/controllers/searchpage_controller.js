@@ -7,12 +7,13 @@ import searchResultsTemplate from "../mst/search.html";
 import * as constants from "../constants";
 import { MDCTextField } from "@material/textfield";
 
-export default class Search extends Controller {
+export default class SearchPage extends Controller {
     static get targets() {
-        return ["popup", "toggler", "field", "results", "wrapper"];
+        return ["field", "results"];
     }
 
     connect() {
+        console.log("Search page connected");
         this.hidden = true;
         this.suggestionAllowed = true;
         //this.queryQueue = [];
@@ -43,7 +44,7 @@ export default class Search extends Controller {
 
     suggest() {
         const query = this.fieldTarget.value;
-        if(query < 2) { // Too small of a query string
+        if(query.length < 2) { // Too small of a query string
             this.clear();
             return;
         }
@@ -62,7 +63,6 @@ export default class Search extends Controller {
     }
 
     doSuggest(query) {
-        
         return axios.get(constants.API_BASE + "/comics/", {
             params: {
                 search: query
