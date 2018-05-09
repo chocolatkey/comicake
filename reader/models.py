@@ -51,7 +51,7 @@ class Person(models.Model):
     name = models.CharField(max_length=100, unique=True)
     alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'))
     def comics(self):
-        return Comic.objects.filter(Q(published=True), Q(artist=self) | Q(author=self))
+        return Comic.objects.filter(Q(published=True), Q(artist=self) | Q(author=self)).order_by('-modified_at')
     def __str__(self):
         return self.name
 
@@ -65,6 +65,7 @@ class Comic(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     description = models.TextField(_("Synopsis"), blank=True)
     published = models.BooleanField(default=True)
+    adult = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     licenses = models.ManyToManyField(Licensee, blank=True)
@@ -163,10 +164,10 @@ class Chapter(models.Model):
     #published_at = models.DateTimeField(default=timezone.now)
     modified_at = models.DateTimeField(auto_now=True)
 
-    def is_protected(self):
+    def get_protection(self):
         if self.protected and self.protection:
-            return True
-        return False
+            return True # TODO real protection val
+        return None
 
     def chapter_decimal(self,):
         chapdig = str(self.chapter)
