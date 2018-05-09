@@ -76,7 +76,7 @@ def read_manifest(request, cid):
 
 @cache_page(settings.CACHE_MEDIUM)
 def search(request):
-    response = HttpResponseServerError("Search not ready!")
+    response = render(request, 'reader/search.html')
     zxcomic.add(learn_cache_key(request, response))
     zxperson.add(learn_cache_key(request, response))
     return response
