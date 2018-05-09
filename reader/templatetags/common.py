@@ -12,7 +12,7 @@ from datetime import date, datetime
 from django.utils.timezone import is_aware, utc
 from django.utils.dateformat import format
 from reader.utils import cdn_url
-from reader.jsonld import chapterLd, comicLd, teamLd
+from reader.jsonld import chapterLd, comicLd, teamLd, personLd
 from django.contrib.sites.shortcuts import get_current_site
 
 import json
@@ -74,6 +74,8 @@ def jsonld(request, item):
         jsonld = chapterLd(request, item)
     elif type(item) is Team:
         jsonld = teamLd(request, item)
+    elif type(item) is Person:
+        jsonld = personLd(request, item)
     else:
         raise template.TemplateSyntaxError("Object of type {} does not have a JSON-LD equivalent".format(type(item).__name__))
     print(type(jsonld))

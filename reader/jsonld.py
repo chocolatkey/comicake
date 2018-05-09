@@ -31,7 +31,7 @@ def chapterManifest(request, chapter):
             "accessMode": "visual",
             "accessibilityControl": ["fullKeyboardControl", "fullMouseControl", "fullTouchControl"],
             "isAccessibleForFree": True,
-            "isProtected": chapter.is_protected(),
+            "protection": chapter.get_protection(),
             "accessibilitySummary":  _("Protected content") if chapter.protected else _("Sequence of images containing drawings with text"),
             "provider": settings.GENERATOR,
             "publisher": [],
@@ -140,6 +140,29 @@ def websiteBase(request):
         "mainEntity":{}
     }
 
+def personLd(request, person):
+    me = websiteBase(request)
+    me["breadcrumb"]["itemListElement"].append({
+        "@type": "ListItem",
+        "position": 2,
+        "item": person.name
+    })
+
+    # TODO maybe their works?
+
+    me["mainEntity"] = {
+        "@type": "Person",
+        "@id": request.build_absolute_uri()
+    }
+
+    if person.alt:
+        me["mainEntity"]["name"] = person.alt
+        me["mainEntity"]["alternateName"] = person.name
+    else:
+        me["mainEntity"]["name"] = person.name
+
+    return me
+
 def teamLd(request, team):
     me = websiteBase(request)
     me["breadcrumb"]["itemListElement"].append({
@@ -156,8 +179,8 @@ def teamLd(request, team):
         })
 
     me["mainEntity"] = {
-        "@type" : "Organization",
-        "@id" : request.build_absolute_uri(),
+        "@type": "Organization",
+        "@id": request.build_absolute_uri(),
         "name": team.name,
         "description": team.description,
         "members": members,
