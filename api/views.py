@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User, Group
 from rest_framework.pagination import PageNumberPagination
-from reader.models import Comic, Chapter, Team, Tag, Person
+from reader.models import Comic, Chapter, Team, Tag, Person, Licensee
 from rest_framework import viewsets
-from .serializers import UserSerializer, GroupSerializer, ComicSerializer, ChapterSerializer, TeamSerializer, TagSerializer, PersonSerializer
+from .serializers import UserSerializer, GroupSerializer, ComicSerializer, ChapterSerializer, TeamSerializer, TagSerializer, PersonSerializer, LicenseeSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
@@ -44,6 +44,12 @@ class PersonViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'alt')
     # TODO: possibly filter by is_active or show is_active
 
+class LicenseeViewSet(viewsets.ModelViewSet):
+    queryset = Licensee.objects.all()
+    serializer_class = LicenseeSerializer
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
+    # TODO: possibly filter by is_active or show is_active
 
 class GroupViewSet(viewsets.ModelViewSet):
     """
@@ -74,7 +80,7 @@ class ComicViewSet(viewsets.ModelViewSet):
     serializer_class = ComicSerializer
     pagination_class = PageSetPagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    filter_fields = ('slug', 'uniqid', 'author', 'artist', 'adult', 'format')
+    filter_fields = ('slug', 'uniqid', 'author', 'artist', 'adult', 'licenses', 'format')
     search_fields = ('name', 'alt')
     ordering_fields = ('name', 'created_at', 'modified_at')
     #lookup_field = 'uniqid'

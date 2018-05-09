@@ -45,6 +45,7 @@ class APIRouter(routers.DefaultRouter):
 router = APIRouter(trailing_slash=False)
 router.register(r'users', views.UserViewSet)
 router.register(r'people', views.PersonViewSet)
+router.register(r'licensees', views.LicenseeViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'comics', views.ComicViewSet)
 router.register(r'chapters', views.ChapterViewSet)

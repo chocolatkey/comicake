@@ -1,11 +1,10 @@
 from django.contrib.auth.models import User, Group
-from reader.models import Comic, Chapter, Team, Tag, Person
+from reader.models import Comic, Chapter, Team, Tag, Person, Licensee
 from rest_framework import serializers
 
 # Caching
 from rest_framework_cache.serializers import CachedSerializerMixin
 from rest_framework_cache.registry import cache_registry
-
 
 class UserSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
     @staticmethod
@@ -27,12 +26,17 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerM
         model = Person
         fields = ('name', 'alt')
 
+class LicenseeSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+    class Meta:
+        model = Licensee
+        fields = ('name', 'homepage', 'logo')
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
     class Meta:
         model = Group
         fields = ('url', 'name')
 
+# I don't like this
 class MiniTagSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
     class Meta:
         model = Tag
@@ -78,13 +82,13 @@ class ComicSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMi
         Thanks to Scott Stafford @ http://ses4j.github.io/2015/11/23/optimizing-slow-django-rest-framework-performance/
         """
         # prefetch_related for "to-many" relationships
-        queryset = queryset.prefetch_related('author', 'artist', 'tags')
+        queryset = queryset.prefetch_related('author', 'artist', 'tags', 'licenses')
         return queryset
 
     class Meta:
         model = Comic
         #, 'author', 'artist', 'tags'
-        fields = ('id', 'name', 'uniqid', 'slug', 'alt', 'author', 'artist', 'adult', 'tags', 'description', 'created_at', 'modified_at', 'cover', 'format')
+        fields = ('id', 'name', 'uniqid', 'slug', 'alt', 'author', 'artist', 'adult', 'tags', 'description', 'created_at', 'modified_at', 'cover', 'licenses', 'format')
 
 class ChapterSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
     #comic = serializers.ReadOnlyField(source='comic.uniqid')
@@ -109,6 +113,7 @@ class ChapterSerializer(serializers.HyperlinkedModelSerializer, CachedSerializer
 
 cache_registry.register(UserSerializer)
 cache_registry.register(PersonSerializer)
+cache_registry.register(LicenseeSerializer)
 cache_registry.register(GroupSerializer)
 cache_registry.register(MiniTagSerializer)
 cache_registry.register(TagSerializer)

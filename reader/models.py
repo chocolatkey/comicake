@@ -48,6 +48,7 @@ class Licensee(models.Model):
 class Person(models.Model):
     class Meta:
         verbose_name_plural = "people"
+        ordering = ('-id',)
     name = models.CharField(max_length=100, unique=True)
     alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'))
     def comics(self):
@@ -125,6 +126,8 @@ class Team(models.Model):
         return Chapter.objects.filter(published=True, team=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic')  
     def __str__(self):
         return self.name
+    class Meta:
+        ordering = ('-id',)
 '''
 class Joint(models.Model):
     members = models.ManyToManyField(Team)
