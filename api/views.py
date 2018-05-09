@@ -47,8 +47,6 @@ class PersonViewSet(viewsets.ModelViewSet):
 class LicenseeViewSet(viewsets.ModelViewSet):
     queryset = Licensee.objects.all()
     serializer_class = LicenseeSerializer
-    filter_backends = (SearchFilter,)
-    search_fields = ('name',)
     # TODO: possibly filter by is_active or show is_active
 
 class GroupViewSet(viewsets.ModelViewSet):

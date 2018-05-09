@@ -49,26 +49,26 @@ class Person(models.Model):
     class Meta:
         verbose_name_plural = "people"
         ordering = ('-id',)
-    name = models.CharField(max_length=100, unique=True)
-    alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'))
+    name = models.CharField(max_length=100, unique=True, db_index=True)
+    alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'), db_index=True)
     def comics(self):
         return Comic.objects.filter(Q(published=True), Q(artist=self) | Q(author=self)).order_by('-modified_at')
     def __str__(self):
         return self.name
 
 class Comic(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, db_index=True)
     uniqid = models.UUIDField(_("Unique ID"), unique=True, default=uuid.uuid4, editable=False, help_text=_("Filesystem identifier for this object"))
     slug = models.SlugField(unique=True, help_text=_("Changing this will break URLs"), max_length=50)
-    alt = models.CharField(_('Alternate title'), blank=True, help_text=_('The original title, or title in another language'), max_length=200)
+    alt = models.CharField(_('Alternate title'), blank=True, help_text=_('The original title, or title in another language'), max_length=200, db_index=True)
     author = models.ManyToManyField(Person, blank=True, related_name='%(class)s_comic_author')
     artist = models.ManyToManyField(Person, blank=True, related_name='%(class)s_comic_artist')
     tags = models.ManyToManyField(Tag, blank=True)
     description = models.TextField(_("Synopsis"), blank=True)
-    published = models.BooleanField(default=True)
-    adult = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=True, db_index=True)
+    adult = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    modified_at = models.DateTimeField(auto_now=True, db_index=True)
     licenses = models.ManyToManyField(Licensee, blank=True)
     COMIC_FORMATS = (
         (0, _('Manga')),
@@ -118,7 +118,7 @@ class Comic(models.Model):
 post_delete.connect(file_cleanup, sender=Comic, dispatch_uid="comic.file_cleanup")
 
 class Team(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, db_index=True)
     #slug = models.SlugField(unique=True, help_text=_("Changing this may break URLs"), max_length=20)
     members = models.ManyToManyField(User, blank=True)
     description = models.TextField(blank=True)
@@ -156,16 +156,16 @@ class Chapter(models.Model):
             mlist += team.name + ", "
         return mlist
     #joint = models.ForeignKey(Joint, on_delete=models.SET_NULL, null=True, blank=True)
-    chapter = models.PositiveSmallIntegerField(blank=False)
-    subchapter = models.PositiveSmallIntegerField(default=0)
-    volume = models.PositiveSmallIntegerField(blank=True, default=0)
-    language = LanguageField(default="en")
+    chapter = models.PositiveSmallIntegerField(blank=False, db_index=True)
+    subchapter = models.PositiveSmallIntegerField(default=0, db_index=True)
+    volume = models.PositiveSmallIntegerField(blank=True, default=0, db_index=True)
+    language = LanguageField(default="en", db_index=True)
     name = models.CharField(max_length=200, blank=True)
-    published = models.BooleanField(default=False)
+    published = models.BooleanField(default=False, db_index=True)
     protected = models.BooleanField(default=False) # TODO get default from settings
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     #published_at = models.DateTimeField(default=timezone.now)
-    modified_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True, db_index=True)
 
     def get_protection(self):
         if self.protected and self.protection:
@@ -258,7 +258,7 @@ class Page(models.Model):
     chapter = models.ForeignKey(Chapter, related_name='pages', on_delete=models.CASCADE)
     def path(self, filename):
         return self.chapter.path(str(self.filename))
-    file = models.ImageField(storage=PageStorage(), upload_to=path, height_field="height", width_field="width", max_length=200) # I hate that this saves the whole path
+    file = models.ImageField(storage=PageStorage(), upload_to=path, height_field="height", width_field="width", max_length=200, db_index=True) # I hate that this saves the whole path
     height = models.PositiveSmallIntegerField(null=True, editable=False) # TODO NOT BLANK!
     width = models.PositiveSmallIntegerField(null=True, editable=False) # TODO NOT BLANK!
     mime = models.CharField(max_length=16, null=True, editable=False) # TODO NOT BLANK!
