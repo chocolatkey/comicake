@@ -23,6 +23,7 @@ from reader.models import Chapter, Comic
 from . import views
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
+from . import settings
 
 # TODO Finish: https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
 sitemaps = {
@@ -32,6 +33,8 @@ sitemaps = {
     }, priority=0.4, changefreq='daily')
 }
 
+paths = settings.FRONTEND_CONFIG["paths"]
+
 urlpatterns = [
     #re_path(r'^_nested_admin/', include('nested_admin.urls')),
     path('', views.home),
@@ -39,9 +42,9 @@ urlpatterns = [
     template_name="sw.js",
     content_type='application/javascript',
     )), name='sw.js'),
-    path('a/', admin.site.urls),
-    path('api/', include('api.urls')),
-    path('r/', include('reader.urls')),
+    path(paths["admin"], admin.site.urls),
+    path(paths["api"], include('api.urls')),
+    path(paths["reader"], include('reader.urls')),
     path('sitemap.xml', cache_page(3600)(sitemap), {'sitemaps': sitemaps},
      name='django.contrib.sitemaps.views.sitemap')
 ]

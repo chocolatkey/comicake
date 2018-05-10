@@ -29,6 +29,13 @@ below in the "Important configuration" section to start with. Leave out stuff yo
 FRONTEND_CONFIG = {
     "theme": {
         "name": "material" # Site's template theme directory
+    },
+    "paths": {
+        # Should have trailing slashes. Make sure to apply in JS too!
+        # TODO apply through ini in webpack
+        "admin": "a/",
+        "api": "api/",
+        "reader": "r/", # Could be set to just '/' to make reader primary app
     }
 }
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -36,7 +43,7 @@ try:
     import configparser
     config = configparser.ConfigParser()
     config.read(os.path.join(BASE_DIR, 'frontend_settings.ini'))
-    FRONTEND_CONFIG = config
+    FRONTEND_CONFIG.update(config)
 except Exception as e:
     print("Error reading frontend settings file!")
     print(e)
@@ -325,7 +332,18 @@ if not DEBUG:
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
             'rest_framework.renderers.JSONRenderer',
-        )
+        ),
+        'DEFAULT_PERMISSION_CLASSES': (
+            'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        ),
+        'DEFAULT_THROTTLE_CLASSES': (
+            'rest_framework.throttling.AnonRateThrottle',
+            'rest_framework.throttling.UserRateThrottle'
+        ),
+        'DEFAULT_THROTTLE_RATES': {
+            'anon': '100/hour', # Sufficient
+            'user': '5000/day'
+        }
     }
 
 # Internationalization
