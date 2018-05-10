@@ -51,6 +51,7 @@ router.register(r'comics', views.ComicViewSet)
 router.register(r'chapters', views.ChapterViewSet)
 router.register(r'teams', views.TeamViewSet)
 router.register(r'tags', views.TagViewSet)
+router.register(r'status', views.StatusViewSet, "api-status")
 
 urlpatterns = [
     url(r'^', include(router.urls)),

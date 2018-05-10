@@ -1,12 +1,10 @@
 from django.contrib.auth.models import User, Group
 from reader.models import Comic, Chapter, Team, Tag, Person, Licensee
 from rest_framework import serializers
+from django.urls import reverse
+#from serpy import Serializer
 
-# Caching
-from rest_framework_cache.serializers import CachedSerializerMixin
-from rest_framework_cache.registry import cache_registry
-
-class UserSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class UserSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     @staticmethod
     def setup_eager_loading(queryset):
         """
@@ -19,35 +17,35 @@ class UserSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMix
 
     class Meta:
         model = User
-        fields = ('url', 'username', 'groups')
+        fields = ('id', 'username', 'groups')
 
-class PersonSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class PersonSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     class Meta:
         model = Person
-        fields = ('name', 'alt')
+        fields = ('id', 'name', 'alt')
 
-class LicenseeSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class LicenseeSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     class Meta:
         model = Licensee
-        fields = ('name', 'homepage', 'logo')
+        fields = ('id', 'name', 'homepage', 'logo')
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class GroupSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     class Meta:
         model = Group
-        fields = ('url', 'name')
+        fields = ('id', 'name')
 
 # I don't like this
-class MiniTagSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class MiniTagSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     class Meta:
         model = Tag
-        fields = ('name', 'slug')
+        fields = ('id', 'name', 'slug')
 
-class TagSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class TagSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     class Meta:
         model = Tag
-        fields = ('name', 'slug', 'description')
+        fields = ('id', 'name', 'slug', 'description')
 
-class TeamSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class TeamSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     @staticmethod
     def setup_eager_loading(queryset):
         """
@@ -60,9 +58,9 @@ class TeamSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMix
 
     class Meta:
         model = Team
-        fields = ('name', 'members', 'description')
+        fields = ('id', 'name', 'members', 'description')
 
-class ComicSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class ComicSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     '''
     chapters = serializers.HyperlinkedRelatedField(
         many=True,
@@ -90,10 +88,11 @@ class ComicSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMi
         #, 'author', 'artist', 'tags'
         fields = ('id', 'name', 'uniqid', 'slug', 'alt', 'author', 'artist', 'adult', 'tags', 'description', 'created_at', 'modified_at', 'cover', 'licenses', 'format')
 
-class ChapterSerializer(serializers.HyperlinkedModelSerializer, CachedSerializerMixin):
+class ChapterSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     #comic = serializers.ReadOnlyField(source='comic.uniqid')
     comic = serializers.ReadOnlyField(source='comic.id')
     protection = serializers.ReadOnlyField(source='get_protection')
+    manifest = serializers.ReadOnlyField()
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -109,14 +108,4 @@ class ChapterSerializer(serializers.HyperlinkedModelSerializer, CachedSerializer
 
     class Meta:
         model = Chapter
-        fields = ('id', 'comic', 'name', 'chapter', 'subchapter', 'protection', 'uniqid', 'volume', 'team', 'language', 'created_at', 'modified_at')
-
-cache_registry.register(UserSerializer)
-cache_registry.register(PersonSerializer)
-cache_registry.register(LicenseeSerializer)
-cache_registry.register(GroupSerializer)
-cache_registry.register(MiniTagSerializer)
-cache_registry.register(TagSerializer)
-cache_registry.register(TeamSerializer)
-cache_registry.register(ComicSerializer)
-cache_registry.register(ChapterSerializer)
+        fields = ('id', 'manifest', 'comic', 'name', 'chapter', 'subchapter', 'protection', 'uniqid', 'volume', 'team', 'language', 'created_at', 'modified_at')

@@ -2,27 +2,53 @@ from django.contrib.auth.models import User, Group
 from rest_framework.pagination import PageNumberPagination
 from reader.models import Comic, Chapter, Team, Tag, Person, Licensee
 from rest_framework import viewsets
+from rest_framework.response import Response
+from comicake import settings
 from .serializers import UserSerializer, GroupSerializer, ComicSerializer, ChapterSerializer, TeamSerializer, TagSerializer, PersonSerializer, LicenseeSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, AllowAny
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 
-from django.views.decorators.cache import cache_page
+from rest_framework_extensions.etag.decorators import etag
+from rest_framework_extensions.cache.decorators import cache_response
+from rest_framework_extensions.mixins import CacheResponseAndETAGMixin, ReadOnlyCacheResponseAndETAGMixin
+
+from raven.contrib.django.templatetags.raven import sentry_public_dsn
+
+class StatusViewSet(viewsets.GenericViewSet):
+    """
+    Endpoint for backend info
+    """
+    permission_classes = (AllowAny,)
+    @etag()
+    @cache_response()
+    def list(self, request, format=None):
+        status = {
+            "site": settings.SITE_TITLE,
+            "version": settings.VERSION,
+            "language": settings.LANGUAGE_CODE,
+            "analytics": settings.GA_ID,
+            "raven": sentry_public_dsn(scheme="https"),
+            "captcha": settings.PROTECTION["captcha"],
+            "endpoints": {
+                "static": settings.STATIC_URL,
+            },           
+
+        }
+        return Response(status)
 
 class PageSetPagination(PageNumberPagination):
     page_size = 25
     #page_size_query_param = 'page_size'
     ordering = '-created_at' # '-creation' is default
 
-class UserViewSet(viewsets.ModelViewSet):
-    '''mixins.CreateModelMixin, 
-                   mixins.RetrieveModelMixin, 
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet'''
+class UserViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    Endpoint that allows users to be viewed or edited.
     """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
     filter_backends = (DjangoFilterBackend, SearchFilter)
     search_fields = ('username',)
     filter_fields = ('groups',)
@@ -36,7 +62,12 @@ class UserViewSet(viewsets.ModelViewSet):
         queryset = self.get_serializer_class().setup_eager_loading(queryset)  
         return queryset
 
-class PersonViewSet(viewsets.ModelViewSet):
+class PersonViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
+    """
+    Endpoint for people a.k.a. authors/artists
+    """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
     pagination_class = PageSetPagination
@@ -44,36 +75,59 @@ class PersonViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'alt')
     # TODO: possibly filter by is_active or show is_active
 
-class LicenseeViewSet(viewsets.ModelViewSet):
+class LicenseeViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
+    """
+    Endpoint for comic licensees
+    """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Licensee.objects.all()
     serializer_class = LicenseeSerializer
     # TODO: possibly filter by is_active or show is_active
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    Endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
-class TeamViewSet(viewsets.ModelViewSet):
+class TeamViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
+    """
+    Endpoint for teams
+    """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
     pagination_class = PageSetPagination
     filter_backends = (DjangoFilterBackend, SearchFilter)
     search_fields = ('name',)
     filter_fields = ('members',)
+
     def get_queryset(self):
         queryset = Team.objects.all()
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)  
         return queryset
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
+    """
+    Endpoint for comic tags
+    """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
-class ComicViewSet(viewsets.ModelViewSet):
+class ComicViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
+    """
+    Endpoint for comics
+    """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Comic.objects.all()
     serializer_class = ComicSerializer
     pagination_class = PageSetPagination
@@ -82,13 +136,20 @@ class ComicViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'alt')
     ordering_fields = ('name', 'created_at', 'modified_at')
     #lookup_field = 'uniqid'
+
     def get_queryset(self):
+        #pprint(vars(super().get_throttles()[1]))
         queryset = Comic.objects.filter(published=True)
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)  
         return queryset
 
-class ChapterViewSet(viewsets.ModelViewSet):
+class ChapterViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
+    """
+    Endpoint for comics chapters
+    """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Chapter.objects.all()
     serializer_class = ChapterSerializer
     pagination_class = PageSetPagination
@@ -96,6 +157,7 @@ class ChapterViewSet(viewsets.ModelViewSet):
     filter_fields = ('comic', 'volume', 'team', 'language')
     ordering_fields = ('created_at', 'modified_at')
     #lookup_field = 'uniqid'
+
     def get_queryset(self):
         queryset = Chapter.objects.filter(published=True)
         # Set up eager loading to avoid N+1 selects
