@@ -65,7 +65,7 @@ def read_pretty(request, series_slug, language, volume, chapter, subchapter=0, p
 def read_uuid(request, cid, page=1):
     # TODO: If logged in show if not published anyway
     chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
-    manifest_url = request.build_absolute_uri(reverse('read_uuid_manifest', args=[chapter.uniqid]))
+    manifest_url = request.build_absolute_uri(chapter.manifest())
     return render(request, 'reader/read.html', {'chapter': chapter, 'page': page, 'manifest_url': manifest_url})
 
 @cache_page(settings.CACHE_LONG) # good times?

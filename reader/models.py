@@ -224,6 +224,10 @@ class Chapter(models.Model):
         return str('{0}' + os.sep + '{1}').format(self.comic.path(self.uniqid), filename)
     #choice_text = models.CharField(max_length=200)
     #votes = models.IntegerField(default=0)
+
+    def manifest(self):
+        return reverse('read_uuid_manifest', args=[self.uniqid])
+
     def __str__(self):
         #return str(self.chapter) + '.' + str(self.subchapter)
         return self.full_title()
