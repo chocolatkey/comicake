@@ -6,7 +6,8 @@ export default class Clickable extends Controller {
     }
 
     click(event) {
-        const target = event.srcElement.querySelectorAll("[data-target='clickable.target']");
+        let it = event.target || event.srcElement;
+        const target = it.querySelectorAll("[data-target='clickable.target']");
         if(target.length == 1) {
             //Turbolinks.visit(target[0].href);
             window.location = target[0].href;
