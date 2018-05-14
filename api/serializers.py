@@ -93,6 +93,7 @@ class ChapterSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     comic = serializers.ReadOnlyField(source='comic.id')
     protection = serializers.ReadOnlyField(source='get_protection')
     manifest = serializers.ReadOnlyField()
+    title = serializers.ReadOnlyField(source='simple_title')
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -108,4 +109,4 @@ class ChapterSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
 
     class Meta:
         model = Chapter
-        fields = ('id', 'manifest', 'comic', 'name', 'chapter', 'subchapter', 'protection', 'uniqid', 'volume', 'team', 'language', 'created_at', 'modified_at')
+        fields = ('id', 'manifest', 'comic', 'name', 'chapter', 'subchapter', 'title', 'protection', 'uniqid', 'volume', 'team', 'language', 'created_at', 'modified_at')
