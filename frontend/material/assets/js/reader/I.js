@@ -8,7 +8,7 @@ import Bibi from "./Bibi";
 import R from "./R";
 import B from "./B";
 import L from "./L";
-import axios from "axios";
+//import axios from "axios";
 
 //==============================================================================================================================================
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -319,7 +319,8 @@ class I { // Bibi.UserInterfaces
             "html.view-vertical.subpanel-opened div#bibi-menu"
         ].join(", "), "width: 100%; padding-right: " + (O.Scrollbars.Width) + "px;");
     
-        this.createMenu_createPanelSwitch();
+        // TODO: Make great again
+        //this.createMenu_createPanelSwitch();
     
         this.SettingMenuComponents = [];
         if(!settings.S["fix-reader-view-mode"])                                                                     this.SettingMenuComponents.push("ViewModeButtons");

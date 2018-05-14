@@ -32,8 +32,6 @@ export default class subPanel {
                 if(Par.onopened) Par.onopened.apply(SubPanel, arguments);
             },
             onclosed: (Opt) => {
-                console.log("subclosed");
-                console.dir(SubPanel);
                 sML.removeClass(SubPanel, "opened");
                 if(!Opt || !Opt.ForAnotherSubPanel) {
                     sML.removeClass(O.HTML, "subpanel-opened");

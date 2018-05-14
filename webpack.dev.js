@@ -60,10 +60,15 @@ module.exports = {
                 //{ loader: "extract-loader" },
                 { loader: "css-loader", options:
                     {
+                        importLoaders: 1,
                         sourceMap: true
                     }
                 }/*,{
-                    loader: "postcss-loader",
+                    loader: "postcss-loader", options: {
+                        plugins: () => [
+                            require("postcss-cssnext")
+                        ]
+                    }
                 }*/,
                 {
                     loader: "sass-loader",

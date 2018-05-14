@@ -12,6 +12,8 @@ import P from "./P";
 import axios from "axios";
 import { DEBUG, CREDITS, PLACEHOLDER, COMMENTS } from "../constants";
 import cdn from "../cdn";
+import unaccessibilize from "./extensions/unaccessibilizer";
+import Loupe from "./extensions/loupe";
 
 //==============================================================================================================================================
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -22,7 +24,7 @@ import cdn from "../cdn";
 
 class L { // Bibi.Loader
     constructor() {
-        this.preprocessResources_Settings = {
+        /*this.preprocessResources_Settings = {
             CSS: {
                 FileExtensionRE: /\.css$/,
                 ReplaceRules: [
@@ -86,7 +88,7 @@ class L { // Bibi.Loader
                     "xlink:href" : "gif|png|jpe?g"
                 }
             }
-        };
+        };*/
 
         let discussionTemplate = document.createElement("div");
         discussionTemplate.innerHTML = "Herro";
@@ -166,7 +168,7 @@ class L { // Bibi.Loader
         });
     }
     
-    
+    /*
     loadContainer() {
         O.log("Loading Container XML: " + B.Path + B.PathDelimiter + B.Container.Path + " ...", "*:");
         O.openDocument(B.Container.Path).then(this.processContainer).then(this.onLoadContainer);
@@ -188,7 +190,7 @@ class L { // Bibi.Loader
     loadPackageDocument() {
         O.log("Loading Package Document: " + B.Path + B.PathDelimiter + B.Package.Path + " ...", "*:");
         O.openDocument(B.Package.Path).then(this.processPackageDocument).then(this.onLoadPackageDocument);
-    }
+    }*/
     
     
     processPackageDocument(Doc) {
@@ -214,9 +216,11 @@ class L { // Bibi.Loader
             if(carr.indexOf(person.name) == -1)
                 carr.push(person.name);
         });
-        B.Creator = carr.join(", "),
+        B.Creator = carr.join(", ");
         B.Publisher = parr.join(", ");
-        B.ID = Doc.metadata.identifier,
+        B.ID = Doc.metadata.identifier;
+        B.CID = Doc.metadata.id;
+        B.OID = Doc.metadata.belongs_to.series.id;
         B.WritingMode = B.PPD = B.Package.Spine["page-progression-direction"];
         if(/^(zho?|chi|kor?|ja|jpn)$/.test(B.Language)) {
             B.WritingMode = (B.PPD == "rtl") ? "tb-rl" : "lr-tb";
@@ -350,7 +354,7 @@ class L { // Bibi.Loader
     
     }
     
-    
+    /*
     onLoadPackageDocument() {
         E.dispatch("bibi:loaded-package-document");
         O.log("Package Document Loaded.", "/*");
@@ -366,7 +370,7 @@ class L { // Bibi.Loader
                 });
             }
         });
-    }
+    }*/
     
     
     createCover() {
@@ -512,7 +516,7 @@ class L { // Bibi.Loader
     }
     
     
-    loadNavigation() {
+    /*loadNavigation() {
     
         if(B.Package.Manifest["nav"].Path) {
             I.Panel.BookInfo.Navigation.Path = B.Package.Manifest["nav"].Path;
@@ -575,7 +579,7 @@ class L { // Bibi.Loader
             E.dispatch("bibi:loaded-navigation", I.Panel.BookInfo.Navigation.Path);
         });
     
-    }
+    }*/
     
     
     loadItemsInSpreads() {
@@ -629,7 +633,7 @@ class L { // Bibi.Loader
     }
     
     
-    preprocessResources() {
+    /*preprocessResources() {
         return new Promise(function(resolve, reject) {
             if(B.Unzipped) {
                 var FileExtensionRE = (() => {
@@ -736,7 +740,7 @@ class L { // Bibi.Loader
             }
         }
         return FileContent;
-    }
+    }*/
     
     
     loadSpread(Spread) {
@@ -772,6 +776,7 @@ class L { // Bibi.Loader
         child.onload = () => {this.onLoadPlaceholder(e); };
         e.Content = e.appendChild(child);
         e.Content.src = PLACEHOLDER;
+        unaccessibilize(e);
         /*e.Content.addEventListener("touchstart", function(e) {
             I.Swiper && e.touches.length >= 2 && I.Swiper.close()
         }),
@@ -815,7 +820,7 @@ class L { // Bibi.Loader
         }, O.Mobile ? 99 : 1);
     }
     
-    
+    /*
     loadItem_writeItemHTML(Item, HTML, Head, Body) {
         Item.ItemBox.appendChild(Item);
         Item.contentDocument.open();
@@ -1073,13 +1078,12 @@ class L { // Bibi.Loader
             }
             return false;
         });
-        /*
-        A.addEventListener(O["pointerdown"], function(Eve) {
-            Eve.preventDefault(); 
-            Eve.stopPropagation();
-            return false;
-        });
-        */
+        
+        //A.addEventListener(O["pointerdown"], function(Eve) {
+        //    Eve.preventDefault(); 
+        //    Eve.stopPropagation();
+        //    return false;
+        //});
     }
     
     
@@ -1149,7 +1153,7 @@ class L { // Bibi.Loader
             backgroundPosition: ComputedStyle.backgroundPosition,
             backgroundSize: ComputedStyle.backgroundSize
         };
-    }
+    }*/
     
     
     onLoadItem(Item) {
@@ -1211,6 +1215,7 @@ class L { // Bibi.Loader
         O.stamp("Book Loaded");
         //O.log("Book Loaded.", "/*");
         E.dispatch("bibi:loaded-book");
+        Loupe.prepare();
     
         this.open();
     }

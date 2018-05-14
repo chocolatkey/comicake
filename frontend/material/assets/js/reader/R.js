@@ -183,14 +183,14 @@ class R { // Bibi.Reader
         sML.style(Item.HTML, { "transform-origin": "", "transformOrigin": "", "transform": "", "column-width": "", "column-gap": "", "column-rule": "" });
         Item.Columned = false, Item.ColumnBreadth = 0, Item.ColumnLength = 0, Item.ColumnGap = 0;
         if(Item.PrePaginated) this.resetItem_asPrePaginatedItem(Item);
-        else if(Item.Outsourcing)  this.resetItem_asReflowableOutsourcingItem(Item);
-        else                       this.resetItem_asReflowableItem(Item);
+        //else if(Item.Outsourcing)  this.resetItem_asReflowableOutsourcingItem(Item);
+        //else                       this.resetItem_asReflowableItem(Item);
         Item.Reset = true;
         E.dispatch("bibi:reset-item", Item);
         O.stamp("Reset End", Item.TimeCard);
         O.stamp("Reset Item " + Item.ItemIndex + " End");
     }
-    
+    /*
     resetItem_asReflowableItem(Item) {
         var ItemIndex = Item.ItemIndex, ItemRef = Item.ItemRef, ItemBox = Item.ItemBox, Spread = Item.Spread;
         var StageB = this.Stage[settings.S.SIZE.B];
@@ -295,8 +295,8 @@ class R { // Bibi.Reader
 
     resetItem_asReflowableItem_adjustContent_breakPages(Item, PageB) {
         var PBR; // PageBreakerRulers
-        if(Item.Body["offset" + settings.S.SIZE.B] <= PageB) PBR = [(settings.S.SLA == "vertical" ? "Top" : "Left"), window["inner" + settings.S.SIZE.L]/*PageL*/, settings.S.SIZE.L, settings.S.SIZE.l, settings.S.BASE.a];
-        else                                        PBR = [(settings.S.SLA == "vertical" ? "Left" : "Top"), /*window["inner" + settings.S.SIZE.B]*/PageB, settings.S.SIZE.B, settings.S.SIZE.b, settings.S.BASE.e];
+        if(Item.Body["offset" + settings.S.SIZE.B] <= PageB) PBR = [(settings.S.SLA == "vertical" ? "Top" : "Left"), window["inner" + settings.S.SIZE.L], settings.S.SIZE.L, settings.S.SIZE.l, settings.S.BASE.a];
+        else                                        PBR = [(settings.S.SLA == "vertical" ? "Left" : "Top"), PageB, settings.S.SIZE.B, settings.S.SIZE.b, settings.S.BASE.e];
         sML.each(Item.contentDocument.querySelectorAll("html>body *"), () => {
             var ComputedStyle = getComputedStyle(this);
             if(ComputedStyle.pageBreakBefore != "always" && ComputedStyle.pageBreakAfter != "always") return;
@@ -373,7 +373,7 @@ class R { // Bibi.Reader
         Page.PageIndexInItem = Item.Pages.length;
         Item.Pages.push(Page);
         return Item;
-    }
+    }*/
     
     resetItem_asPrePaginatedItem(Item) {
         var ItemIndex = Item.ItemIndex, ItemRef = Item.ItemRef, ItemBox = Item.ItemBox, Spread = Item.Spread;
