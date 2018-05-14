@@ -110,7 +110,8 @@ module.exports = {
             use: {
                 loader: "html-loader",
                 options: {
-                    attrs: [":data-src"]
+                    attrs: [":data-src"],
+                    ignoreCustomFragments: [/\{\{.*?}}/]
                 }
             }
         }],
