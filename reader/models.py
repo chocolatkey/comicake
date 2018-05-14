@@ -32,8 +32,10 @@ class Tag(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(unique=True, max_length=20)
     description = models.TextField(blank=True)
+
     def __str__(self):
         return self.name
+
     #class Meta:
         #permissions
 
@@ -42,6 +44,7 @@ class Licensee(models.Model):
     homepage = models.CharField(max_length=80, blank=True, help_text=_("Link to liscensee's website"))
     logo = models.ImageField(upload_to='misc', blank=True, help_text=_("Licensee's logo, preferably transparent"))
     # TODO countries for DMCA maybe?
+
     def __str__(self):
         return self.name
 
@@ -51,8 +54,13 @@ class Person(models.Model):
         ordering = ('-id',)
     name = models.CharField(max_length=100, unique=True, db_index=True)
     alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'), db_index=True)
+
     def comics(self):
         return Comic.objects.filter(Q(published=True), Q(artist=self) | Q(author=self)).order_by('-modified_at')
+
+    def get_absolute_url(self):
+        return reverse('person', args=[self.id])
+
     def __str__(self):
         return self.name
 
@@ -77,30 +85,37 @@ class Comic(models.Model):
         (3, _('LTR Book')),
         (4, _('RTL Book'))
     )
+
     def authors(self):
         mlist = ""
         for team in self.author.all():
             mlist += team.name + ", "
         return mlist
     authors.short_description = _("Author(s)")
+
     def artists(self):
         mlist = ""
         for team in self.artist.all():
             mlist += team.name + ", "
         return mlist
     artists.short_description = _("Artist(s)")
+
     format = models.PositiveSmallIntegerField(choices=COMIC_FORMATS, blank=False, default=0)
+
     def path(self, filename):
         # file will be uploaded to MEDIA_ROOT/stuff_below
         return str('{0}' + os.sep + '{1}').format(str(self.uniqid), filename)
+
     cover = models.ImageField(upload_to=path, blank=True)
     chapter_title = models.CharField(_("Custom chapter title"), blank=True, max_length=200, help_text=_('Replace the default chapter title with a custom format. Example: "{num}{ord} Stage" returns "2nd Stage"'))
+
     def thumb(self):
         try:
             return mark_safe('<img src="%s" height="150"/>' % self.cover.url)
         except Exception as e:
             return ''
     thumb.short_description = ''
+
     def __str__(self):
         return self.name
     
@@ -122,10 +137,16 @@ class Team(models.Model):
     #slug = models.SlugField(unique=True, help_text=_("Changing this may break URLs"), max_length=20)
     members = models.ManyToManyField(User, blank=True)
     description = models.TextField(blank=True)
+
+    def get_absolute_url(self):
+        return reverse('team', args=[self.id])
+        
     def chapters(self):
-        return Chapter.objects.filter(published=True, team=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic')  
+        return Chapter.objects.filter(published=True, team=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic')
+
     def __str__(self):
         return self.name
+
     class Meta:
         ordering = ('-id',)
 '''
@@ -140,22 +161,26 @@ class Joint(models.Model):
 class Protection(models.Model):
     hslices = models.PositiveSmallIntegerField()
     vslices = models.PositiveSmallIntegerField()
+    key = models.CharField(max_length=256)
+
     def default_expiry(self):
         return timezone.now() + timedelta(days=1)
-    key = models.CharField(max_length=256)
+
     expires = models.DateTimeField(default=default_expiry)
+    
 
 class Chapter(models.Model):
     comic = models.ForeignKey(Comic, on_delete=models.CASCADE)
     uniqid = models.UUIDField(_("Unique ID"), unique=True, default=uuid.uuid4, editable=False, help_text=_("Filesystem identifier for this object"))
     protection = models.OneToOneField(Protection, on_delete=models.CASCADE, blank=True, null=True, editable=False)
     team = models.ManyToManyField(Team, blank=True)
+
     def teams(self):
         mlist = ""
         for team in self.team.all():
             mlist += team.name + ", "
         return mlist
-    #joint = models.ForeignKey(Joint, on_delete=models.SET_NULL, null=True, blank=True)
+
     chapter = models.PositiveSmallIntegerField(blank=False, db_index=True)
     subchapter = models.PositiveSmallIntegerField(default=0, db_index=True)
     volume = models.PositiveSmallIntegerField(blank=True, default=0, db_index=True)
@@ -260,8 +285,10 @@ class PageStorage(FileSystemStorage):
 
 class Page(models.Model):
     chapter = models.ForeignKey(Chapter, related_name='pages', on_delete=models.CASCADE)
+
     def path(self, filename):
         return self.chapter.path(str(self.filename))
+
     file = models.ImageField(storage=PageStorage(), upload_to=path, height_field="height", width_field="width", max_length=200, db_index=True) # I hate that this saves the whole path
     height = models.PositiveSmallIntegerField(null=True, editable=False) # TODO NOT BLANK!
     width = models.PositiveSmallIntegerField(null=True, editable=False) # TODO NOT BLANK!

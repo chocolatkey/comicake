@@ -18,19 +18,32 @@ from django.conf import settings
 from django.urls import path, include, re_path
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.sitemaps import GenericSitemap
+from django.contrib.flatpages.sitemaps import FlatPageSitemap
 from django.views.decorators.cache import cache_page
-from reader.models import Chapter, Comic
+from reader.models import Chapter, Comic, Team, Person
 from . import views
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from . import settings
 
-# TODO Finish: https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
+# https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
 sitemaps = {
     'chapters': GenericSitemap({
         'queryset': Chapter.objects.filter(published=True),
         'date_field: ': 'created_at'
-    }, priority=0.4, changefreq='daily')
+    }, priority=0.6, changefreq='daily'),
+    'comics': GenericSitemap({
+        'queryset': Comic.objects.filter(published=True),
+        'date_field: ': 'modified_at'
+    }, priority=0.4, changefreq='weekly'),
+    'teams': GenericSitemap({
+        'queryset': Team.objects.all(),
+        'date_field: ': 'created_at'
+    }, priority=0.4, changefreq='daily'),
+    'people': GenericSitemap({
+        'queryset': Person.objects.all()
+    }, priority=0.4, changefreq='weekly'),
+    'pages': FlatPageSitemap
 }
 
 paths = settings.FRONTEND_CONFIG["paths"]
