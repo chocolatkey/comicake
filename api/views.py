@@ -38,10 +38,10 @@ class StatusViewSet(viewsets.GenericViewSet):
         }
         return Response(status)
 
-class PageSetPagination(PageNumberPagination):
+class IdSetPagination(PageNumberPagination):
     page_size = 25
     #page_size_query_param = 'page_size'
-    ordering = '-created_at' # '-creation' is default
+    ordering = '-id' # '-creation' is default
 
 class UserViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     """
@@ -54,7 +54,9 @@ class UserViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     filter_fields = ('groups',)
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    pagination_class = PageSetPagination
+    pagination_class = IdSetPagination
+    page_size_query_param = 'n'
+    max_page_size = 100
 
     def get_queryset(self):
         queryset = User.objects.all()
@@ -70,7 +72,9 @@ class PersonViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
-    pagination_class = PageSetPagination
+    pagination_class = IdSetPagination
+    page_size_query_param = 'n'
+    max_page_size = 100
     filter_backends = (SearchFilter,)
     search_fields = ('name', 'alt')
     # TODO: possibly filter by is_active or show is_active
@@ -102,7 +106,9 @@ class TeamViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-    pagination_class = PageSetPagination
+    pagination_class = IdSetPagination
+    page_size_query_param = 'n'
+    max_page_size = 1000
     filter_backends = (DjangoFilterBackend, SearchFilter)
     search_fields = ('name',)
     filter_fields = ('members',)
@@ -130,7 +136,9 @@ class ComicViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Comic.objects.all()
     serializer_class = ComicSerializer
-    pagination_class = PageSetPagination
+    pagination_class = IdSetPagination
+    page_size_query_param = 'n'
+    max_page_size = 100
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('slug', 'uniqid', 'author', 'artist', 'adult', 'licenses', 'format')
     search_fields = ('name', 'alt')
@@ -144,6 +152,9 @@ class ComicViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
         queryset = self.get_serializer_class().setup_eager_loading(queryset)  
         return queryset
 
+class ChapterSetPagination(PageNumberPagination):
+    page_size = 25
+
 class ChapterViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     """
     Endpoint for comics chapters
@@ -152,10 +163,12 @@ class ChapterViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     throttle_classes = (UserRateThrottle, AnonRateThrottle)
     queryset = Chapter.objects.all()
     serializer_class = ChapterSerializer
-    pagination_class = PageSetPagination
+    pagination_class = ChapterSetPagination
+    page_size_query_param = 'n'
+    max_page_size = 1000
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_fields = ('comic', 'volume', 'team', 'language')
-    ordering_fields = ('created_at', 'modified_at')
+    ordering_fields = ('created_at', 'modified_at', 'volume', 'chapter', 'subchapter')
     #lookup_field = 'uniqid'
 
     def get_queryset(self):
