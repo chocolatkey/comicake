@@ -23,7 +23,8 @@ def chapterManifest(request, chapter):
         "metadata": {
             "@type": "ComicIssue",
             "identifier": "urn:uuid:" + str(chapter.uniqid),
-            "issueNumber": chapter.decimal(),
+            "id": chapter.id,
+            "issueNumber": float(chapter.decimal()),
             "name": chapter.simple_title(),
             "subtitle": chapter.full_title(),
             "author": [],
@@ -46,6 +47,7 @@ def chapterManifest(request, chapter):
                     "name": chapter.comic.name,
                     "slug": chapter.comic.slug,
                     "identifier": request.build_absolute_uri(chapter.comic.get_absolute_url()),
+                    "id": chapter.comic.id, # mazui
                     "position": chapter.decimal()
                 }
             },
