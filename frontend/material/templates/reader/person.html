@@ -11,35 +11,28 @@
     <script type="application/ld+json">{% jsonld request person %}</script>
 {% endblock %}
 {% block body %}
-<main role="main" class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary" >
-    <div class="mdc-layout-grid">
-        <div class="mdc-layout-grid__inner">
-            <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-                <h1 class="mdc-typography--headline3 mdc-theme--text-primary-on-primary">{{ person.name }}{% if person.alt %}<span class="mdc-typography--title">「{{ person.alt }}」</span>{% endif %}</h1>
-                <h2 class="mdc-typography--headline2 mdc-theme--text-primary-on-primary">{% trans 'Works' %}</h2>
-                {% for comic in person.comics.all %}
-                {% if forloop.first %}
-                <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list" data-controller="clickable">
-                {% endif %}
-                    <li class="mdc-list-item" data-action="click->clickable#click">{# TODO: no cover stretching #}
-                        {% if comic.cover %}<img class="mdc-list-item__graphic" src="{% icdn comic.cover.url options='{"thumb": true}' %}" width="56" height="56" alt="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}">{% endif %}
-                        <a href="{% url 'series' comic.slug %}" class="mdc-list-item__text" data-target="clickable.target">
-                            {{ comic.name }}
-                            <span class="mdc-list-item__secondary-text">
-                                {% with authors=comic.author.all artists=comic.artist.all %}
-                                {% if person in authors %}{% trans 'Author' %}{% endif %}{% if person in authors and person in artists %}{% trans ' & ' %}{% endif %}{% if person in artists %}{% trans 'Artist' %}{% endif %}
-                                {% endwith %}
-                            </span>
-                        </a>
-                    </li>
-                {% if forloop.last %}
-                </ul>
-                {% endif %}
-                {% empty %}
-                <span class="mdc-theme--text-primary-on-primary">{% trans 'This person has no works' %}</span>
-                {% endfor %}
+    <main role="main" class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary">
+        <div class="mdc-layout-grid">
+            <div class="mdc-layout-grid__inner">
+                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+                    <h1 class="mdc-typography--headline3 mdc-theme--text-primary-on-primary">{{ person.name }}{% if person.alt %}<span class="mdc-typography--title">「{{ person.alt }}」</span>{% endif %}</h1>
+                    <h2 class="mdc-typography--headline2 mdc-theme--text-primary-on-primary">{% trans 'Works' %}</h2>{% for comic in person.comics.all %}{% if forloop.first %}
+                    <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list" data-controller="clickable">{% endif %}
+                        <li class="mdc-list-item ripple" data-action="click->clickable#click">{# TODO: no cover stretching #}
+                            {% if comic.cover %}<img class="mdc-list-item__graphic" src="{% icdn comic.cover.url options='{"thumb": true}' %}" width="56" height="56" alt="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}">{% endif %}
+                            <a href="{% url 'series' comic.slug %}" class="mdc-list-item__text" data-target="clickable.target">
+                                {{ comic.name }}
+                                <span class="mdc-list-item__secondary-text">{% spaceless %}
+                                    {% with authors=comic.author.all artists=comic.artist.all %}
+                                    {% if person in authors %}{% trans 'Author' %}{% endif %}{% if person in authors and person in artists %}{% trans ' & ' %}{% endif %}{% if person in artists %}{% trans 'Artist' %}{% endif %}
+                                    {% endwith %}
+                                {% endspaceless %}</span>
+                            </a>
+                        </li>{% if forloop.last %}
+                    </ul>{% endif %}{% empty %}
+                    <span class="mdc-theme--text-primary-on-primary">{% trans 'This person has no works' %}</span>{% endfor %}
+                </div>
             </div>
         </div>
-    </div>
-</div>  
+    </main>
 {% endblock %}

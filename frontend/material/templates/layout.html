@@ -38,8 +38,7 @@
     <link rel="preconnect" href="//i2.wp.com">
     {% endif %}{% block final_head %}
     {% render_bundle 'comicake' 'css' %}
-    {% render_bundle 'comicake' 'js' %}
-{% endblock%}{% endcache %}
+    {% render_bundle 'comicake' 'js' %}{% endblock%}{% endcache %}
 </head>
 <body class="mdc-typography"{% block extrabody %}{% endblock %}>
     {% block header %}<header id="header" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall">
@@ -50,7 +49,7 @@
                 <span class="mdc-toolbar__title mhide">{{ SITE_TITLE }}</span>
                 <div class="mhide">
                     <nav id="toolbar-tab-bar" class="mdc-tab-bar custom-tab-bar-in-toolbar">
-                        <a class="mdc-tab{% if request.path == '/' %} ripple mdc-tab--active{% endif %}" href="/">Home<span class="mdc-tab__indicator"></span></span></a>
+                        <a class="mdc-tab{% if request.path == '/' %} ripple mdc-tab--active{% endif %}" href="/">Home<span class="mdc-tab__indicator"></span></a>
                         {% for page in flatpages %}<a class="mdc-tab{% if page.url == request.path %} ripple mdc-tab--active{% endif %}" href="{{ page.url }}">{{ page.title }}<span class="mdc-tab__indicator"></span></a>{% endfor %}
                     </nav>
                 </div>
@@ -86,7 +85,7 @@
     <aside class="mdc-drawer mdc-drawer--temporary">
         <nav class="mdc-drawer__drawer">
             <header class="mdc-drawer__header">
-                <div class="mdc-drawer__header-content mdc-theme--text-primary-on-primary mdc-theme--primary-bg">
+                <div class="mdc-drawer__header-content mdc-theme--primary-bg">
                     {{ SITE_TITLE }}
                 </div>
             </header>
@@ -99,10 +98,8 @@
             </div>
             </nav>
         </nav>
-    </aside>{% endblock %}
-    <!--data-turbolinks="false"-->
-    {% block body %}{% endblock %}
-    {% block footer %}<footer class="mdc-theme--text-primary-on-primary noselect">
+    </aside>{% endblock %}{% block body %}{% endblock %}
+    {% block footer %}<footer class="noselect">
             <div class="text">{% trans 'All comics featured on this website are property of their publishers. If you liked any of the comics you obtained here, consider buying the original versions, or the local translation, when available. Thanks for your support.' %}</div>
     </footer>{% endblock %}
 </body>

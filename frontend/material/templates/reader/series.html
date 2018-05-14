@@ -18,7 +18,7 @@
     <script type="application/ld+json">{% jsonld request comic %}</script>
 {% endblock %}{% endcache %}
 {% block body %}
-    <main class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary">
+    <main class="mdc-toolbar-fixed-adjust">
         <div class="mdc-layout-grid">
             <div class="mdc-layout-grid__inner">
                 {% if comic.cover %}<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet">
@@ -26,100 +26,69 @@
                 </div>{% endif %}
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet">
                     <h1>{{ comic.name }}{% if comic.alt %}<span class="mdc-typography--title">「{{ comic.alt }}」</span>{% endif %}{% include 'partials/rss_link.html' with comic=comic %}</h1>
-                    <table>
-                        {% with comic.author.all as authors %}{% if authors|length > 0 %}
+                    <table>{% with comic.author.all as authors %}{% if authors|length > 0 %}
                         <tr>
                             <td>{% if authors|length == 1 %}{% trans 'Author' %}{% else %}{% trans 'Authors' %}{% endif %}:</td>
-                            <td>
-                                {% for person in authors %}
+                            <td>{% for person in authors %}
                                 <a class="mdc-chip mdc-theme--secondary-bg" href="{% url 'person' person.id %}" title="{{ person.name }}{% if person.alt %} ({{ person.alt }}){% endif %}" tabindex="0">
-                                    <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ person.name }}</div>
-                                </a>
-                                {% endfor %}
+                                    <div class="mdc-chip__text">{{ person.name }}</div>
+                                </a>{% endfor %}
                             </td>
-                        </tr>
-                        {% endif %}{% endwith %}
-                        {% with comic.artist.all as artists %}{% if artists|length > 0 %}
+                        </tr>{% endif %}{% endwith %}{% with comic.artist.all as artists %}{% if artists|length > 0 %}
                         <tr>
                             <td>{% if artists|length == 1 %}{% trans 'Artist' %}{% else %}{% trans 'Artists' %}{% endif %}:</td>
-                            <td>
-                                {% for person in artists %}
+                            <td>{% for person in artists %}
                                 <a class="mdc-chip mdc-theme--secondary-bg" href="{% url 'person' person.id %}" title="{{ person.name }}{% if person.alt %} ({{ person.alt }}){% endif %}" tabindex="0">
                                     <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ person.name }}</div>
-                                </a>
-                                {% endfor %}
+                                </a>{% endfor %}
                             </td>
-                        </tr>
-                        {% endif %}{% endwith %}
-                        {% with comic.licenses.all as licensees %}{% if licensees|length > 0 %}
+                        </tr>{% endif %}{% endwith %}{% with comic.licenses.all as licensees %}{% if licensees|length > 0 %}
                         <tr>
                             <td>{% trans 'Licensed by' %}:</td>
-                            <td>
-                                {% for licensee in licensees %}
+                            <td>{% for licensee in licensees %}
                                 <a class="mdc-chip mdc-theme--secondary-bg" href="{{ licensee.homepage }}" target="_blank" title="{{ licensee.name }}" tabindex="0">
                                     {% if licensee.logo %}<img class="mdc-chip__icon mdc-chip__icon--leading" src="{% icdn licensee.logo.url options='{"thumb": true}' %}" />{% endif %}
                                     <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ licensee.name }}</div>
-                                </a>
-                                {% endfor %}
+                                </a>{% endfor %}
                             </td>
-                        </tr>
-                        {% endif %}{% endwith %}
-                        {% with comic.tags.all as tags %}{% if tags|length > 0 %}
+                        </tr>{% endif %}{% endwith %}{% with comic.tags.all as tags %}{% if tags|length > 0 %}
                         <tr>
                             <td>{% trans 'Tags' %}:</td>
-                            <td>
-                                {% for tag in tags %}
+                            <td>{% for tag in tags %}
                                 <a class="mdc-chip mdc-theme--secondary-bg" href="{% url 'search' %}?tag={{ tag.slug }}" title="{{ tag.description }}" tabindex="0">
                                     <div class="mdc-chip__text mdc-theme--text-primary-on-primary">{{ tag.name }}</div>
-                                </a>
-                                {% endfor %}
+                                </a>{% endfor %}
                             </td>
-                        </tr>
-                        {% endif %}
-                        {% endwith %}
+                        </tr>{% endif %}{% endwith %}
                     </table>
-                    <p class="mdc-typography--body1">
-                        <b class="mdc-typography--subheading2">{% trans 'Synopsis' %}: </b>{{ comic.description }}
-                    </p>
+                    <pre style="white-space: pre-wrap; line-height: normal;">{{ comic.description }}</pre>
                 </div>
             </div>
         </div>
-        {% for chapter in comic.chapters %}
-        <div class="mdc-list-group">
-            {% ifchanged chapter.volume %}
-            {% if not forloop.first %}
+        {% for chapter in comic.chapters %}{% ifchanged chapter.volume %}{% if not forloop.first %}
                 </ul>
-            </div>
-            {% endif %}
+            </div>{% endif %}
             <div class="mdc-list-group" data-controller="clickable">
                 <h3 class="mdc-list-group__subheader">{% if chapter.volume %}{% blocktrans with volume=chapter.volume %}Volume {{ volume }}{% endblocktrans %}{% else %}{% trans 'Chapters' %}{% endif %}</h3>
                 <hr class="mdc-list-divider mdc-list-divider--inset">
-                <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list">
-            {% endifchanged %}
+                <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list">{% endifchanged %}
                     <li class="mdc-list-item ripple" data-action="click->clickable#click">
-                        <span class="mdc-list-item__graphic" role="presentation">
+                        <span class="mdc-list-item__graphic" role="presentation">{% spaceless %}
                                 {{ chapter.chapter }}{% if chapter.subchapter %}.{{ chapter.subchapter }}{% endif %}
-                        </span>
+                        {% endspaceless %}</span>
                         <span class="mdc-list-item__text">
                             <a href="{% cpath chapter %}" data-target="clickable.target" data-turbolinks="false">{{ chapter.simple_title }}</a>
-                            <span class="mdc-list-item__secondary-text">{{ chapter.created_at|ago }}
-                                {% with chapter.team.all as teams %}
-                                    {% ifnotequal teams|length 0 %}
-                                        {% trans 'by' %}
-                                        {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
-                                    {% endifnotequal %}
-                                {% endwith %}
-                            </span>
+                            <span class="mdc-list-item__secondary-text">{{ chapter.created_at|ago }}{% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}
+                                {% trans 'by' %}
+                                {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                            {% endifnotequal %}{% endwith %}</span>
                         </span>
                         <a href="#" class="mdc-list-item__meta material-icons jss" aria-label="Download this chapter" title="Download" onclick="event.preventDefault();">
                             file_download
                         </a>
-                    </li>
-        {% if forloop.last %}
+                    </li>{% if forloop.last %}
                 </ul>
-            </div>
-        {% endif %}
-        {% empty %}
+            </div>{% endif %}{% empty %}
         <span class="mdc-theme--text-primary-on-primary">{% trans 'No chapters available' %}</span>
         {% endfor %}
     </main>

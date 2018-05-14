@@ -10,13 +10,12 @@
 {% block body %}
     <main class="mdc-toolbar-fixed-adjust">
         <div class="mdc-layout-grid">
-            <div class="mdc-layout-grid__inner" data-controller="clickable">
-            {% for comic in comics %}
+            <div class="mdc-layout-grid__inner" data-controller="clickable">{% for comic in comics %}
                 <div class="mdc-layout-grid__cell">
                     <div class="mdc-card mdc-theme--text-primary-on-primary mdc-theme--primary-bg">
                         <div class="mdc-card__media mdc-card__media--square"{% if comic.cover %} style="background-image:url('{% icdn comic.cover.url %}');"{% endif %}>
                             <div class="mdc-card__media-content mdc-card__media-content--with-title" data-action="click->clickable#click">
-                                <div class="mdc-card__media-title mdc-typography--subheading2">
+                                <div class="mdc-card__media-title">
                                     <a href="{% url 'series' comic.slug %}" data-target="clickable.target">
                                         {{ comic.name }}{% if comic.alt %}<span class="mdc-typography--caption">「{{ comic.alt }}」</span>{% endif %}
                                     </a>
@@ -36,8 +35,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            {% empty %}
+                </div>{% empty %}
             <div class="mdc-layout-grid__cell"><span class="mdc-theme--text-primary-on-primary">{% trans 'No series have been published' %}</span></div>
             {% endfor %}
             </div>
