@@ -7,6 +7,7 @@ export default class buttonGroup {
         if(typeof Par.className != "string" || !Par.className) delete Par.className;
         if(typeof Par.id        != "string" || !Par.id)        delete Par.id;
         var ClassName = ["bibi-buttongroup"];
+        if (Par.className) ClassName.push(Par.className);
         if(Par.Tiled) ClassName.push("bibi-buttongroup-tiled");
         if(Par.Sticky) ClassName.push("sticky");
         Par.className = ClassName.join(" ");

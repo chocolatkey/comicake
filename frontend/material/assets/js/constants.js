@@ -6,6 +6,9 @@ export const READER_BASE = GLOBAL_BASE + "/r"; // Base URL on domain for the rea
 export function seriesLink(slug) {
     return READER_BASE + "/series/" + slug + "/";
 }
+export function readerLink(uuid) {
+    return READER_BASE + "/read/" + uuid + "/";
+}
 export const READER_VERSION = "0.0.1"; // Don't change unless you modify the code
 export const PLACEHOLDER = "/static/img/placeholder.svg"; // Placeholder for images that haven't loaded
 export const CREDITS = 2; // Position of credits page. 0 = none
