@@ -151,6 +151,7 @@ class ComicAdmin(admin.ModelAdmin):
     readonly_fields = ('uniqid',)
     ordering = ('-created_at',)
     actions = [make_published, make_unpublished]
+    save_on_top = True
 
     list_display = ('thumb', 'name', 'authors', 'artists', 'published')
     #list_editable = ('published',)
