@@ -40,7 +40,7 @@ class AdminImageWidget(AdminFileWidget):
             image_url = os.path.join(settings.MEDIA_URL, value.url)
             file_name=str(value)
             output.append(u' <a href="%s" target="_blank"><img src="%s" alt="%s" width="150" height="150"  style="object-fit: contain;"/></a> %s ' % \
-            (image_url, image_url, file_name, _('')))
+            (image_url, image_url, file_name, _('Page')))
         output.append(super(AdminFileWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
 
@@ -51,7 +51,7 @@ class AdminThumbWidget(AdminFileWidget):
             image_url = os.path.join(settings.MEDIA_URL, value.url)
             file_name=str(value).rsplit('/')[-1]
             output.append(u' <a href="%s" target="_blank"><img src="%s" alt="%s" width="150" height="150"  style="object-fit: contain;"/></a> %s ' % \
-            (image_url, image_url, file_name, _('')))
+            (image_url, image_url, file_name, _('Page')))
         else:
             output.append(super(AdminFileWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))

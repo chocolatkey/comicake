@@ -78,13 +78,6 @@ class Comic(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
     licenses = models.ManyToManyField(Licensee, blank=True)
-    COMIC_FORMATS = (
-        (0, _('Manga')),
-        (1, _('Toon')),
-        (2, _('Classic')),
-        (3, _('LTR Book')),
-        (4, _('RTL Book'))
-    )
 
     def authors(self):
         mlist = ""
@@ -100,7 +93,14 @@ class Comic(models.Model):
         return mlist
     artists.short_description = _("Artist(s)")
 
-    format = models.PositiveSmallIntegerField(choices=COMIC_FORMATS, blank=False, default=0)
+    COMIC_FORMATS = (
+        (0, _('Comic')),
+        (1, _('Manga')),
+        (2, _('Toon')),
+        # (3, _('LTR Book')),
+        # (4, _('RTL Book'))
+    )
+    format = models.PositiveSmallIntegerField(choices=COMIC_FORMATS, blank=False, default=1, help_text=_('Determines page layout in viewer'))
 
     def path(self, filename):
         # file will be uploaded to MEDIA_ROOT/stuff_below
