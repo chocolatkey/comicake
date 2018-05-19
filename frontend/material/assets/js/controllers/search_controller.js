@@ -1,6 +1,7 @@
 import { Controller } from "stimulus";
 import Mustache from "mustache";
-import axios from "axios";
+import "whatwg-fetch";
+import qs from "qs";
 import delayPromise from "delay-promise";
 
 import searchResultsTemplate from "../mst/search.html";
@@ -62,13 +63,18 @@ export default class Search extends Controller {
     }
 
     doSuggest(query) {
-        return axios.get(constants.API_BASE + "/comics.json", {
-            params: {
-                search: query
+        return fetch(constants.API_BASE + "/comics.json?" + qs.stringify({
+            search: query
+        })).then(response => {
+            if (!response.ok) {
+                var error = new Error(response.statusText);
+                error.message = response;
+                throw error;
             }
-        }).then(response => {
-            if(response.data.count > 0) {
-                const suggestions = response.data.results;
+            return response.json();
+        }).then(data => {
+            if(data.count > 0) {
+                const suggestions = data.results;
                 let mdata = {"results": []};
                 suggestions.forEach(comic => {
                     mdata["results"].push({
@@ -78,7 +84,6 @@ export default class Search extends Controller {
                     });
                 });
                 this.set(mdata);
-                console.log(this.suggestionAllowed);
             } else {
                 this.clear();
             }
