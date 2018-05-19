@@ -78,7 +78,6 @@ def jsonld(request, item):
         jsonld = personLd(request, item)
     else:
         raise template.TemplateSyntaxError("Object of type {} does not have a JSON-LD equivalent".format(type(item).__name__))
-    print(type(jsonld))
     indent = 4 if settings.DEBUG else None
     return mark_safe(json.dumps(jsonld, indent=indent))
 

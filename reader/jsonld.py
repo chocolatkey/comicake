@@ -6,8 +6,15 @@ from .utils import cdn_url
 
 # TODO: make this a nice class sometime
 
+def tti(t):
+    '''
+    Sane ISO format time
+    '''
+    return t.replace(microsecond=0).isoformat()
+
 def chapterManifest(request, chapter):
     '''
+    WebPub Manifest for items
     Reference at https://github.com/readium/webpub-manifest/tree/master/contexts/default
     https://github.com/HadrienGardeur/comics-manifest
 
@@ -38,8 +45,8 @@ def chapterManifest(request, chapter):
             "publisher": [],
             "description": chapter.comic.description,
             # if chapter.comic.alt %}"alternateName": "{{ chapter.comic.alt }}",{% endif %}
-            "published": chapter.created_at.isoformat(),
-            "modified": chapter.modified_at.isoformat(),
+            "published": tti(chapter.created_at),
+            "modified": tti(chapter.modified_at),
             "language": chapter.language,
             "subject": [],
             "belongs_to": {
@@ -55,15 +62,33 @@ def chapterManifest(request, chapter):
         },
         "links": [
             {"rel": "self", "href": request.build_absolute_uri(), "type": "application/webpub+json"},
-            {"rel": "alternate", "href": request.build_absolute_uri(reverse('read_uuid', args=[chapter.uniqid])), "type": "text/html"},
+            {"rel": "alternate", "href": request.build_absolute_uri(reverse('read_uuid_page', args=[chapter.uniqid, 0])), "type": "text/html"},
             #{"rel": "alternate", "href": "TODO", "type": "application/vnd.comicbook+zip"}
         ],
         "spine": []
     }
 
+    # 'pub page-progression-direction & rendition
+    rdir = "auto"
+    rspread = "landscape"
+    if chapter.comic.format is 0: # Comic
+        rdir = "ltr"
+    elif chapter.comic.format is 1: # Manga
+        rdir = "rtl"
+    elif chapter.comic.format is 2: # Toon (long strip)
+        rspread = "none"
+
+    manifest['metadata']['direction'] = rdir
+    manifest['metadata']['rendition'] = {
+        "layout": "pre-paginated",
+        "orientation": "portrait",
+        "spread": rspread
+    }
+
+    # Cover
     if chapter.comic.cover:
         manifest['metadata'].update({
-            "image": cdn_url(request, chapter.comic.cover.url),
+            "image": request.build_absolute_uri(chapter.comic.cover.url),
             "thumbnailUrl": cdn_url(request, chapter.comic.cover.url, {'thumb': True})
         })
 
@@ -250,8 +275,8 @@ def comicLd(request, comic):
         "about": comic.description,
         "author": authors,
         "creator": artists,
-        "dateCreated": comic.created_at.isoformat(),
-        "dateModified": comic.modified_at.isoformat(),
+        "dateCreated": tti(comic.created_at),
+        "dateModified": tti(comic.modified_at),
         "genre": genres,
         "copyrightHolder": copyrightHolders
     }
@@ -340,8 +365,8 @@ def chapterLd(request, chapter):
         "copyrightHolders": copyrightHolders,
         "publisher": [],
         "description": chapter.comic.description,
-        "dateCreated": chapter.comic.created_at.isoformat(),
-        "dateModified": chapter.comic.modified_at.isoformat(),
+        "dateCreated": tti(chapter.comic.created_at),
+        "dateModified": tti(chapter.comic.modified_at),
         "inLanguage": chapter.language,
         "genre": genres
     }
