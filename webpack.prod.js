@@ -140,7 +140,13 @@ module.exports = {
             chunkFilename: "[id].css"
         }),
         new UglifyJsPlugin({
-            parallel: true
+            parallel: true,
+            uglifyOptions: {
+                toplevel: true,
+                mangle: {
+                    toplevel: true,
+                }
+            }
         }),
         new WorkboxPlugin.GenerateSW({
             swDest: "../../frontend/_common/templates/sw.js",

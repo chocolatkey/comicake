@@ -130,6 +130,7 @@ jspm_packages/
 
 # webpack stats file
 webpack-stats.json
+stats.json
 
 # old tools
 _tools/
