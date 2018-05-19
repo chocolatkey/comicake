@@ -2,11 +2,11 @@
         <div class="pagination">
             <span class="step-links">
                 {% if subject.has_previous %}
-                    <a class="mdc-button mdc-theme--text-primary-on-primary ripple" href="{% url page 1 %}">&laquo;&laquo; {% trans 'first' %}</a>
-                    <a class="mdc-button mdc-theme--text-primary-on-primary ripple" href="{% url page subject.previous_page_number %}">&laquo; {% trans 'previous' %}</a>
+                    <a class="mdc-button ripple" href="{% url page 1 %}">&laquo;&laquo; {% trans 'first' %}</a>
+                    <a class="mdc-button ripple" href="{% url page subject.previous_page_number %}">&laquo; {% trans 'previous' %}</a>
                 {% endif %}{% if subject.has_next %}
-                    <a class="fright mdc-button mdc-theme--text-primary-on-primary ripple" href="{% url page subject.paginator.num_pages %}">{% trans 'last' %} &raquo;&raquo;</a>
-                    <a class="fright mdc-button mdc-theme--text-primary-on-primary ripple" href="{% url page subject.next_page_number %}">{% trans 'next' %} &raquo;</a>
+                    <a class="fright mdc-button ripple" href="{% url page subject.paginator.num_pages %}">{% trans 'last' %} &raquo;&raquo;</a>
+                    <a class="fright mdc-button ripple" href="{% url page subject.next_page_number %}">{% trans 'next' %} &raquo;</a>
                 {% endif %}
             </span>
         </div>

@@ -12,7 +12,7 @@
         <div class="mdc-layout-grid">
             <div class="mdc-layout-grid__inner" data-controller="clickable">{% for comic in comics %}
                 <div class="mdc-layout-grid__cell">
-                    <div class="mdc-card mdc-theme--text-primary-on-primary mdc-theme--primary-bg">
+                    <div class="mdc-card">
                         <div class="mdc-card__media mdc-card__media--square"{% if comic.cover %} style="background-image:url('{% icdn comic.cover.url %}');"{% endif %}>
                             <div class="mdc-card__media-content mdc-card__media-content--with-title" data-action="click->clickable#click">
                                 <div class="mdc-card__media-title">
@@ -27,16 +27,15 @@
                         </div>
                         <div class="mdc-card__actions" data-turbolinks="false">
                             <div class="mdc-card__action-buttons">
-                                {% with comic.latest_chapter as chapter %}{% if chapter %}<a href="{% cpath chapter %}" class="mdc-button mdc-button--raised mdc-card__action mdc-card__action--button mdc-theme--text-primary-on-primary ripple">{% trans 'Latest Release' %}</a>{% endif %}{% endwith %}
+                                {% with comic.latest_chapter as chapter %}{% if chapter %}<a href="{% cpath chapter %}" class="mdc-button mdc-button--raised mdc-card__action mdc-card__action--button ripple">{% trans 'Latest Release' %}</a>{% endif %}{% endwith %}
                             </div>
                             <div class="mdc-card__action-icons">
-                                {% include 'partials/rss_link.html' with comic=comic class="ripple mdc-ripple-surface mdc-theme--text-primary-on-primary" innerclass="rss-here material-icons mdc-card__action mdc-card__action--icon" %}
-                                <!--<i class="material-icons mdc-card__action mdc-card__action--icon ripple mdc-ripple-surface mdc-theme--text-primary-on-primary" tabindex="0" role="button" title="More options">more_vert</i>-->
+                                {% include 'partials/rss_link.html' with comic=comic class="ripple mdc-ripple-surface" innerclass="rss-here material-icons mdc-card__action mdc-card__action--icon" %}
                             </div>
                         </div>
                     </div>
                 </div>{% empty %}
-            <div class="mdc-layout-grid__cell"><span class="mdc-theme--text-primary-on-primary">{% trans 'No series have been published' %}</span></div>
+            <div class="mdc-layout-grid__cell"><span>{% trans 'No series have been published' %}</span></div>
             {% endfor %}
             </div>
         </div>
