@@ -21,7 +21,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" crossorigin="anonymous">
     <!-- Modernizr has to be synchronously loaded before body/css to prevent FOUC! -->
-    <script src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
+    <script type="text/javascript" src="{% url 'jsi18n' %}"></script>
     {% if not DEBUG %}{% load raven %}
     <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" integrity="sha256-RcIeVDrPyqnlpQMijRlDyHaxHYCgchqk4VnDr/627eA=" crossorigin="anonymous"></script>
     <script>Raven.config('{% sentry_public_dsn %}').install()</script>
@@ -36,9 +37,9 @@
     <link rel="preconnect" href="//i0.wp.com">
     <link rel="preconnect" href="//i1.wp.com">
     <link rel="preconnect" href="//i2.wp.com">
-    {% endif %}{% block final_head %}
+    {% endif %}{% endcache %}{% block final_head %}
     {% render_bundle 'comicake' 'css' %}
-    {% render_bundle 'comicake' 'js' %}{% endblock%}{% endcache %}
+    {% render_bundle 'comicake' 'js' %}{% endblock%}
 </head>
 <body class="mdc-typography"{% block extrabody %}{% endblock %}>
     {% block header %}<header id="header" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall">
@@ -48,15 +49,16 @@
                 <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
                 <span class="mdc-toolbar__title mhide">{{ SITE_TITLE }}</span>
                 <div class="mhide">
-                    <nav id="toolbar-tab-bar" class="mdc-tab-bar custom-tab-bar-in-toolbar">
+                    <nav class="mdc-tab-bar toolbar-tab-bar">
                         <a class="mdc-tab{% if request.path == '/' %} ripple mdc-tab--active{% endif %}" href="/">Home<span class="mdc-tab__indicator"></span></a>
                         {% for page in flatpages %}<a class="mdc-tab{% if page.url == request.path %} ripple mdc-tab--active{% endif %}" href="{{ page.url }}">{{ page.title }}<span class="mdc-tab__indicator"></span></a>{% endfor %}
+                        <span class="mdc-tab-bar__indicator"></span>
                     </nav>
                 </div>
             </section>
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end" data-controller="search">
                 <div>
-                    <nav id="toolbar-tab-bar" class="mdc-tab-bar custom-tab-bar-in-toolbar mdc-tab-bar--icons-with-text">
+                    <nav class="mdc-tab-bar toolbar-tab-bar mdc-tab-bar--icons-with-text">
                         <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" href="/r/latest/">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
                             <span class="mdc-tab__icon-text">{% trans 'Latest' %}</span>

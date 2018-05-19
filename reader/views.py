@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.utils.translation import gettext as _
 from django.http import HttpResponse, Http404, HttpResponseForbidden, HttpResponseServerError, JsonResponse
-from django.shortcuts import get_list_or_404, get_object_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
@@ -71,8 +71,38 @@ def read_uuid(request, cid, page=1):
 @cache_page(settings.CACHE_LONG) # good times?
 def read_manifest(request, cid):
     # TODO: If logged in show if not published anyway
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection', 'pages'), published=True, uniqid=cid)
     return JsonResponse(chapterManifest(request, chapter))
+
+@cache_page(settings.CACHE_LONG) # good times?
+def read_prev(request, cid):
+    current_chapter = get_object_or_404(
+        Chapter,
+        published=True,
+        uniqid=cid
+        )
+    prev_chapter = Chapter.objects.filter(published=True, comic=current_chapter.comic).filter(
+        Q(chapter__lt=current_chapter.chapter, volume__lte=current_chapter.volume) | Q(volume__lte=current_chapter.volume, chapter=current_chapter.chapter, subchapter__lt=current_chapter.subchapter)
+    ).first()
+    if prev_chapter:
+        return redirect(prev_chapter)
+    else:
+        return redirect(current_chapter.comic)
+
+@cache_page(settings.CACHE_LONG) # good times?
+def read_next(request, cid):
+    current_chapter = get_object_or_404(
+        Chapter,
+        published=True,
+        uniqid=cid
+        )
+    next_chapter = Chapter.objects.filter(published=True, comic=current_chapter.comic).filter(
+        Q(chapter__gt=current_chapter.chapter, volume__gte=current_chapter.volume) | Q(volume__gte=current_chapter.volume, chapter=current_chapter.chapter, subchapter__gt=current_chapter.subchapter)
+    ).last()
+    if next_chapter:
+        return redirect(next_chapter)
+    else:
+        return redirect(current_chapter.comic)
 
 @cache_page(settings.CACHE_MEDIUM)
 def search(request):
