@@ -61,7 +61,7 @@ SECRET_KEY = 'GENERATE_YOUR_OWN_VERY_IMPORTANT!' # SECURITY WARNING: keep the se
 ## Paths & Static files # https://docs.djangoproject.com/en/2.0/howto/static-files/
 STATIC_URL = '/static/' # Set to absolute path of nginx/apache mapped static dir!
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-MEDIA_URL = os.path.join(STATIC_URL, 'comics/')
+MEDIA_URL = os.path.join(STATIC_URL, 'media/')
 MEDIA_ROOT = BASE_DIR + MEDIA_URL
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'frontend', '_common', 'assets'),
