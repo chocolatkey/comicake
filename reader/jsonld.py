@@ -26,7 +26,7 @@ def chapterManifest(request, chapter):
     '''
     pages = chapter.pages.all()
     manifest = {
-        "@context": "http://readium.org/webpub/default.jsonld",
+        "@context": "http://readium.org/webpub/epub.jsonld",
         "metadata": {
             "@type": "ComicIssue",
             "identifier": "urn:uuid:" + str(chapter.uniqid),
