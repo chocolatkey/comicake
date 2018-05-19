@@ -16,26 +16,31 @@
     <meta property="og:image" content="{% icdn chapter.comic.cover.url options='{"thumb": true}' %}" />
     <meta property="og:image:alt" content="{% blocktrans with comic=chapter.comic %}Cover for {{ comic }}{% endblocktrans %}" />
     {% endif %}
+    <link rel="canonical" href="{% url 'read_uuid' chapter.uniqid %}">
     <link rel="alternate" type="application/rss+xml" title="{% blocktrans with comic=chapter.comic %}RSS Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_rss_comic' chapter.comic.uniqid %}" />
     <link rel="alternate" type="application/atom+xml" title="{% blocktrans with comic=chapter.comic %}Atom Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_atom_comic' chapter.comic.uniqid %}" />
-    {% if page > 0 %}<!-- Fallback for users without JavaScript -->
+    {% if page > 0 %}<!-- Classic Fallback -->
+    <!--[if IE]>
+    <meta http-equiv="refresh" content="0;url={% url 'read_uuid_page' chapter.uniqid 0 %}">
+    <![endif]-->
     <noscript>
         <meta http-equiv="refresh" content="0;url={% url 'read_uuid_page' chapter.uniqid 0 %}">
-    </noscript>{% endif %}
+    </noscript>{% else %}<meta name="robots" content="noindex, nofollow">{% endif %}
+
     <script type="application/ld+json">{% jsonld request chapter %}</script>
     <link href="{{ manifest_url }}" rel="manifest" type="application/webpub+json">
 {% endcache %}{% endblock %}{% block final_head %}
     {% render_bundle 'comicake' 'css' %}
     {% render_bundle 'reader' 'css' %}
-    {% render_bundle 'reader' 'js' %}
+    {% if page > 0 %}{% render_bundle 'reader' 'js' %}{% endif %}
 {% endblock%}
-{% block extrabody %}{% if page > 0 %} data-bibi-book="{{ manifest_url }}" data-controller="reader"{% endif %}{% endblock %}
-    {% block header %}<div id="bibi-menu" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall">
+{% block extrabody %}{% if page is not 0 %} data-bibi-book="{{ manifest_url }}" data-controller="reader"{% endif %}{% endblock %}
+    {% block header %}<div class="noselect mdc-toolbar mdc--theme-primary{% if page is not 0 %} mdc-toolbar--fixed mdc-toolbar--waterfall{% endif %}" {% if page is not 0 %}id="bibi-menu"{% endif %}>
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-                <a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle ripple" onclick="event.preventDefault();">menu</a>
+                {% if page is not 0 %}<a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle ripple" onclick="event.preventDefault();">menu</a>{% endif %}
                 <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
-                <span class="etext mhide"><a href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name }}</a> &rsaquo; <div id="cakeChapters" class="mdc-select"><select class="mdc-select__native-control" id="cakeSelectChapters"><option value="{{ chapter.uniqid }}" selected>{{ chapter.simple_title }}</option><option>{% trans 'Loading...' %}</option></select></div></span>
+                <span class="etext mhide"><a href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name }}</a> &rsaquo; {% if page is 0 %}{{ chapter.simple_title }}{% else %}<div id="cakeChapters" class="mdc-select"><select class="mdc-select__native-control" id="cakeSelectChapters"><option value="{{ chapter.uniqid }}" selected>{{ chapter.simple_title }}</option><option>{% trans 'Loading...' %}</option></select></div>{% endif %}</span>
             </section>
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end" data-controller="search">
                 <div>
@@ -52,12 +57,12 @@
                     </nav>
                 </div>
             </section>
-        </div>{% if chapter.format is 1 %}
+        </div>{% if page is not 0 %}{% if chapter.format is 1 %}
         <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_prev' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Prev' %}</a>
         <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_next' chapter.uniqid %}">{% trans 'Next' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% else %}
         <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_next' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Next' %}</a>
-        <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_prev' chapter.uniqid %}">{% trans 'Prev' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% endif %}
-    </div>
+        <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_prev' chapter.uniqid %}">{% trans 'Prev' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% endif %}{% endif %}
+    </div>{% if page is not 0 %}
     <aside class="mdc-drawer mdc-drawer--temporary toc">
         <nav class="mdc-drawer__drawer">
         <header class="mdc-drawer__header">
@@ -82,25 +87,23 @@
             </div>
             </nav>
         </nav>
-    </aside>{% endblock %}
-{% block body %}
-{% if page is 0 %}
-    <main role="main" class="mdc-toolbar-fixed-adjust" >
-        TODO: Basic pages
+    </aside>{% endif %}{% endblock %}
+{% block body %}{% if page is 0 %}
+    <style>
+        html{ overflow: auto; }
+        body {  height: auto; }
+    </style>
+    <main role="main" id="cakeClassic">
+        {% with chapter.pages.all as pages %}{% for page in pages %}<img src="{{ page.file.url }}"/>
+        {% endfor %}{% endwith %}
+        <div>{% if chapter.format is 1 %}
+            <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_prev' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Prev' %}</a>
+            <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_next' chapter.uniqid %}">{% trans 'Next' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% else %}
+            <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_next' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Next' %}</a>
+            <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_prev' chapter.uniqid %}">{% trans 'Prev' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% endif %}
+        </div>
     </main>
 {% else %}
-    <!--<main role="main" class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary" >
-    </main>-->
-    <!--<div id="mdc-js-snackbar"
-        class="mdc-snackbar dhide"
-        aria-live="assertive"
-        aria-atomic="true"
-        aria-hidden="true">
-    <div class="mdc-snackbar__text"></div>
-    <div class="mdc-snackbar__action-wrapper">
-    <button type="button" class="mdc-snackbar__action-button"></button>
-    </div>
-    </div>-->
     <span class="mdc-fab hover material-icons" id="comments-fab" aria-label="{% trans 'Comments' %}">
         <i class="mdc-icon-toggle material-icons ripple" id="comments-fab-icon" role="button" aria-pressed="false"
             aria-label="{% trans 'Comments' %}" tabindex="0"

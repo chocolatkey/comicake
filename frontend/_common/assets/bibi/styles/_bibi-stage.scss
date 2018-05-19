@@ -453,6 +453,27 @@ div#bibi-sub {
 	}
 }
 
+// Fallback view
+main#cakeClassic {
+	width: 100%;
+	height: auto;
+	//margin-top: 64px;
+	& div {
+		text-align: center;
+	}
+	& img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+    	margin: auto;
+	}
+	& .cakeChapSwitch {
+		top: auto;
+		position: relative;
+		margin: 10px;
+	}
+}
+
 
 // ================================================================================
 // + Factory / Dev.
@@ -477,6 +498,3 @@ div#__bs_notify__ {
 	//transform-origin: 0 100% !important;
 	//transform: translateY(-2em) rotate(90deg) !important;
 }
-
-
-
