@@ -3,7 +3,7 @@
 {% load render_bundle from webpack_loader %}
 {% block html_prefix %} article: http://ogp.me/ns/article#{% endblock %}
 {% block title %}{% tt request chapter %}{% endblock %}
-{% cache 600 og_data chapter.uniqid %}{% block extra_head %}{# TODO: make into template tag you can pass objects #}
+{% block extra_head %}{% cache 600 og_data chapter.uniqid %}{# TODO: make into template tag you can pass objects #}
     <meta property="og:title" content="{% tt request chapter %}" />
     <meta property="og:type" content="article" />
     <meta property="article:published_time" content="{{ chapter.created_at|date:'c' }}">
@@ -23,42 +23,73 @@
         <meta http-equiv="refresh" content="0;url={% url 'read_uuid_page' chapter.uniqid 0 %}">
     </noscript>{% endif %}
     <script type="application/ld+json">{% jsonld request chapter %}</script>
-{% endblock %}{% block final_head %}
+    <link href="{{ manifest_url }}" rel="manifest" type="application/webpub+json">
+{% endcache %}{% endblock %}{% block final_head %}
     {% render_bundle 'comicake' 'css' %}
     {% render_bundle 'reader' 'css' %}
     {% render_bundle 'reader' 'js' %}
-{% endblock%}{% endcache %}
+{% endblock%}
 {% block extrabody %}{% if page > 0 %} data-bibi-book="{{ manifest_url }}" data-controller="reader"{% endif %}{% endblock %}
-{% block header %}<div id="bibi-menu" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall" data-turbolinks="false">
-    <div class="mdc-toolbar__row">
-        <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-            <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
-            <span class="etext mhide"><a href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name }}</a> &rsaquo; {{ chapter.simple_title }}</span>
-        </section>
-        <section class="mdc-toolbar__section mdc-toolbar__section--align-end" data-controller="search">
-            <div>
-                <nav id="toolbar-tab-bar" class="mdc-tab-bar custom-tab-bar-in-toolbar mdc-tab-bar--icons-tabs">
-                    <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Latest' %}" href="/r/latest/">
-                        <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
-                    </a>
-                    <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Directory' %}" href="/r/directory/">
-                        <i class="material-icons mdc-tab__icon" aria-hidden="true">view_list</i>
-                    </a>
-                    <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Search' %}" href="/r/search/">
-                        <i class="material-icons mdc-tab__icon" aria-hidden="true">search</i>
-                    </a>
-                </nav>
-            </div>
-        </section>
+    {% block header %}<div id="bibi-menu" class="noselect mdc-toolbar mdc--theme-primary mdc-toolbar--fixed mdc-toolbar--waterfall">
+        <div class="mdc-toolbar__row">
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+                <a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle ripple" onclick="event.preventDefault();">menu</a>
+                <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
+                <span class="etext mhide"><a href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name }}</a> &rsaquo; <div id="cakeChapters" class="mdc-select"><select class="mdc-select__native-control" id="cakeSelectChapters"><option value="{{ chapter.uniqid }}" selected>{{ chapter.simple_title }}</option><option>{% trans 'Loading...' %}</option></select></div></span>
+            </section>
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-end" data-controller="search">
+                <div>
+                    <nav class="mdc-tab-bar toolbar-tab-bar mdc-tab-bar--icons-tabs">
+                        <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Latest' %}" href="/r/latest/">
+                            <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
+                        </a>
+                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Directory' %}" href="/r/directory/">
+                            <i class="material-icons mdc-tab__icon" aria-hidden="true">view_list</i>
+                        </a>
+                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Search' %}" href="/r/search/">
+                            <i class="material-icons mdc-tab__icon" aria-hidden="true">search</i>
+                        </a>
+                    </nav>
+                </div>
+            </section>
+        </div>{% if chapter.format is 1 %}
+        <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_prev' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Prev' %}</a>
+        <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_next' chapter.uniqid %}">{% trans 'Next' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% else %}
+        <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_next' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Next' %}</a>
+        <a class="mdc-button mdc-button--raised ripple cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_prev' chapter.uniqid %}">{% trans 'Prev' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% endif %}
     </div>
-</div>{% endblock %}
+    <aside class="mdc-drawer mdc-drawer--temporary toc">
+        <nav class="mdc-drawer__drawer">
+        <header class="mdc-drawer__header">
+                <div class="mdc-drawer__header-content mdc-theme--primary-bg" style="
+                background-image:url('{% icdn chapter.comic.cover.url %}');
+                background-position: center;
+                background-size: cover;
+                ">
+                <div class="mdc-card__media-title mdc-drawer__header-text">
+                    <a href="{% url 'series' chapter.comic.slug %}">
+                        {{ chapter.comic.name }}
+                    </a>
+                    <div class="mdc-typography--caption etext">
+                        {% include 'partials/people.html' with people=chapter.comic.author.all %}{% if chapter.comic.artist.all.count %} | {% endif %}{% include 'partials/people.html' with people=chapter.comic.artist.all %}
+                    </div>
+                </div>
+                </div>
+            </header>
+            <nav class="mdc-drawer__content mdc-list-group">
+            <div class="mdc-list" id="cakeListChapters">
+                <div class="mdc-drawer__toolbar-spacer">{% trans 'Loading...' %}</div>
+            </div>
+            </nav>
+        </nav>
+    </aside>{% endblock %}
 {% block body %}
 {% if page is 0 %}
-<main role="main" class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary" >
-    Hello!
-</main>
+    <main role="main" class="mdc-toolbar-fixed-adjust" >
+        TODO: Basic pages
+    </main>
 {% else %}
-<!--<main role="main" class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary" >
+    <!--<main role="main" class="mdc-toolbar-fixed-adjust mdc-theme--text-primary-on-primary" >
     </main>-->
     <!--<div id="mdc-js-snackbar"
         class="mdc-snackbar dhide"
@@ -70,6 +101,12 @@
     <button type="button" class="mdc-snackbar__action-button"></button>
     </div>
     </div>-->
+    <span class="mdc-fab hover material-icons" id="comments-fab" aria-label="{% trans 'Comments' %}">
+        <i class="mdc-icon-toggle material-icons ripple" id="comments-fab-icon" role="button" aria-pressed="false"
+            aria-label="{% trans 'Comments' %}" tabindex="0"
+            data-toggle-on='{"label": "{% trans 'Hide comments' %}", "content": "close"}'
+            data-toggle-off='{"label": "{% trans 'Show comments' %}", "content": "comment"}'>comment</i>
+    </span>
 {% endif %}
 {% endblock %}
 {% block footer %}{% endblock %}

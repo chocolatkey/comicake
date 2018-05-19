@@ -8,7 +8,7 @@ import Bibi from "./Bibi";
 import R from "./R";
 import B from "./B";
 import L from "./L";
-//import axios from "axios";
+import { COMMENTS } from "../constants";
 
 //==============================================================================================================================================
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -233,6 +233,9 @@ class I { // Bibi.UserInterfaces
         // Menus
         if(!settings.S["use-menubar"]) sML.addClass(O.HTML, "without-menubar");
         this.Menu = document.getElementById("bibi-menu");//.appendChild(sML.create("div", { id: "bibi-menu", on: { "click": function(Eve) { Eve.stopPropagation(); } } }));
+        this.FAB = document.getElementById("comments-fab");
+        this.FAB.Hover = true;
+        this.setFeedback(this.FAB);
         this.Menu.Height = this.Menu.offsetHeight;
         this.setHoverActions(this.Menu);
         this.setToggleAction(this.Menu, {
@@ -252,18 +255,36 @@ class I { // Bibi.UserInterfaces
         E.add("bibi:scrolls", () => {
             let isVert = (settings.S.RVM == "vertical");
             let cindex = R.getCurrent().Page.PageIndex;
-            let eindex = isVert ? R.Pages.length : R.Pages.length - 1;
+            let eindex = R.Pages.length - 1;/*isVert ? R.Pages.length - 1 : R.Pages.length - 1;*/
+            clearTimeout(this.FAB.Tea);
             if(/*settings.S.RVM == "vertical" && */(cindex > 0) && (cindex < eindex)) {
                 this.Menu.Hot = false;
                 sML.removeClass(this.Menu, "hot");
                 this.Menu.Hover = true;
                 E.dispatch("bibi:unhovers", null, this.Menu);
+                //if(!this.FAB.Targeted)
+                clearTimeout(this.FAB.uncannyDelay);
+                if(this.Panel.UIState != "active")
+                    E.dispatch("bibi:unhovers", null, this.FAB);
                 // document.body.requestPointerLock(); TODO
             } else {
+                /*if(!this.Menu.Hot) *///sML.addClass(this.Menu, "hot");
+                ///this.Menu.Hot = true;
+                //E.dispatch("bibi:hovers", null, this.Menu);
                 clearTimeout(this.Menu.Timer_cool);
-                /*if(!this.Menu.Hot) */sML.addClass(this.Menu, "hot");
-                this.Menu.Hot = true;
-                E.dispatch("bibi:hovers", null, this.Menu);
+                this.FAB.uncannyDelay = setTimeout(() => {
+                    // Because when scrolling starts, page is still old
+                    if(R.getCurrent().Page.PageIndex == cindex)
+                        E.dispatch("bibi:hovers", null, this.FAB);
+                }, 234);
+                this.FAB.Targeted = true;
+                this.Menu.Tea = setTimeout(() => {
+                    // TODO: fix recurring even though cleared
+                    if(this.Panel.UIState != "active") {
+                        this.FAB.Targeted = false;
+                        E.dispatch("bibi:unhovers", null, this.FAB);
+                    }
+                }, 3456);
             }
             if(/*!isVert && */this.Menu.Hot) {
                 clearTimeout(this.Menu.Timer_cool);
@@ -271,6 +292,8 @@ class I { // Bibi.UserInterfaces
                     this.Menu.Hot = false;
                     sML.removeClass(this.Menu, "hot");
                     sML.removeClass(this.Menu, "hover");
+                    //sML.removeClass(this.FAB, "hover");
+                    //this.FAB.Targeted = false;
                 }, 1234);
             }
         });
@@ -285,6 +308,25 @@ class I { // Bibi.UserInterfaces
                     this.Menu.Timer_close = setTimeout(() => {
                         E.dispatch("bibi:unhovers", Eve, this.Menu);
                     }, 123);
+                }
+                if(COMMENTS) {
+                    if(BibiEvent.Division.X == "right" && BibiEvent.Division.Y == "bottom") {
+                        E.dispatch("bibi:hovers", Eve, this.FAB);
+                        clearTimeout(this.Menu.Tea);
+                        if(!this.FAB.Targeted) { // meh
+                            this.Menu.Tea = setTimeout(() => {
+                                if(this.Panel.UIState != "active") {
+                                    this.FAB.Targeted = false;
+                                    E.dispatch("bibi:unhovers", null, this.FAB);
+                                }
+                            }, 3456);
+                        }
+                    } else {
+                        if(!this.FAB.Targeted) {
+                            clearTimeout(this.Menu.Tea);
+                            E.dispatch("bibi:unhovers", Eve, this.FAB);
+                        }
+                    }
                 }
             });
         }

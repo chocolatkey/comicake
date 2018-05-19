@@ -1,3 +1,5 @@
+import "whatwg-fetch";
+
 import O from "./O";
 import E from "./E";
 import sML from "../vendor/sML";
@@ -9,7 +11,6 @@ import I from "./I";
 import Bibi from "./Bibi";
 import P from "./P";
 
-import axios from "axios";
 import { DEBUG, CREDITS, PLACEHOLDER, COMMENTS } from "../constants";
 import cdn from "../cdn";
 import unaccessibilize from "./extensions/unaccessibilizer";
@@ -143,12 +144,19 @@ class L { // Bibi.Loader
                 if(!DEBUG && !P.habitat["trustworthy-origins"].includes(PathOrData.Path.replace(/^([\w\d]+:\/\/[^/]+).*$/, "$1")))
                     return this.loadBook.reject("The Origin of the Path of the Book Is Not Allowed.");
                 B.Path = PathOrData.Path;
-                axios.get(B.Path).then((e) => {
-                    this.manifest = e.data;
+                fetch(B.Path).then(response => {
+                    if (!response.ok) {
+                        var error = new Error(response.statusText);
+                        error.message = response;
+                        throw error;
+                    }
+                    return response.json();
+                }).then(data => {
+                    this.manifest = data;
                     // Online Manifest
                     B.Unzipped = true; // Satisfy our Satoru overlords
                     O.log("Comic: " + B.Path + " (WebPub Manifest)", "-*");
-                    this.loadBook.resolve();
+                    return this.loadBook.resolve();
                 }).catch((error) => {
                     // Failed to load the manifest, daihen!
                     this.loadBook.reject("Failed to load manifest: " + error);
@@ -194,11 +202,8 @@ class L { // Bibi.Loader
     
     
     processPackageDocument(Doc) {
-    
-        B.Package.Metadata["rendition:layout"] = "pre-paginated",
-        B.Package.Metadata["rendition:orientation"] = "portrait", // I think this is right?
-        B.Package.Metadata["rendition:spread"] = "landscape", // TODO
-        B.Package.Spine["page-progression-direction"] = "rtl", // TODO
+        B.Package.Metadata = Doc.metadata;
+        B.Package.Spine["page-progression-direction"] = B.Package.Metadata["direction"], // https://github.com/readium/webpub-manifest/tree/master/contexts/default#progression-direction
         B.Package.Manifest["cover-image"].Path = cdn.image(Doc.metadata.image);
         B.Language = Doc.metadata.language;
         B.ID = Doc.metadata.identifier,
@@ -261,10 +266,10 @@ class L { // Bibi.Loader
                 idref: n,
                 linear: "yes",
                 "page-spread": o, // Alternate R & L
-                "rendition:layout": "pre-paginated",
-                "rendition:orientation": "portrait",
+                "rendition:layout": B.Package.Metadata["rendition"]["layout"],
+                "rendition:orientation": isLandscape ? "landscape" : "portrait",
                 "rendition:page-spread": o,
-                "rendition:spread": "landscape", // TODO
+                "rendition:spread": B.Package.Metadata["rendition"]["spread"],
                 viewport: {
                     height: e.height,
                     width: e.width,
@@ -277,7 +282,7 @@ class L { // Bibi.Loader
         //var discPageNum = Object.keys(B.Package.Manifest.items).length + 1;
         //console.log("DPN: " + discPageNum);
         //var n = "item-" + sML.String.pad(discPageNum, 0, 3);
-        if(COMMENTS && false) {
+        /*if(COMMENTS && false) {
             B.Package.Manifest.items["extra"] = {
                 href: ""
             };
@@ -294,7 +299,7 @@ class L { // Bibi.Loader
                     width: 800
                 }
             });
-        }
+        }*/
         
         
         //if(constants.CREDITS)
@@ -317,9 +322,9 @@ class L { // Bibi.Loader
         O.log(IDLogs.join(" / "), "-*");
 
         var MetaLogs = [];
-        MetaLogs.push("rendition:layout: \"" + B.Package.Metadata["rendition:layout"] + "\"");
-        MetaLogs.push("rendition:orientation: \"" + B.Package.Metadata["rendition:orientation"] + "\"");
-        MetaLogs.push("rendition:spread: \"" + B.Package.Metadata["rendition:spread"] + "\"");
+        MetaLogs.push("rendition:layout: \"" + B.Package.Metadata["rendition"]["layout"] + "\"");
+        MetaLogs.push("rendition:orientation: \"" + B.Package.Metadata["rendition"]["orientation"] + "\"");
+        MetaLogs.push("rendition:spread: \"" + B.Package.Metadata["rendition"]["spread"] + "\"");
         MetaLogs.push("page-progression-direction: \"" + B.Package.Spine["page-progression-direction"] + "\"");
         O.log(MetaLogs.join(" / "), "-*");
         var vSet = false;

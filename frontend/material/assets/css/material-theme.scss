@@ -7,14 +7,18 @@
 @import "@material/drawer/mdc-drawer";
 @import "@material/chips/mdc-chips";
 @import "@material/card/mdc-card";
+@import "@material/select/mdc-select";
 
 @import "@material/typography/mdc-typography";
 @import "@material/theme/mdc-theme";
 @import "@material/ripple/mdc-ripple";
+@import "@material/fab/mdc-fab";
+@import "@material/icon-toggle/mdc-icon-toggle";
 
 
 html, body {
     background: #111111;
+    color: #fff;
 }
 
 .mdc-button,
@@ -31,14 +35,14 @@ color: #212121;
 
 .mdc-button,
 .mdc-fab {
-background-color: #546E7A;
+background-color: rgb(53, 60, 63);
 color: #ffffff;
 }
 
 .mdc-button--plain,
 .mdc-fab--plain {
 background-color: transparent;
-color: #546E7A;
+color: rgb(53, 60, 63);
 }
 
 .mdc-button--raised.mdc-ripple-upgraded::before,
@@ -76,7 +80,7 @@ background-color: rgba(255, 255, 255, 0.16);
 .mdc-fab--plain.mdc-ripple-upgraded::after {
 background-color: rgba(84, 110, 122, 0.16);
 }
-
+/*
 .mdc-snackbar {
     transform: translate(-50%,-100%);
 }
@@ -157,6 +161,7 @@ background-color: rgba(84, 110, 122, 0.16);
     .mdc-radio.mdc-ripple-upgraded--unbounded::after {
     background-color: rgba(84, 110, 122, 0.14);
     }
+*/
 /*
 .mdc-card {
     background-color: #ffffff;
@@ -442,12 +447,12 @@ main {
     width: 100%;
     overflow: hidden;
 }
-
+/*
 .mdc-fab {
     position: absolute;
     bottom: -25px;
     right: 28px;
-}
+}*/
 
 .content {
     font-size: 13px;
@@ -493,14 +498,14 @@ main {
 .mdc-icon-toggle::after {
     background-color: rgba(255, 255, 255, 0.06);
 }
-
+/*
 .mdc-fab.mdc--theme-primary.mdc-ripple-upgraded::after {
     background-color: rgba(255, 255, 255, 0.16);
 }
 
 .mdc-fab.mdc--theme-secondary.mdc-ripple-upgraded::after {
     background-color: rgba(255, 255, 255, 0.16);
-}
+}*/
 
 .mdc-tab {
     min-width: inherit;
@@ -612,6 +617,7 @@ button::-moz-focus-inner {
 
 .mdc-chip__icon {
     border-radius: 0;
+    width: auto !important;
 }
 
 .mdc-toolbar__title {
@@ -620,36 +626,48 @@ button::-moz-focus-inner {
     margin-right: 12px !important;
     margin-left: 0 !important;
 }
-.custom-indicator-tab-bar-in-toolbar .mdc-tab:not(.mdc-tab--active),
-.custom-tab-bar-in-toolbar .mdc-tab:not(.mdc-tab--active) {
-color: white; }
-.custom-indicator-tab-bar-in-toolbar .mdc-tab:not(.mdc-tab--active) .mdc-tab__icon,
-.custom-tab-bar-in-toolbar .mdc-tab:not(.mdc-tab--active) .mdc-tab__icon {
-color: white; }
 
-.custom-indicator-tab-bar-in-toolbar .mdc-tab--active,
-.custom-indicator-tab-bar-in-toolbar .mdc-tab:hover,
-.custom-tab-bar-in-toolbar .mdc-tab--active,
-.custom-tab-bar-in-toolbar .mdc-tab:hover {
-/* @alternate */
-color: rgba(255, 255, 255, 0.54);
-color: var(--mdc-theme-text-primary-on-primary, white); }
-.custom-indicator-tab-bar-in-toolbar .mdc-tab--active .mdc-tab__icon,
-.custom-indicator-tab-bar-in-toolbar .mdc-tab:hover .mdc-tab__icon,
-.custom-tab-bar-in-toolbar .mdc-tab--active .mdc-tab__icon,
-.custom-tab-bar-in-toolbar .mdc-tab:hover .mdc-tab__icon {
-/* @alternate */
-color: rgba(255, 255, 255, 0.54);
-color: var(--mdc-theme-text-primary-on-primary, white); }
-
-.custom-indicator-tab-bar-in-toolbar .mdc-tab-bar__indicator,
-.custom-indicator-tab-bar-in-toolbar .mdc-tab__indicator {
-/* @alternate */
-background-color: #018786;
-background-color: var(--mdc-theme-secondary, #018786); }
-
-.custom-tab-bar-in-toolbar .mdc-tab-bar__indicator,
-.custom-tab-bar-in-toolbar .mdc-tab__indicator {
+.mdc-tab-bar__indicator,
+.mdc-tab__indicator {
 /* @alternate */
 background-color: white;
 background-color: var(--mdc-theme-text-primary-on-primary, white); }
+
+// Select
+.mdc-select {
+    height: 48px;
+    background-image: url(data:image/svg+xml,%3Csvg%20width%3D%2210px%22%20height%3D%225px%22%20viewBox%3D%227%2010%2010%205%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3Cpolygon%20id%3D%22Shape%22%20stroke%3D%22none%22%20fill%3D%22%23ffffff%22%20fill-rule%3D%22evenodd%22%20opacity%3D%220.54%22%20points%3D%227%2010%2012%2015%2017%2010%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E);
+    background-position: right 8px bottom 8px;
+    display: inline;
+}
+.mdc-select__native-control {
+    padding-top: 10px;
+    border-bottom: none !important;
+    text-overflow: ellipsis;
+    width: auto;
+    max-width: 100%;
+    //background: rgba(10, 10, 10, 0.9);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+}
+
+.mdc-select__native-control option, .mdc-select__native-control optgroup {
+    color: #fff;
+    background: rgba(0,0,0,.87);
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+
+.mdc-toolbar__section.mdc-toolbar__section--align-end {
+    //min-width: 450px;
+}
+
+.mdc-drawer--temporary.toc .mdc-drawer__header-content {
+    padding: 0px;
+}
+
+.mdc-drawer__header-text {
+    width: 100%;
+}

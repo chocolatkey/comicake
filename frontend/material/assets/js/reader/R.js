@@ -491,23 +491,14 @@ class R { // Bibi.Reader
                     SpreadBox.PaddingAfter = Math.ceil((this.Stage[settings.S.SIZE.L] - LastItemInSpread["offset" + settings.S.SIZE.L]) / 2);
                 }
             }
-            if(Spread.SpreadIndex != 0) {
+            /*if(Spread.SpreadIndex != 0) {
                 var PreviousSpreadBox = this.Spreads[Spread.SpreadIndex - 1].SpreadBox;
                 SpreadBox.PaddingBefore = SpreadBox.PaddingBefore - PreviousSpreadBox.PaddingAfter;
                 if(SpreadBox.PaddingBefore < I.Menu.offsetHeight) SpreadBox.PaddingBefore = I.Menu.offsetHeight;
-            }
-            if(settings.S.RVM == "vertical") { // No vertical padding
-                if(Spread.SpreadIndex == 0)
-                    SpreadBox.PaddingBefore = 64;
-                else
-                    SpreadBox.PaddingBefore = 0;
-                if(Spread.SpreadIndex + 1 == this.Spreads.length)
-                    SpreadBox.PaddingAfter = 64;
-                else
-                    SpreadBox.PaddingAfter = 0;
-            }
+            }*/
         } else if(settings.S.RVM == "paged") {
             if(Spread.SpreadIndex == 0) {
+                //
             } else {
                 SpreadBox.PaddingBefore = this.Stage.PageGap;
             }
@@ -519,6 +510,8 @@ class R { // Bibi.Reader
             }
             if(Spread.SpreadIndex == this.Spreads.length - 1) {
                 SpreadBox.PaddingAfter  = Math.ceil( (this.Stage[settings.S.SIZE.L] - SpreadBox["offset" + settings.S.SIZE.L]) / 2);
+            } else {
+                //SpreadBox.PaddingAfter = 0;
             }
         }
         if(SpreadBox.PaddingBefore > 0) SpreadBox.style["padding" + settings.S.BASE.B] = SpreadBox.PaddingBefore + "px";

@@ -1,0 +1,7 @@
+{{#volumes}}
+    {{#no}}<optgroup label="Volume {{ no }}">{{/no}}
+    {{#chapters}}
+        <option value="{{ uuid }}"{{#selected}} selected{{/selected}}>{{ name }}</option>
+    {{/chapters}}
+    {{#no}}</optgroup>{{/no}}
+{{/volumes}}

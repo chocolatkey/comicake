@@ -1,3 +1,4 @@
+/*
 $mdc-theme-primary: #212121;
 $mdc-theme-primary-light: #484848;
 $mdc-theme-primary-dark: #000000;
@@ -50,6 +51,20 @@ $mdc-theme-text-secondary-on-dark: hsla(0,0%,100%,.7);
 $mdc-theme-text-hint-on-dark: hsla(0,0%,100%,.5);
 $mdc-theme-text-disabled-on-dark: hsla(0,0%,100%,.5);
 $mdc-theme-text-icon-on-dark: hsla(0,0%,100%,.5);
+*/
+
+$mdc-theme-primary: #212121 !default; // shiro
+$mdc-theme-on-primary: if(mdc-theme-contrast-tone($mdc-theme-primary) == "dark", #000, #fff) !default;
+
+// The $mdc-theme-accent variable is DEPRECATED - it exists purely for backward compatibility.
+// The $mdc-theme-secondary* variables should be used for all new projects.
+$mdc-theme-accent: #000 !default; // grey
+$mdc-theme-secondary: $mdc-theme-accent !default;
+$mdc-theme-on-secondary: if(mdc-theme-contrast-tone($mdc-theme-secondary) == "dark", #000, #fff) !default;
+$mdc-theme-background: #000 !default; // Black
+
+$mdc-theme-surface: #000 !default;
+$mdc-theme-on-surface: if(mdc-theme-contrast-tone($mdc-theme-surface) == "dark", #000, #fff) !default;
 
 @import "material-theme";
 @import "rich";

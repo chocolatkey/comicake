@@ -41,7 +41,7 @@ let update = function(Settings) {
 
     if(typeof Settings == "object") for(var Property in Settings) if(typeof S[Property] != "function") S[Property] = Settings[Property];
 
-    S.BRL = S["book-rendition-layout"] = B.Package.Metadata["rendition:layout"];
+    S.BRL = S["book-rendition-layout"] = B.Package.Metadata["rendition"]["layout"];
     S.BWM = S["book-writing-mode"] = (/^tb/.test(B.WritingMode) && !O.VerticalTextEnabled) ? "lr-tb" : B.WritingMode;
 
     // Font Family

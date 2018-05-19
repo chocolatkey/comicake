@@ -146,7 +146,7 @@ html.view-vertical.slider-opened.panel-opened div#bibi-menu,html.view-vertical.s
     html.js .mhide, html.bibi .mhide {
         display: none !important;
     }
-    html.no-js .dhide, html.bibi .dhide {
+    html.no-js .mhide, html.bibi .mhide {
         display: none !important;
     }
     div#bibi-notifier-board p {
@@ -359,4 +359,74 @@ html.InternetExplorer .extra-spread-box .item-content.extra-content,html.Interne
 .extra-spread-box .item-content.extra-content aside .figgroup p a.hover {
     border-color: #faa83a;
     background: rgba(250,168,58,.1)
+}
+
+.mdc-drawer--temporary {
+    z-index: 2000;
+}
+
+// Reader comments
+#comments-fab {
+    z-index: 9001;
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    display: none;
+    html.slider-opened.view-vertical & {
+        right: 60px;
+        display: flex;
+    }
+    html.slider-opened.view-paged & {
+        bottom: 60px;
+        display: flex;
+    }
+}
+
+#disqus_thread {
+    visibility: hidden;
+    max-width: 900px;
+    height: 100%;
+    margin: 0 auto;
+    margin-top: 35px;
+    padding: 70px 10px;
+}
+
+#disqus_thread.shown {
+    visibility: inherit;
+}
+
+@media (max-width: 799px) {
+    #comments-fab {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+#comments-fab.hover {
+    display: flex;
+}
+
+#comments-fab > .mdc-icon-toggle {
+    height: 32px;
+    display: inherit;
+}
+
+// Next/Prev button
+.cakeChapSwitch {
+    position: absolute;
+    top: 70px;
+    padding: 10px;
+    z-index: 1800;
+}
+
+#cakeRightChap {
+    right: 10px;
+    & > .mdc-button__icon {
+        margin-left: 8px;
+        margin-right: -4px;
+    }
+}
+
+#cakeLeftChap {
+    left: 10px;
 }

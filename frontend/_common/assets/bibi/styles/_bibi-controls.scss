@@ -484,6 +484,7 @@ div#bibi-panel-bookinfo {
 	z-index: $z-index_panel-bookinfo;
 	width: 100%;
 	height: 100%;
+	display: none; // TODO: Repurpose properly
 }
 	div#bibi-panel-bookinfo-box {
 		box-sizing: border-box;
@@ -1032,6 +1033,7 @@ div.bibi-subpanel {
 // --------------------------------------------------------------------------------
 
 div#bibi-menu {
+	z-index: 4000;
 	html.without-menubar & { display: none !important; }
 	html.bibi &, html.bibi & .mdc-tab, html.bibi & img, html.bibi & .material-icons {
 		color: rgba(255, 255, 255, 0.05);
@@ -1042,7 +1044,7 @@ div#bibi-menu {
 	}
 	box-sizing: border-box;
 	position: fixed; html.waiting-file & { display: none; }
-	z-index: $z-index_menu;
+	z-index: $z-index_menu + 1;
 	left: 0; right: auto; top: 0; bottom: auto;
 	border-bottom: solid 1px rgba(128,128,128, 0.1);
 	height: $top-bar-height;

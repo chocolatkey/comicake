@@ -13,6 +13,11 @@
     font-family: Roboto, "游ゴシック", YuGothic, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif !important;
 }
 
+// To fix above
+.mdc-fab__icon {
+    font-family: 'Material Icons' !important;
+}
+
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
