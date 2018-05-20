@@ -195,7 +195,7 @@
         var $form = $('#page-upload');
         var $cbutton = $('#page-upload .deletelink-box');
         $form.fileupload({
-            {% if not standalone %}url: "{{ request.get_full_path }}../multiupload/",{% endif %}
+            {% if not standalone %}url: "{{ request.path }}../multiupload/",{% endif %}
             formData: [{ name: "csrfmiddlewaretoken", value: "{{ csrf_token }}"}],
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
             maxFileSize: 100000000,
