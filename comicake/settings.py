@@ -114,6 +114,7 @@ admin.site.index_title = APP_NAME + ' Management System'
 ADMIN_LOGO = 'img/logo.svg'
 MENU_WEIGHT = {
     'Reader': 1,
+    'Blog': 2,
 }
 ADMIN_STYLE = {
     'primary-color': '#111',
@@ -171,6 +172,7 @@ RAVEN_CONFIG = { # Sentry config for error reports
 INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'reader.apps.ReaderConfig',
+    'blog.apps.BlogConfig', # TODO add setting to enable/disable this
     'admin_menu',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -202,7 +204,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'blog.middleware.FlatpageFallbackMiddleware', # todo optional
 ]
 
 if DEBUG:

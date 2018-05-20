@@ -28,13 +28,6 @@ def latest(request, page=1):
     paginator = Paginator(chapters, 25)
     page_chapters = paginator.get_page(page)
     return render(request, 'reader/latest.html', {'chapters': page_chapters})
-    #raise Http404("TODO")
-    #question = get_object_or_404(Question, pk=question_id)
-    #from django.shortcuts import get_object_or_404, render
-    #get_list_or_404()
-    #my_objects = list(MyModel.objects.filter(published=True))
-    #if not my_objects:
-    #    raise Http404("No MyModel matches the given query.")
 
 @cache_page(settings.CACHE_LONG)
 def directory(request, page=1):

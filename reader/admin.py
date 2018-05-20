@@ -30,7 +30,6 @@ def make_unpublished(modeladmin, request, queryset):
     else:
         message_bit = _("%s items were") % updates
     modeladmin.message_user(request, _("%s successfully unpublished.") % message_bit)
-
 make_unpublished.short_description = _("Unpublish selected items")
 
 class AdminImageWidget(AdminFileWidget):

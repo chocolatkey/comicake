@@ -21,7 +21,6 @@ from django.contrib.sitemaps import GenericSitemap
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
 from django.views.decorators.cache import cache_page
 from reader.models import Chapter, Comic, Team, Person
-from . import views
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from . import settings
@@ -50,8 +49,6 @@ sitemaps = {
 paths = settings.FRONTEND_CONFIG["paths"]
 
 urlpatterns = [
-    #re_path(r'^_nested_admin/', include('nested_admin.urls')),
-    path('', views.home),
     path('i18n/', cache_page(None)(JavaScriptCatalog.as_view(packages=['reader'])), name='jsi18n'),
     path('sw.js', cache_page(None)(TemplateView.as_view(
     template_name="sw.js",
@@ -59,6 +56,7 @@ urlpatterns = [
     )), name='sw.js'),
     path(paths["admin"], admin.site.urls),
     path(paths["api"], include('api.urls')),
+    path('', include('blog.urls')),
     path(paths["reader"], include('reader.urls')),
     path('sitemap.xml', cache_page(3600)(sitemap), {'sitemaps': sitemaps},
      name='django.contrib.sitemaps.views.sitemap')
