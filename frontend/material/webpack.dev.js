@@ -8,7 +8,7 @@ var path = require("path"),
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
-var config = ini.parse(fs.readFileSync("./frontend_settings.ini", "utf-8"));
+var config = ini.parse(fs.readFileSync("../../frontend_settings.ini", "utf-8"));
 
 // 4 hotreload: node server.js
 module.exports = {
@@ -17,27 +17,27 @@ module.exports = {
         comicake: [
             "webpack-dev-server/client?http://localhost:3000",
             "webpack/hot/only-dev-server",
-            "./frontend/" + config.theme.name + "/assets/js/index",
-            "./frontend/" + config.theme.name + "/assets/css/main.scss"
+            "./assets/js/index",
+            "./assets/css/main.scss"
         ],
         reader: [
-            "./frontend/" + config.theme.name + "/assets/js/vendor/sML",
-            "./frontend/" + config.theme.name + "/assets/js/reader/index",
-            "./frontend/_common/assets/bibi/styles/-header.scss",
-            "./frontend/_common/assets/bibi/styles/bibi.heart.scss"
+            "./assets/js/vendor/sML",
+            "./assets/js/reader/index",
+            "./assets/bibi/styles/-header.scss",
+            "./assets/bibi/styles/bibi.heart.scss"
         ]
     },
     resolve: {
         modules: [
-            "./frontend/" + config.theme.name + "/assets/js",
-            "./frontend/" + config.theme.name + "/assets/css",
-            "./frontend/" + config.theme.name + "/assets/bibi",
+            "./assets/js",
+            "./assets/css",
+            "./assets/bibi",
             "node_modules",
             "bower_components"
         ]
     },
     output: {
-        path: path.resolve("./static/bundles/"),
+        path: path.resolve("../../static/bundles/"),
         filename: "[name]-[hash].js",
         publicPath: pp
     },
@@ -75,7 +75,7 @@ module.exports = {
                     options: {
                         sourceMap: true,
                         includePaths: [
-                            "./frontend/" + config.theme.name + "/assets/css",
+                            "./frontend/assets/css",
                             "./node_modules"
                         ],
                         importer: function(url, prev) {
@@ -119,7 +119,7 @@ module.exports = {
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(), // don't reload if there is an error
-        new BundleTracker({filename: "./webpack-stats.json"}),
+        new BundleTracker({filename: "../../webpack-stats.json"}),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional

@@ -22,6 +22,7 @@
     "node-sass": "^4.8.3",
     "qs": "^6.5.2",
     "sass-loader": "^7.0.1",
+    "siema": "^1.5.1",
     "stimulus": "^1.0.1",
     "turbolinks": "^5.1.1",
     "uglifyjs-webpack-plugin": "^1.2.5",

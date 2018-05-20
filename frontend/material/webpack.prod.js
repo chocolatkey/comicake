@@ -9,7 +9,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 
-var config = ini.parse(fs.readFileSync("./frontend_settings.ini", "utf-8"));
+var config = ini.parse(fs.readFileSync("../../frontend_settings.ini", "utf-8"));
 
 let getBuildNumber = function() {
     var now = "", date = new Date();
@@ -32,28 +32,27 @@ module.exports = {
     //mode: "development",
     entry: {
         comicake: [
-            //"@babel/polyfill",
-            "./frontend/" + config.theme.name + "/assets/js/index",
-            "./frontend/" + config.theme.name + "/assets/css/main.scss"
+            "./assets/js/index",
+            "./assets/css/main.scss"
         ],
         reader: [
-            "./frontend/" + config.theme.name + "/assets/js/vendor/sML",
-            "./frontend/" + config.theme.name + "/assets/js/reader/index",
-            "./frontend/_common/assets/bibi/styles/-header.scss",
-            "./frontend/_common/assets/bibi/styles/bibi.heart.scss"
+            "./assets/js/vendor/sML",
+            "./assets/js/reader/index",
+            "./assets/bibi/styles/-header.scss",
+            "./assets/bibi/styles/bibi.heart.scss"
         ]
     },
     resolve: {
         modules: [
-            "./frontend/" + config.theme.name + "/assets/js",
-            "./frontend/" + config.theme.name + "/assets/css",
-            "./frontend/" + config.theme.name + "/assets/bibi",
+            "./assets/js",
+            "./assets/css",
+            "./assets/bibi",
             "node_modules",
             "bower_components"
         ]
     },
     output: {
-        path: path.resolve("./static/bundles/"),
+        path: path.resolve("../../static/bundles/"),
         filename: "[name]-[hash].js",
         publicPath: pp
     },
@@ -84,7 +83,7 @@ module.exports = {
                     options: {
                         sourceMap: true,
                         includePaths: [
-                            "./frontend/" + config.theme.name + "/assets/css",
+                            "./assets/css",
                             "./node_modules"
                         ],
                         importer: function(url, prev) {
@@ -132,7 +131,7 @@ module.exports = {
         }],
     },
     plugins: [
-        new BundleTracker({filename: "./webpack-stats.json"}),
+        new BundleTracker({filename: "../../webpack-stats.json"}),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
@@ -149,7 +148,7 @@ module.exports = {
             }
         }),
         new WorkboxPlugin.GenerateSW({
-            swDest: "../../frontend/_common/templates/sw.js",
+            swDest: "./templates/sw.js",
             importWorkboxFrom: "local",
             importsDirectory: "sw",
             clientsClaim: true,
