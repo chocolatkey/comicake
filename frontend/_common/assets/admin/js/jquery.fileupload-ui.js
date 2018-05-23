@@ -37,7 +37,7 @@
     } else {
         // Browser globals:
         factory(
-            window.jQuery,
+            django.jQuery,
             window.tmpl
         );
     }

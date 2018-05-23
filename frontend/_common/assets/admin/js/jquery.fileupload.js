@@ -28,7 +28,7 @@
         );
     } else {
         // Browser globals:
-        factory(window.jQuery);
+        factory(django.jQuery);
     }
 }(function ($) {
     'use strict';
