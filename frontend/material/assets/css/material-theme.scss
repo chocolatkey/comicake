@@ -624,7 +624,11 @@ button::-moz-focus-inner {
     padding: 0;
     min-width: 90px;
     margin-right: 12px !important;
-    margin-left: 0 !important;
+    //margin-left: 0 !important;
+}
+
+.mdc-tab__icon + .mdc-tab__icon-text {
+    padding-top: 0;
 }
 
 .mdc-tab-bar__indicator,
