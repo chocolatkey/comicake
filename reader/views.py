@@ -122,15 +122,16 @@ def person(request, person_id):
 
 ### Feeds ###
 
-def make_feed_chapter(item):
+def make_feed_chapter(request, item):
     if item.get_protection():
         return item.comic.thumb() # Only show thumbnail
     else:
-        return loader.render_to_string("partials/pages.html", {'pages': item.pages.all})  # Let them read the chapter in good ol' RSS
+        return loader.render_to_string("partials/pages.html", {'pages': item.pages.all, 'request': request})  # Let them read the chapter in good ol' RSS
 
 class RssChapterFeed(Feed):
     def __call__(self, request, *args, **kwargs):
         keyname = self.__class__.__name__
+        self.request = request
         zxchapter.add(keyname)
         return cache.get_or_set(keyname , super(RssChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_MEDIUM)
 
@@ -151,7 +152,7 @@ class RssChapterFeed(Feed):
         return "{} {}".format(item.comic.name, item.full_title())
     
     def item_description(self, item):
-        return make_feed_chapter(item)
+        return make_feed_chapter(self.request, item)
     
     def item_guid(self, item):
         return item.uniqid
@@ -179,6 +180,7 @@ class AtomChapterFeed(RssChapterFeed):
 class RssComicChapterFeed(RssChapterFeed):
     def __call__(self, request, *args, **kwargs):
         keyname = "%s-%s" % (self.__class__.__name__, kwargs['cid'])
+        self.request = request
         zxchapter.add(keyname)
         zxcomic.add(keyname)
         return cache.get_or_set(keyname , super(RssComicChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_MEDIUM)
@@ -204,8 +206,8 @@ class RssComicChapterFeed(RssChapterFeed):
     def item_title(self, item):
         return "{} {}".format(item.comic.name, item.full_title())
     
-    def item_description(self, item):
-        return make_feed_chapter(item)
+    def item_description(self, item):   
+        return make_feed_chapter(self.request, item)
     
     def item_guid(self, item):
         return item.uniqid

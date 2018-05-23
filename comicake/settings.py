@@ -301,7 +301,7 @@ if not DEBUG:
             'sentry': {
                 'level': 'ERROR', # To capture more than ERROR, change to WARNING, INFO, etc.
                 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-                'tags': {'custom-tag': 'x'},
+                #'tags': {'custom-tag': 'x'},
             },
             'console': {
                 'level': 'DEBUG',
