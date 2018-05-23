@@ -65,7 +65,10 @@ export default class Search extends Controller {
     doSuggest(query) {
         return fetch(constants.API_BASE + "/comics.json?" + qs.stringify({
             search: query
-        })).then(response => {
+        }), {
+            headers: constants.API_HEADERS,
+            credentials: constants.DEBUG ? "include" : "omit"
+        }).then(response => {
             if (!response.ok) {
                 var error = new Error(response.statusText);
                 error.message = response;

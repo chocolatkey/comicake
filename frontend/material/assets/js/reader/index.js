@@ -62,7 +62,9 @@ let getChapters = () => {
         n: 1000
     };
     fetch(API_BASE + "/chapters.json?" + qs.stringify(params, {arrayFormat: "repeat"}), {
-        headers: { "Cache-Control": "max-age=300" }
+        headers: constants.API_HEADERS,
+        credentials: constants.DEBUG ? "include" : "omit"
+        //headers: { "Cache-Control": "max-age=300" }
     }).then(response => {
         if (!response.ok) {
             var error = new Error(response.statusText);

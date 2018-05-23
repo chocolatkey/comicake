@@ -11,7 +11,7 @@ import I from "./I";
 import Bibi from "./Bibi";
 import P from "./P";
 
-import { DEBUG, CREDITS, PLACEHOLDER, COMMENTS } from "../constants";
+import { DEBUG, CREDITS, PLACEHOLDER, COMMENTS, API_HEADERS } from "../constants";
 import cdn from "../cdn";
 import unaccessibilize from "./extensions/unaccessibilizer";
 import Loupe from "./extensions/loupe";
@@ -144,7 +144,10 @@ class L { // Bibi.Loader
                 if(!DEBUG && !P.habitat["trustworthy-origins"].includes(PathOrData.Path.replace(/^([\w\d]+:\/\/[^/]+).*$/, "$1")))
                     return this.loadBook.reject("The Origin of the Path of the Book Is Not Allowed.");
                 B.Path = PathOrData.Path;
-                fetch(B.Path).then(response => {
+                fetch(B.Path, {
+                    headers: API_HEADERS,
+                    credentials: DEBUG ? "include" : "omit"
+                }).then(response => {
                     if (!response.ok) {
                         var error = new Error(response.statusText);
                         error.message = response;
