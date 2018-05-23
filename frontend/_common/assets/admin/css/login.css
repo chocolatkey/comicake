@@ -2,7 +2,7 @@
 
 body.login {
     background: #000;
-    background-image: url('/static/img/bg.jpg');
+    background-image: url('/static/img/bg.svg');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
