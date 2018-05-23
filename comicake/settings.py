@@ -173,7 +173,6 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'reader.apps.ReaderConfig',
     'blog.apps.BlogConfig', # TODO add setting to enable/disable this
-    'admin_menu',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -230,6 +229,11 @@ TEMPLATES = [
                 #'dynamic_preferences.processors.global_preferences',
                 'reader.utils.global_settings'
             ],
+            'libraries': {
+                'custom_admin_css': 'comicake.templatetags.custom_admin_css',
+                'custom_admin_logo': 'comicake.templatetags.custom_admin_logo',
+                'custom_admin_menu': 'comicake.templatetags.custom_admin_menu',
+            },
         },
     },
 ]
@@ -354,6 +358,7 @@ if not DEBUG:
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+LANGUAGE_COOKIE_NAME = "comicake_language"
 
 
 #COMPRESS_ROOT = os.path.join(BASE_DIR, 'static/')
