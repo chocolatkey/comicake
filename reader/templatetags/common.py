@@ -1,5 +1,6 @@
 from django import template
 from reader.models import Comic, Chapter, Person, Team
+from blog.models import Post, Page
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.conf import settings
@@ -12,7 +13,7 @@ from datetime import date, datetime
 from django.utils.timezone import is_aware, utc
 from django.utils.dateformat import format
 from reader.utils import cdn_url
-from reader.jsonld import chapterLd, comicLd, teamLd, personLd
+from reader.jsonld import chapterLd, comicLd, teamLd, personLd, postLd, pageLd
 from django.contrib.sites.shortcuts import get_current_site
 
 import json
@@ -76,6 +77,10 @@ def jsonld(request, item):
         jsonld = teamLd(request, item)
     elif type(item) is Person:
         jsonld = personLd(request, item)
+    elif type(item) is Post:
+        jsonld = postLd(request, item)
+    elif type(item) is Page:
+        jsonld = pageLd(request, item)
     else:
         raise template.TemplateSyntaxError("Object of type {} does not have a JSON-LD equivalent".format(type(item).__name__))
     indent = 4 if settings.DEBUG else None

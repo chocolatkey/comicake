@@ -45,7 +45,7 @@ def chapterManifest(request, chapter):
             "publisher": [],
             "description": chapter.comic.description,
             # if chapter.comic.alt %}"alternateName": "{{ chapter.comic.alt }}",{% endif %}
-            "published": tti(chapter.created_at),
+            "published": tti(chapter.published_at),
             "modified": tti(chapter.modified_at),
             "language": chapter.language,
             "subject": [],
@@ -163,9 +163,44 @@ def websiteBase(request):
                 "position": 1,
                 "item": get_current_site(request).name
             }]
-        },	
+        },
+        "provider": settings.GENERATOR,
         "mainEntity":{}
     }
+
+def pageLd(request, page):
+    me = websiteBase(request)
+    me["breadcrumb"]["itemListElement"].append({
+        "@type": "ListItem",
+        "position": 2,
+        "item": page.title
+    })
+    me["name"] = page.title
+    me["identifier"] = page.get_absolute_url()
+    return me
+
+def postLd(request, post):
+    me = websiteBase(request)
+    me["breadcrumb"]["itemListElement"].append({
+        "@type": "ListItem",
+        "position": 2,
+        "item": _("Blog")
+    })
+    me["breadcrumb"]["itemListElement"].append({
+        "@type": "ListItem",
+        "position": 3,
+        "item": post.title
+    })
+    me["mainEntity"] = {
+        "@type": "BlogPosting",
+        "identifier": post.get_absolute_url(),
+        "headline": post.title,
+        "author": post.author.username,
+        "dateCreated": tti(post.created_at),
+        "dateModified": tti(post.modified_at),
+        "publisher": get_current_site(request).name
+    }
+    return me
 
 def personLd(request, person):
     me = websiteBase(request)
@@ -270,7 +305,6 @@ def comicLd(request, comic):
     me["mainEntity"] = {
         "@type": "ComicSeries",
         "identifier": "urn:uuid:{}".format(comic.uniqid),
-        "provider": settings.GENERATOR,
         "name": comic.name,
         "about": comic.description,
         "author": authors,
@@ -361,12 +395,11 @@ def chapterLd(request, chapter):
         "accessMode": "visual",
         "accessibilityControl": ["fullKeyboardControl", "fullMouseControl", "fullTouchControl"],
         "isAccessibleForFree": True,
-        "provider": settings.GENERATOR,
         "copyrightHolders": copyrightHolders,
         "publisher": [],
         "description": chapter.comic.description,
-        "dateCreated": tti(chapter.comic.created_at),
-        "dateModified": tti(chapter.comic.modified_at),
+        "datePublished": tti(chapter.published_at),
+        "dateModified": tti(chapter.modified_at),
         "inLanguage": chapter.language,
         "genre": genres
     }
