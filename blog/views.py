@@ -5,10 +5,16 @@ from django.shortcuts import get_object_or_404
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, Http404, HttpResponsePermanentRedirect
+from django.contrib.syndication.views import Feed
+from django.utils.feedgenerator import Atom1Feed
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from django.contrib.flatpages.views import render_flatpage
+from datetime import date
+from django.core.cache import cache
+from django.urls import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Page, Post
 from reader.models import Chapter
@@ -62,22 +68,85 @@ def page(request, url):
             raise
     return render_flatpage(request, f)
 
+@cache_page(settings.CACHE_MEDIUM)
 def home(request):
     """
     Homepage
     """
-    chapters = Chapter.objects.filter(published=True, comic__published=True).prefetch_related('team', 'comic')
-    posts = Post.objects.filter(published=True).prefetch_related('author')
+    chapters = Chapter.only_published().prefetch_related('team', 'comic')
+    posts = Post.objects.filter(published=True).prefetch_related('author')[:5]
     return render(request, 'home.html', {'chapters': chapters, 'posts': posts})
 
-def archive(request, year=None, month=None, day=None):
+@cache_page(settings.CACHE_MEDIUM)
+def archive(request, page=1, year=None, month=None, day=None):
     """
     Blog post archive
     """
-    return HttpResponse("Archive not ready!")
+    posts = Post.objects.filter(published=True).prefetch_related('author')
+    paginator = Paginator(posts, 5)
+    page_posts = paginator.get_page(page)
+    return render(request, 'blog/archive.html', {'posts': page_posts})
 
+@cache_page(settings.CACHE_MEDIUM)
 def post(request, year, month, day, slug):
     """
     Blog posts
     """
-    return HttpResponse("Post not ready!")
+    try:
+        cdate = date(year, month, day)
+    except ValueError:
+        raise Http404
+    post = get_object_or_404(Post,
+        slug=slug,
+        created_at__contains=cdate
+        )
+    return render(request, 'blog/post.html', {'post': post})
+
+### Feeds ###
+
+class RssPostFeed(Feed):
+    def __call__(self, request, *args, **kwargs):
+        keyname = self.__class__.__name__
+        return cache.get_or_set(keyname , super(RssPostFeed, self).__call__(request, *args, **kwargs), settings.CACHE_MEDIUM)
+
+    title = settings.SITE_TITLE
+
+    def link(self, obj):
+        return reverse('blog_feed_rss')
+
+    description = _("Blog RSS Feed for %s") % settings.SITE_TITLE
+
+    def ttl(self):
+        return settings.CACHE_MEDIUM
+
+    def items(self):
+        return Post.objects.filter(published=True).prefetch_related('author')[:25]
+    
+    def item_title(self, item):
+        return item.title
+    
+    def item_description(self, item):
+        return item.content
+    
+    def item_guid(self, item):
+        return item.get_absolute_url()
+    
+    def item_author_name(self, item):
+        if item.author:
+            return item.author.username # Could be first_name + last_name
+        else:
+            return None
+    
+    def item_pubdate(self, item):
+        return item.created_at
+    
+    def item_updateddate(self, item):
+        return item.modified_at
+
+class AtomPostFeed(RssPostFeed):
+    def link(self, obj):
+        return reverse('blog_feed_atom')
+
+    subtitle = _("Blog Atom Feed for %s") % settings.SITE_TITLE
+
+    feed_type = Atom1Feed

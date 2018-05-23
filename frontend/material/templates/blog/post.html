@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% load i18n common %}
+{% block html_prefix %} article: http://ogp.me/ns/article#{% endblock %}
+{% block title %}{% tt request post %}{% endblock %}
+{% block extra_head %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt request post %}" />
+    <meta name="description" content="{{ post.content|striptags|truncatechars:250 }}">
+    <meta property="og:description" content="{{ post.content|striptags|truncatechars:250 }}" />
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="{{ post.created_at|date:'c' }}">
+    <meta property="article:modified_time" content="{{ post.modified_at|date:'c' }}">
+    <meta property="article:author" content="{{ post.author }}">
+    <meta property="og:image" content="{% icdn '/static/img/logo.svg' %}" />
+    <meta property="og:image:alt" content="{% blocktrans with site=SITE_TITLE %}Logo for {{ SITE_TITLE }}{% endblocktrans %}" />
+    <script type="application/ld+json">{% jsonld request post %}</script>
+{% endblock %}
+{% block body %}
+<main role="main" class="mdc-toolbar-fixed-adjust"{% if post.enable_comments %} data-controller="article" data-target="article.main"{% endif %}>
+    <h1>{{ post.title }}</h1>
+    <h3 class="post-card__subtitle mdc-typography--subtitle2">{{ post.created_at|ago }} {% trans 'by'%} {{ post.author }}</h3>
+    {{ post.content|safe }}
+</main>
+{% endblock %}

@@ -10,8 +10,10 @@
     <meta property="og:locale" content="{{ OG_LOCALE }}">
     {% block extra_head %}{% endblock %}{% cache None head %}
     <link rel="sitemap" type="application/xml" title="Sitemap" href="{% url 'django.contrib.sitemaps.views.sitemap' %}" />
-    <link rel="alternate" type="application/rss+xml" title="{% trans 'RSS Feed' %}" href="{% url 'feed_rss' %}" />
-    <link rel="alternate" type="application/atom+xml" title="{% trans 'Atom Feed' %}" href="{% url 'feed_atom' %}" />
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'RSS Chapter Feed' %}" href="{% url 'feed_rss' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'Atom Chapter Feed' %}" href="{% url 'feed_atom' %}" />
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'RSS Blog Feed' %}" href="{% url 'blog_feed_rss' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'Atom Blog Feed' %}" href="{% url 'blog_feed_atom' %}" />
     <meta name="generator" content="{{ GENERATOR }}" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <meta name="theme-color" content="#212121">
