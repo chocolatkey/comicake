@@ -25,8 +25,12 @@ admin.site.register(Page, ExtendedFlatPageAdmin)
 class PostAdmin(admin.ModelAdmin):
     form = PostAdminForm
     list_display = ('title', 'author', 'published', 'created_at')
-    readonly_fields = ('author', 'created_at')
+    readonly_fields = ('author', 'created_at', 'modified_at')
     search_fields = ['title', 'content']
     prepopulated_fields = {"slug": ("title",)}
     actions = [make_published, make_unpublished]
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.author = request.user
+        obj.save()
 admin.site.register(Post, PostAdmin)

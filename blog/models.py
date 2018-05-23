@@ -20,12 +20,15 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         datum = self.created_at
-        return reverse('post', kwargs={
+        return reverse('blog_post', kwargs={
             'year': '%04d' % datum.year,
             'month': '%02d' % datum.month,
             'day': '%02d' % datum.day,
             'slug': self.slug,
         })
+    
+    class Meta:
+        ordering = ('-created_at',)
 
 # Really irritating but have to imitate flatpage from scratch because it's not abstract (or maybe I'm retarded?)
 class Page(models.Model):
