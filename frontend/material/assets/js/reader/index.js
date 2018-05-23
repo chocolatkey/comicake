@@ -30,7 +30,7 @@ import "element-closest";
 import "mutation-observer-inner-html-shim";
 import "whatwg-fetch";
 
-import { DEBUG, API_BASE, COMMENTS, readerLink } from "../constants";
+import { DEBUG, API_BASE, API_HEADERS, COMMENTS, readerLink } from "../constants";
 import { onLoadMDC } from "../mdc";
 import Bibi from "./Bibi";
 import B from "./B";
@@ -62,8 +62,8 @@ let getChapters = () => {
         n: 1000
     };
     fetch(API_BASE + "/chapters.json?" + qs.stringify(params, {arrayFormat: "repeat"}), {
-        headers: constants.API_HEADERS,
-        credentials: constants.DEBUG ? "include" : "omit"
+        headers: API_HEADERS,
+        credentials: DEBUG ? "include" : "omit"
         //headers: { "Cache-Control": "max-age=300" }
     }).then(response => {
         if (!response.ok) {
