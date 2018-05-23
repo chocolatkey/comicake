@@ -18,24 +18,31 @@ from .utils import cdn_url
 
 class MultiUploadAdmin(admin.ModelAdmin):
     class Media:
-        '''js = (
-            'jquery/jquery.1.8.0.min.js',
-            'jquery/jquery_fix_csrf.js',
-            'jquery/jquery.ui.widget.js',
-            'jquery/tmpl.min.js',
-            'jquery/canvas-to-blob.min.js',
-            'jquery/load-image.min.js',
-            'jquery/jquery.iframe-transport.js',
-            'jquery/jquery.fileupload.js',
-            'jquery/jquery.fileupload-fp.js',
-            'jquery/jquery.fileupload-ui.js',
+        js = (
+            'admin/js/jquery.init.js', # Häh? Include this and everything else comes with it...
+            'admin/js/jquery.ui.widget.js',
+            'admin/js/csrf.js',
+            'admin/js/jquery-ui.min.js',
+            'admin/js/tmpl.min.js',
+            'admin/js/load-image.all.min.js',
+            'admin/js/canvas-to-blob.min.js',
+            'admin/js/jquery.iframe-transport.js',
+            'admin/js/jquery.fileupload.js',
+            'admin/js/jquery.fileupload-process.js',
+            'admin/js/jquery.fileupload-image.js',
+            'admin/js/jquery.fileupload-validate.js',
+            'admin/js/jquery.fileupload-jquery-ui.js',
+            'admin/js/jquery.fileupload-ui.js',
+            'admin/js/jquery.blueimp-gallery.min.js',
         )
         css = {
-            'all': ['css/jquery-ui.css',
-                    'css/jquery.fileupload-ui.css',
-                    'css/multiupload.css',
-                    ],
-        }'''
+            'all': [
+                'admin/css/jquery-ui.min2.css',
+                'admin/css/jquery.fileupload-ui.css',
+                'admin/css/blueimp-gallery.min.css',
+                'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
+            ]
+        }
     change_form_template = 'admin/multiupload/change_form.html'
     change_list_template = 'admin/multiupload/change_list.html'
     multiupload_template = 'admin/multiupload/upload.html'

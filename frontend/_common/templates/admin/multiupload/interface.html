@@ -1,26 +1,4 @@
 {% load i18n static %}
-    {% if standalone %}<link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />{% endif %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/jquery-ui.min2.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/jquery.fileupload-ui.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/blueimp-gallery.min.css' %}" />
-    <script src="{% static 'admin/js/jquery-3.3.1.min.js' %}"></script>
-    <script src="{% static 'admin/js/jquery.ui.widget.js' %}"></script>
-    <script src="{% static 'admin/js/csrf.js' %}"></script>
-    <script src="{% static 'admin/js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'admin/js/tmpl.min.js' %}"></script>
-    <script src="{% static 'admin/js/load-image.all.min.js' %}"></script>
-    <script src="{% static 'admin/js/canvas-to-blob.min.js' %}"></script>
-    <!--<script src="{% static 'admin/js/bootstrap.min.js' %}"></script>-->
-    <script src="{% static 'admin/js/jquery.iframe-transport.js' %}"></script>
-    <script src="{% static 'admin/js/jquery.fileupload.js' %}"></script>
-    <script src="{% static 'admin/js/jquery.fileupload-process.js' %}"></script>
-    <script src="{% static 'admin/js/jquery.fileupload-image.js' %}"></script>
-    <script src="{% static 'admin/js/jquery.fileupload-validate.js' %}"></script>
-    <script src="{% static 'admin/js/jquery.fileupload-jquery-ui.js' %}"></script>
-    <script src="{% static 'admin/js/jquery.fileupload-ui.js' %}"></script>
-    <script src="{% static 'admin/js/jquery.blueimp-gallery.min.js' %}"></script>
-    <!-- TODO: local host -->
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
         .submit-row .button {
             padding: 10px 15px;
@@ -189,50 +167,52 @@
     
     
     <script type="text/javascript">
-    $(document).ready(function () {
-        'use strict';
-        // Initialize the jQuery File Upload widget:
-        var $form = $('#page-upload');
-        var $cbutton = $('#page-upload .deletelink-box');
-        $form.fileupload({
-            {% if not standalone %}url: "{{ request.path }}../multiupload/",{% endif %}
-            formData: [{ name: "csrfmiddlewaretoken", value: "{{ csrf_token }}"}],
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-            maxFileSize: 100000000,
-            sequentialUploads: true
-        }).bind('fileuploadsubmit', function (e, data) {
-            $cbutton.show();
-            var inputs = data.context.find(':input');
-            if (inputs.filter('[required][value=""]').first().focus().length) {
-                return false;
-            }
-            data.formData = inputs.serializeArray();
-        }).bind('fileuploaddone', function (e, data) {
-            $cbutton.hide();
-        }).bind('fileuploadadd', function (e, data) {
-            $("#no-upload-text").hide();
-            $cbutton.show();
-        });
+    (function($) {
+        $(document).ready(function () {
+            'use strict';
+            // Initialize the jQuery File Upload widget:
+            var $form = $('#page-upload');
+            var $cbutton = $('#page-upload .deletelink-box');
+            $form.fileupload({
+                {% if not standalone %}url: "{{ request.path }}../multiupload/",{% endif %}
+                formData: [{ name: "csrfmiddlewaretoken", value: "{{ csrf_token }}"}],
+                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                maxFileSize: 100000000,
+                sequentialUploads: true
+            }).bind('fileuploadsubmit', function (e, data) {
+                $cbutton.show();
+                var inputs = data.context.find(':input');
+                if (inputs.filter('[required][value=""]').first().focus().length) {
+                    return false;
+                }
+                data.formData = inputs.serializeArray();
+            }).bind('fileuploaddone', function (e, data) {
+                $cbutton.hide();
+            }).bind('fileuploadadd', function (e, data) {
+                $("#no-upload-text").hide();
+                $cbutton.show();
+            });
 
-        $(".deletelink.cancel").click(function() {
-            $cbutton.hide();
+            $(".deletelink.cancel").click(function() {
+                $cbutton.hide();
+            });
+        
+            $form.addClass('fileupload-processing');
+            $.ajax({
+                //xhrFields: {withCredentials: true},
+                url: $form.fileupload('option', 'url'),
+                dataType: 'json',
+                context: $form[0]
+            }).always(function () {
+                $(this).removeClass('fileupload-processing');
+            }).done(function (result) {
+                if(!result.length)
+                    $("#no-upload-text").show();
+                $(this).fileupload('option', 'done')
+                    .call(this, $.Event('done'), {result: {files: result}});
+            });
         });
-    
-        $form.addClass('fileupload-processing');
-        $.ajax({
-            //xhrFields: {withCredentials: true},
-            url: $form.fileupload('option', 'url'),
-            dataType: 'json',
-            context: $form[0]
-        }).always(function () {
-            $(this).removeClass('fileupload-processing');
-        }).done(function (result) {
-            if(!result.length)
-                $("#no-upload-text").show();
-            $(this).fileupload('option', 'done')
-                .call(this, $.Event('done'), {result: {files: result}});
-        });
-    });
+    })(django.jQuery); 
     window.locale = {
         "fileupload": {
             "errors": {

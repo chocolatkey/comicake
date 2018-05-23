@@ -1,11 +1,7 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/change_form.html" %}
 {% load i18n admin_modify admin_urls raw staticfiles %}
 
 {% block title %}Multiupload {{ block.super }}{% endblock %}
-
-{% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ SITE_TITLE|default:_('Django administration') }}</a></h1>
-{% endblock %}
 
 {% block extrahead %}{{ block.super }}
 {% url 'admin:jsi18n' as jsi18nurl %}
