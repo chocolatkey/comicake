@@ -170,7 +170,7 @@ E.add("bibi:opened", () => {
             };
             var d = document, s = d.createElement("script");
             s.src = "https://" + COMMENTS + ".disqus.com/embed.js";
-            s.setAttribute("data-timestamp", +new Date());
+            s.setAttribute("data-timestamp", + new Date());
             (d.head || d.body).appendChild(s);
             sML.addClass(dthread, "shown");
         }

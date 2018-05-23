@@ -270,7 +270,7 @@ class I { // Bibi.UserInterfaces
             } else {
                 /*if(!this.Menu.Hot) *///sML.addClass(this.Menu, "hot");
                 ///this.Menu.Hot = true;
-                //E.dispatch("bibi:hovers", null, this.Menu);
+                E.dispatch("bibi:hovers", null, this.Menu);
                 clearTimeout(this.Menu.Timer_cool);
                 this.FAB.uncannyDelay = setTimeout(() => {
                     // Because when scrolling starts, page is still old
