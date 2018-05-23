@@ -5,7 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 import uuid
 import os
 from django.db.models.signals import post_delete
@@ -56,7 +56,7 @@ class Person(models.Model):
     alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'), db_index=True)
 
     def comics(self):
-        return Comic.objects.filter(Q(published=True), Q(artist=self) | Q(author=self)).order_by('-modified_at')
+        return Comic.objects.filter(Q(artist=self) | Q(author=self), published=True).order_by('-modified_at')
 
     def get_absolute_url(self):
         return reverse('person', args=[self.id])
@@ -74,7 +74,7 @@ class Comic(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     description = models.TextField(_("Synopsis"), blank=True)
     published = models.BooleanField(default=True, db_index=True)
-    adult = models.BooleanField(default=False, db_index=True)
+    adult = models.BooleanField(default=False, db_index=True, help_text=_('Show a warning when attempting to view the comic or its chapters'))
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
     licenses = models.ManyToManyField(Licensee, blank=True)
@@ -123,10 +123,10 @@ class Comic(models.Model):
         return reverse('series', args=[self.slug])
 
     def chapters(self):
-        return Chapter.objects.filter(published=True, comic=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic')
+        return Chapter.only_published(comic=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team')
     
     def latest_chapter(self):
-        return Chapter.objects.filter(published=True, comic=self).order_by('-volume', '-chapter', '-subchapter')[:1].get()
+        return Chapter.only_published(comic=self).order_by('-volume', '-chapter', '-subchapter')[:1].get()
     
     class Meta:
         ordering = ('name',)
@@ -142,7 +142,7 @@ class Team(models.Model):
         return reverse('team', args=[self.id])
         
     def chapters(self):
-        return Chapter.objects.filter(published=True, team=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team', 'comic')
+        return Chapter.only_published(team=self).order_by('-volume', '-chapter', '-subchapter').prefetch_related('team')
 
     def __str__(self):
         return self.name
@@ -187,23 +187,39 @@ class Chapter(models.Model):
     language = LanguageField(default="en", db_index=True)
     name = models.CharField(max_length=200, blank=True)
     published = models.BooleanField(default=False, db_index=True)
-    protected = models.BooleanField(default=False) # TODO get default from settings
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    #published_at = models.DateTimeField(default=timezone.now)
+    protected = models.BooleanField(default=False, help_text=_("Not yet implemented!")) # TODO get default from settings
+    published_at = models.DateTimeField(db_index=True, default=timezone.now, help_text=_("Setting a future time will cause the chapter to remain unpublished until then"))
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
+
+    @staticmethod
+    def only_published(**kwargs):
+        """
+        Published status is true when:
+        1. The comic the chapter belongs to is published
+        2. Published field is true and publish date has passed
+        3. Protection is disabled OR protection is enabled and ready
+        """
+        chapters = Chapter.objects.all()
+        if kwargs:
+            chapters = chapters.filter(**kwargs)
+        return chapters.filter(
+                ~Q(Q(protected=True) & Q(protection__isnull=True)),
+                comic__published=True,
+                published=True, published_at__lte=timezone.now()
+            ).prefetch_related('comic')
 
     def get_protection(self):
         if self.protected and self.protection:
             return True # TODO real protection val
         return None
 
-    def chapter_decimal(self,):
+    def chapter_decimal(self):
         chapdig = str(self.chapter)
         if self.subchapter:
             chapdig += "." + str(self.subchapter)
         return chapdig
 
-    def custom_title(self,):
+    def custom_title(self):
         t = ""
         if self.comic.chapter_title: # FoOlSlide chapter title formatting
             # Generate Ordinal Numbers Suffix (English)
@@ -222,7 +238,7 @@ class Chapter(models.Model):
         return t
 
 
-    def full_title(self,):
+    def full_title(self):
         t = ""
         if self.volume:
             t += _("Vol. %d") % int(self.volume) + " "
@@ -232,13 +248,13 @@ class Chapter(models.Model):
         return t
     full_title.short_description = _("Title")
 
-    def simple_title(self,):
+    def simple_title(self):
         t = self.custom_title()
         if self.name:
             t += ": " + self.name
         return t
     
-    def decimal(self,):
+    def decimal(self):
         if self.subchapter:
             return str(self.chapter) + "." + str(self.subchapter)
         else:
@@ -264,7 +280,7 @@ class Chapter(models.Model):
     #    return Page.objects.filter(chapter=self)
 
     class Meta:
-        ordering = ('-created_at',)
+        ordering = ('-published_at',)
 
 from django.utils.encoding import filepath_to_uri
 from django.utils._os import safe_join

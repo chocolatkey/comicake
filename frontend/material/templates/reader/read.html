@@ -6,7 +6,7 @@
 {% block extra_head %}{% cache 600 og_data chapter.uniqid %}{# TODO: make into template tag you can pass objects #}
     <meta property="og:title" content="{% tt request chapter %}" />
     <meta property="og:type" content="article" />
-    <meta property="article:published_time" content="{{ chapter.created_at|date:'c' }}">
+    <meta property="article:published_time" content="{{ chapter.published_at|date:'c' }}">
     <meta property="article:modified_time" content="{{ chapter.modified_at|date:'c' }}">
     {% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}<meta name="author" content="{% for team in teams %}{{ team }}{% if not forloop.last %}, {% endif %}{% endfor %}">{% endifnotequal %}
     {% for team in teams %}<meta property="article:author" content="{% url 'team' team_id=team.id %}">{% endfor %}{% endwith %}
@@ -90,12 +90,11 @@
     </aside>{% endif %}{% endblock %}
 {% block body %}{% if page is 0 %}
     <style>
-        html{ overflow: auto; }
-        body {  height: auto; }
+        html { overflow: auto; }
+        body { height: auto; }
     </style>
     <main role="main" id="cakeClassic">
-        {% with chapter.pages.all as pages %}{% for page in pages %}<img src="{{ page.file.url }}"/>
-        {% endfor %}{% endwith %}
+        {% include "partials/pages.html" with pages=chapter.pages.all %}
         <div>{% if chapter.format is 1 %}
             <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_prev' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Prev' %}</a>
             <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_next' chapter.uniqid %}">{% trans 'Next' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% else %}

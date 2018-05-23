@@ -109,4 +109,4 @@ class ChapterSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
 
     class Meta:
         model = Chapter
-        fields = ('id', 'manifest', 'comic', 'name', 'chapter', 'subchapter', 'title', 'protection', 'uniqid', 'volume', 'team', 'language', 'created_at', 'modified_at')
+        fields = ('id', 'manifest', 'comic', 'name', 'chapter', 'subchapter', 'title', 'protection', 'uniqid', 'volume', 'team', 'language', 'published_at', 'modified_at')

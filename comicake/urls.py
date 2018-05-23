@@ -29,16 +29,15 @@ from django.views.i18n import JavaScriptCatalog
 # https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
 sitemaps = {
     'chapters': GenericSitemap({
-        'queryset': Chapter.objects.filter(published=True),
-        'date_field: ': 'created_at'
+        'queryset': Chapter.only_published(),
+        'date_field: ': 'modified_at'
     }, priority=0.6, changefreq='daily'),
     'comics': GenericSitemap({
         'queryset': Comic.objects.filter(published=True),
         'date_field: ': 'modified_at'
     }, priority=0.4, changefreq='weekly'),
     'teams': GenericSitemap({
-        'queryset': Team.objects.all(),
-        'date_field: ': 'created_at'
+        'queryset': Team.objects.all()
     }, priority=0.4, changefreq='daily'),
     'people': GenericSitemap({
         'queryset': Person.objects.all()

@@ -13,6 +13,8 @@ from django.core.cache import cache
 from django.utils.cache import learn_cache_key
 from django.urls import reverse
 from django.db.models import Q
+from django.template import loader
+
 from .models import Chapter, Comic, Team, Page, Person
 from .jsonld import chapterManifest
 
@@ -24,21 +26,21 @@ zxperson = set()
 
 @cache_page(settings.CACHE_LONG)
 def latest(request, page=1):
-    chapters = list(Chapter.objects.filter(published=True, comic__published=True).prefetch_related('team', 'comic'))
+    chapters = Chapter.only_published().prefetch_related('team')
     paginator = Paginator(chapters, 25)
     page_chapters = paginator.get_page(page)
     return render(request, 'reader/latest.html', {'chapters': page_chapters})
 
 @cache_page(settings.CACHE_LONG)
 def directory(request, page=1):
-    comics = list(Comic.objects.filter(published=True).prefetch_related('author', 'artist'))
+    comics = Comic.objects.filter(published=True).prefetch_related('author', 'artist')
     paginator = Paginator(comics, 12)
     page_comics = paginator.get_page(page)
     return render(request, 'reader/directory.html', {'comics': page_comics})
 
 @cache_page(settings.CACHE_LONG)
 def series(request, series_slug):
-    comic = get_object_or_404(Comic.objects.prefetch_related('author', 'artist', 'tags'), published=True, slug=series_slug)
+    comic = get_object_or_404(Comic.objects.all().prefetch_related('author', 'artist', 'tags', 'licenses'), published=True, slug=series_slug)
     return render(request, 'reader/series.html', {'comic': comic})
 
 @cache_page(settings.CACHE_LONG) # todo increase?
@@ -74,7 +76,7 @@ def read_prev(request, cid):
         published=True,
         uniqid=cid
         )
-    prev_chapter = Chapter.objects.filter(published=True, comic=current_chapter.comic).filter(
+    prev_chapter = Chapter.only_published(comic=current_chapter.comic).filter(
         Q(chapter__lt=current_chapter.chapter, volume__lte=current_chapter.volume) | Q(volume__lte=current_chapter.volume, chapter=current_chapter.chapter, subchapter__lt=current_chapter.subchapter)
     ).first()
     if prev_chapter:
@@ -89,7 +91,7 @@ def read_next(request, cid):
         published=True,
         uniqid=cid
         )
-    next_chapter = Chapter.objects.filter(published=True, comic=current_chapter.comic).filter(
+    next_chapter = Chapter.only_published(comic=current_chapter.comic).filter(
         Q(chapter__gt=current_chapter.chapter, volume__gte=current_chapter.volume) | Q(volume__gte=current_chapter.volume, chapter=current_chapter.chapter, subchapter__gt=current_chapter.subchapter)
     ).last()
     if next_chapter:
@@ -118,30 +120,38 @@ def person(request, person_id):
     zxcomic.add(learn_cache_key(request, response))
     return response
 
+### Feeds ###
+
+def make_feed_chapter(item):
+    if item.get_protection():
+        return item.comic.thumb() # Only show thumbnail
+    else:
+        return loader.render_to_string("partials/pages.html", {'pages': item.pages.all})  # Let them read the chapter in good ol' RSS
+
 class RssChapterFeed(Feed):
     def __call__(self, request, *args, **kwargs):
         keyname = self.__class__.__name__
         zxchapter.add(keyname)
-        return cache.get_or_set(keyname , super(RssChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_LONG)
+        return cache.get_or_set(keyname , super(RssChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_MEDIUM)
 
     title = settings.SITE_TITLE
 
     def link(self, obj):
         return reverse('feed_rss')
 
-    description = _("RSS Feed for %s") % settings.SITE_TITLE
+    description = _("Chapter RSS Feed for %s") % settings.SITE_TITLE
 
     def ttl(self):
-        return 60
+        return settings.CACHE_MEDIUM
 
     def items(self):
-        return Chapter.objects.filter(published=True).prefetch_related('team', 'comic')[:25]
+        return Chapter.only_published().prefetch_related('team', 'pages')[:25]
     
     def item_title(self, item):
         return "{} {}".format(item.comic.name, item.full_title())
     
     def item_description(self, item):
-        return item.comic.thumb()
+        return make_feed_chapter(item)
     
     def item_guid(self, item):
         return item.uniqid
@@ -150,7 +160,7 @@ class RssChapterFeed(Feed):
         return item.teams()
     
     def item_pubdate(self, item):
-        return item.created_at
+        return item.published_at
     
     def item_updateddate(self, item):
         return item.modified_at
@@ -162,7 +172,7 @@ class AtomChapterFeed(RssChapterFeed):
     def link(self, obj):
         return reverse('feed_atom')
 
-    subtitle = _("Atom Feed for %s") % settings.SITE_TITLE
+    subtitle = _("Chapter Atom Feed for %s") % settings.SITE_TITLE
 
     feed_type = Atom1Feed
 
@@ -171,7 +181,7 @@ class RssComicChapterFeed(RssChapterFeed):
         keyname = "%s-%s" % (self.__class__.__name__, kwargs['cid'])
         zxchapter.add(keyname)
         zxcomic.add(keyname)
-        return cache.get_or_set(keyname , super(RssComicChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_LONG)
+        return cache.get_or_set(keyname , super(RssComicChapterFeed, self).__call__(request, *args, **kwargs), settings.CACHE_MEDIUM)
 
     def title(self, obj):
         return obj.name
@@ -180,22 +190,22 @@ class RssComicChapterFeed(RssChapterFeed):
         return reverse('feed_rss_comic', args=[obj.uniqid])
 
     def description(self, obj):
-        return _("RSS Feed for %s") % obj.name
+        return _("Chapter RSS Feed for %s") % obj.name
 
     def get_object(self, request, cid):
         return get_object_or_404(Comic, published=True, uniqid=cid)
 
     def ttl(self):
-        return 60
+        return settings.CACHE_MEDIUM
 
     def items(self, obj):
-        return Chapter.objects.filter(comic=obj, published=True).prefetch_related('team', 'comic')[:50]
+        return Chapter.only_published(comic=obj).prefetch_related('team', 'pages')[:50]
     
     def item_title(self, item):
         return "{} {}".format(item.comic.name, item.full_title())
     
     def item_description(self, item):
-        return item.comic.thumb()
+        return make_feed_chapter(item)
     
     def item_guid(self, item):
         return item.uniqid
@@ -204,7 +214,7 @@ class RssComicChapterFeed(RssChapterFeed):
         return item.teams()
     
     def item_pubdate(self, item):
-        return item.created_at
+        return item.published_at
     
     def item_updateddate(self, item):
         return item.modified_at
@@ -217,6 +227,6 @@ class AtomComicChapterFeed(RssComicChapterFeed):
         return reverse('feed_atom_comic', args=[obj.uniqid])
 
     def subtitle(self, obj):
-        return _("Atom Feed for %s") % obj.name
+        return _("Chapter Atom Feed for %s") % obj.name
 
     feed_type = Atom1Feed

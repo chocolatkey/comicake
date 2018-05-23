@@ -36,6 +36,7 @@ def global_settings(request):
         'SENTRY_DSN': settings.SENTRY_DSN,
         'GA_ID': settings.GA_ID,
         'SITE_TITLE': settings.SITE_TITLE,
+        'SITE_DESCRIPTION': settings.SITE_DESCRIPTION,
         'VERSION': settings.VERSION,
         'GENERATOR': settings.GENERATOR,
         'BASE_URL': "http://localhost:8000" if settings.DEBUG else request.scheme + "://" + get_current_site(None).domain, # baka, this is so bad

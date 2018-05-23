@@ -168,11 +168,11 @@ class ChapterViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     max_page_size = 1000
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_fields = ('comic', 'volume', 'team', 'language')
-    ordering_fields = ('created_at', 'modified_at', 'volume', 'chapter', 'subchapter')
+    ordering_fields = ('published_at', 'modified_at', 'volume', 'chapter', 'subchapter')
     #lookup_field = 'uniqid'
 
     def get_queryset(self):
-        queryset = Chapter.objects.filter(published=True)
+        queryset = Chapter.only_published()
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)  
         return queryset

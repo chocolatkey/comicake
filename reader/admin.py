@@ -96,9 +96,9 @@ class ChapterAdmin(ChapterMultiuploadMixing, MultiUploadAdmin):
     comic_link.admin_order_field = 'Comic'
     comic_link.short_description = 'Comic'
 
-    list_display = ('full_title', 'comic_link', 'teams', 'created_at', 'modified_at', 'language', 'published')
+    list_display = ('full_title', 'comic_link', 'teams', 'published_at', 'modified_at', 'language', 'published')
     #list_editable = ('team',)
-    readonly_fields = ('uniqid',)
+    readonly_fields = ('uniqid', 'protected')
     list_display_links = ('full_title',)
     list_filter = ('comic', 'published', 'team') # todo: protection enabled also 'language' too big
     autocomplete_fields = ['comic', 'team']
@@ -140,10 +140,22 @@ class ChapterInlineAdmin(admin.TabularInline):
     extra = 0
     max_num = 0
     show_change_link = True
-    readonly_fields = ('full_title', 'created_at', 'modified_at')
-    fields = ('full_title', 'published', 'protected', 'created_at', 'modified_at')
+    readonly_fields = ('full_title', 'modified_at', 'protected')
+    fields = ('full_title', 'published', 'protected', 'modified_at')
 
 class ComicAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {'fields': ('name', 'slug', 'alt', 'author', 'artist', 'tags', 'description', 'published', 'format', 'cover')}),
+        (_('Advanced'), {
+            'classes': ('collapse', ),
+            'fields': (
+                'adult',
+                'chapter_title',
+                'created_at',
+                'modified_at',
+            ),
+        }),
+    )
     inlines = [
         ChapterInlineAdmin,
     ]
@@ -160,6 +172,7 @@ class ComicAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
     autocomplete_fields = ['author', 'artist', 'tags', 'licenses']
+    readonly_fields = ('created_at', 'modified_at')
     def get_formsets_with_inlines(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
             if isinstance(inline, ChapterInlineAdmin) and obj is None:

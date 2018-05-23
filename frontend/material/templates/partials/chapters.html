@@ -16,7 +16,7 @@
                     {% endspaceless %}</span>
                     <span class="mdc-list-item__text">
                         <a href="{% cpath chapter %}" data-target="clickable.target" data-turbolinks="false">{{ chapter }}</a>
-                        <span class="mdc-list-item__secondary-text">{{ chapter.created_at|ago }}{% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}
+                        <span class="mdc-list-item__secondary-text">{{ chapter.published_at|ago }}{% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}
                             {% trans 'by' %}
                             {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
                         {% endifnotequal %}{% endwith %}</span>
