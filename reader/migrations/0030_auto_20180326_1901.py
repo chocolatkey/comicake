@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reader', '0029_auto_20180326_1855'),
+        ('reader', '0028_remove_chapter_published_at'),
     ]
 
     operations = [

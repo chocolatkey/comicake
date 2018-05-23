@@ -31,10 +31,6 @@ class Migration(migrations.Migration):
                 ('expires', models.DateTimeField()),
             ],
         ),
-        migrations.RemoveField(
-            model_name='chapter',
-            name='id',
-        ),
         migrations.AddField(
             model_name='chapter',
             name='chapter',
@@ -87,7 +83,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='chapter',
             name='uniqid',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+            field=models.UUIDField(default=uuid.uuid4, editable=False, serialize=False),
         ),
         migrations.AddField(
             model_name='chapter',

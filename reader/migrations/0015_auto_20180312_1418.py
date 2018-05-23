@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='chapter',
             name='protection',
-            field=models.OneToOneField(blank=True, default=0, editable=False, on_delete=django.db.models.deletion.CASCADE, to='reader.Protection'),
+            field=models.OneToOneField(blank=True, default=None, editable=False, on_delete=django.db.models.deletion.CASCADE, to='reader.Protection'),
             preserve_default=False,
         ),
     ]
