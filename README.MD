@@ -1,19 +1,21 @@
 # ComiCake
 
-**STILL IN DEVELOPMENT STAGE!**
+**Please do not try and install, installation flow not complete**
 
-**NOT READY FOR PRODUCTION USAGE!**
-
-An application ready to serve as your next comic reader!
+An application (nearly) ready to serve as your next comic reader!
+See this page: https://github.com/chocolatkey/comicake/projects/1 for ETA and TODOs
 
 ## Setup
 
-blablabla
+Recommended you use a virtualenv
 - `python manage.py migrate`
 - `python manage.py createsuperuser`
 
 If you want to add an initial set of English tags oriented towards manga, run the command `python manage.py loaddata tags_manga.json`
 
+## Content Protection
+
+TODO explanation
 
 Portions of code from these projects were used in the making of comicake:
 
@@ -48,3 +50,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+TODO add licenses
