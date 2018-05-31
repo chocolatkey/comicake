@@ -72,6 +72,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
+FILE_UPLOAD_PERMISSIONS = 0o644
 ## DB
 # Recommended you switch off sqlite in production!
 DATABASES = { # Database (https://docs.djangoproject.com/en/2.0/ref/settings/#databases)
@@ -157,8 +158,10 @@ CACHES = {
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
+
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Application definition
 RAVEN_CONFIG = { # Sentry config for error reports
