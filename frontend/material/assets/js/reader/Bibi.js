@@ -39,32 +39,32 @@ class Bibi {
         O.stamp("Welcome!");
         O.log("Welcome! - ComiCake Reader v" + this.version + " powered by BiB/i b" + this.build, "-0");
         E.dispatch("bibi:says-welcome");
-    
+
         O.RequestedURL = location.href;
         O.BookURL = O.Origin + location.pathname + location.search;
-    
+
         O.Language = (() => {
             if(typeof navigator.language != "string") return "en";
             return (navigator.language.split("-")[0] == "ja") ? "ja" : "en";
         })();
-    
+
         O.contentWindow = window;
         O.contentDocument = document;
-    
+
         O.HTML  = document.documentElement; O.HTML.className = sML.Environments.join(" ") + " bibi welcome";
         O.Head  = document.head;
         O.Body  = document.body;
         O.Info  = document.getElementById("bibi-info");
         O.Title = document.getElementsByTagName("title")[0];
-    
+
         // Device & Event
         if(sML.OS.iOS || sML.OS.Android) {
             O.Mobile = true;
             O.HTML.className = O.HTML.className + " Touch";
-            if(sML.OS.iOS) {
+            /*if(sML.OS.iOS) {
                 O.Head.appendChild(sML.create("meta", { name: "apple-mobile-web-app-capable",          content: "yes"   }));
                 O.Head.appendChild(sML.create("meta", { name: "apple-mobile-web-app-status-bar-style", content: "white" }));
-            }
+            }*/
             O["resize"] = "orientationchange";
             O["pointerdown"] = "touchstart";
             O["pointermove"] = "touchmove";
@@ -103,10 +103,10 @@ class Bibi {
 
         // Reader
         R.initialize();
-    
+
         // UI
         I.initialize();
-    
+
         O.NotCompatible = (sML.UA.InternetExplorer < 11) ? true : false;
         if(O.NotCompatible) {
             // Say Bye-bye
