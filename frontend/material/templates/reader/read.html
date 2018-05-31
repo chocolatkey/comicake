@@ -41,7 +41,7 @@
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                 {% if page is not 0 %}<a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle ripple" onclick="event.preventDefault();">menu</a>{% endif %}
                 <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
-                <span class="etext mhide"><a href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name }}</a> &rsaquo; {% if page is 0 %}{{ chapter.simple_title }}{% else %}<div id="cakeChapters" class="mdc-select"><select class="mdc-select__native-control" id="cakeSelectChapters"><option value="{{ chapter.uniqid }}" selected>{{ chapter.simple_title }}</option><option>{% trans 'Loading...' %}</option></select></div>{% endif %}</span>
+                <span class="etext mhide"><a href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name|truncatechars:50 }}</a> &rsaquo; {% if page is 0 %}{{ chapter.simple_title }}{% else %}<div id="cakeChapters" class="mdc-select"><select class="mdc-select__native-control" id="cakeSelectChapters"><option value="{{ chapter.uniqid }}" selected>{{ chapter.simple_title }}</option><option>{% trans 'Loading...' %}</option></select></div>{% endif %}</span>
             </section>
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end" data-controller="search">
                 <div>

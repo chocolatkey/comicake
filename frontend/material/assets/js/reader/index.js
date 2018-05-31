@@ -107,6 +107,8 @@ let getChapters = () => {
         // Desktop
         if(data.count <= 1) { // This is the only chapter?
             selector.outerHTML = data.results[0].title;
+            document.getElementById("cakeChapters").style = "background: none;";
+
         } else {
             const selectorDom = Mustache.render(chapterSelectTemplate, finalized);
             selector.innerHTML = selectorDom;
