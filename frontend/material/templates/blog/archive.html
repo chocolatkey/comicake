@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% load flatpages common humanize i18n %}
-{% block title %}{% tt request 'Series List' %}{% endblock %}
+{% block title %}{% tt request 'Archive' %}{% endblock %}
 {% block extra_head %}{# TODO: make into template tag you can pass objects #}
-    <meta property="og:title" content="{% tt request 'Series List' %}" />
-    <meta property="og:description" content="{% blocktrans with site_name=SITE_TITLE %}Series list for {{ site_name }}{% endblocktrans %}" />
+    <meta property="og:title" content="{% tt request 'Posts' %}" />
+    <meta property="og:description" content="{% blocktrans with site_name=SITE_TITLE %}Post archive for {{ site_name }}{% endblocktrans %}" />
     <meta property="og:type" content="website" />
-    <meta name="description" content="{% blocktrans with site_name=SITE_TITLE %}Series List for {{ site_name }}{% endblocktrans %}">
+    <meta name="description" content="{% blocktrans with site_name=SITE_TITLE %}Post archive for {{ site_name }}{% endblocktrans %}">
 {% endblock %}
 {% block body %}
     <main class="mdc-toolbar-fixed-adjust">
