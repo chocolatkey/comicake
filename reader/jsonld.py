@@ -76,6 +76,7 @@ def chapterManifest(request, chapter):
     elif chapter.comic.format is 1: # Manga
         rdir = "rtl"
     elif chapter.comic.format is 2: # Toon (long strip)
+        rdir = "ttb"
         rspread = "none"
 
     manifest['metadata']['direction'] = rdir
