@@ -254,7 +254,7 @@ class L { // Bibi.Loader
                 o = "center";
             }
             B.Package.Manifest.items[n] = e;
-            if(isCredits) { // Adjust cover page size
+            if(isCredits && Doc.spine.length > 1) { // Adjust cover page size,  but only if more than one page in chapter
                 let senpai;
                 if(t == 0)
                     senpai = Doc.spine[t + 1];
@@ -304,10 +304,6 @@ class L { // Bibi.Loader
             });
         }*/
         
-        
-        //if(constants.CREDITS)
-        //    L.LoadedSpreads ++;
-        
         if(B.Title && false) {
             var BookIDFragments = [B.Title];
             if(B.Creator)   BookIDFragments.push(B.Creator);
@@ -331,7 +327,14 @@ class L { // Bibi.Loader
         MetaLogs.push("page-progression-direction: \"" + B.Package.Spine["page-progression-direction"] + "\"");
         O.log(MetaLogs.join(" / "), "-*");
         var vSet = false;
-        if(settings.S["use-cookie"]) {
+
+        // Only if not vertical reading!
+        if(B.PPD == "ttb") {
+            // Toon mode, force vertical!
+            settings.S["reader-view-mode"] = "vertical";
+            settings.S["fix-reader-view-mode"] = true;
+            vSet = true;
+        } else if(settings.S["use-cookie"]) {
             var BibiCookie = O.Cookie.remember(O.RootPath);
             var BookCookie = O.Cookie.remember(B.ID);
             if(BibiCookie) {

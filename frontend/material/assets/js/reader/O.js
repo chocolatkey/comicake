@@ -308,8 +308,8 @@ class O { // Bibi.Operator
         TimeCard[HMS] = What;
     }
     
-    stopPropagation(Eve) { Eve.stopPropagation(); return false; };
-    preventDefault (Eve) { Eve.preventDefault();  return false; };
+    stopPropagation(Eve) { Eve.stopPropagation(); return false; }
+    preventDefault (Eve) { Eve.preventDefault();  return false; }
     
     getBibiEventCoord(Eve) {
         var Coord = { X:0, Y:0 };

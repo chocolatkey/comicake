@@ -389,8 +389,9 @@ class R { // Bibi.Reader
             delete Item.Scale;
         } else {
             Scale = 1;
-            // (settings.S.BRL == "pre-paginated" && settings.S.SLA == "vertical") || 
-            if(this.Stage.Orientation == ItemRef["rendition:spread"] || ItemRef["rendition:spread"] == "both") {
+            if(settings.S.BRL == "pre-paginated" && B.PPD == "ttb") {
+                Scale = 0.8;
+            } else if(this.Stage.Orientation == ItemRef["rendition:spread"] || ItemRef["rendition:spread"] == "both") {
                 var SpreadViewPort = { Width: ItemRef["viewport"].width, Height: ItemRef["viewport"].height };
                 if(Item.SpreadPair) SpreadViewPort.Width += Item.SpreadPair.ItemRef["viewport"].width;
                 else if(ItemRef["page-spread"] == "right" || ItemRef["page-spread"] == "left") SpreadViewPort.Width += SpreadViewPort.Width;

@@ -38,12 +38,12 @@ class I { // Bibi.UserInterfaces
     
         E.bind("bibi:readied", () => {
             this.createPanel();
-            this.createMenu();
             this.createHelp();
             this.createPoweredBy();
         });
     
         E.bind("bibi:prepared", () => {
+            this.createMenu();
             /*this.createNombre();
             this.createSlider();
             this.createArrows();
