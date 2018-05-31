@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% load common i18n %}
-{% block title %}{% tt 'Search' %}{% endblock %}
+{% block title %}{% tt request 'Search' %}{% endblock %}
 {% block extra_head %}
-    <meta property="og:title" content="TODO" />
-    <meta property="og:description" content="TODO" />
+    <meta property="og:title" content="{% tt request 'Search' %}" />
+    <meta property="og:description" content="" />
     <meta property="og:type" content="website" />
-    <meta name="description" content="TODO">
-    <script type="application/ld+json">TODO</script>
+    <meta name="description" content="">
+    <!--<script type="application/ld+json"></script>-->
 {% endblock %}
 {% block body %}
 <main role="main" class="mdc-toolbar-fixed-adjust" >

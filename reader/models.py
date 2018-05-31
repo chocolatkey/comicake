@@ -93,6 +93,9 @@ class Comic(models.Model):
         return mlist
     artists.short_description = _("Artist(s)")
 
+    def people(self):
+        return list(set().union(self.author.all(), self.artist.all()))
+
     COMIC_FORMATS = (
         (0, _('Comic')),
         (1, _('Manga')),
