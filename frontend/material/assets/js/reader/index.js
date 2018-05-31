@@ -58,10 +58,10 @@ let getChapters = () => {
     const params = {
         comic: B.OID,
         language: B.Language,
-        ordering: ["volume", "chapter", "subchapter"],
+        ordering: "volume,chapter,subchapter",
         n: 1000
     };
-    fetch(API_BASE + "/chapters.json?" + qs.stringify(params, {arrayFormat: "repeat"}), {
+    fetch(API_BASE + "/chapters.json?" + qs.stringify(params), {
         headers: API_HEADERS,
         credentials: DEBUG ? "include" : "omit"
         //headers: { "Cache-Control": "max-age=300" }
