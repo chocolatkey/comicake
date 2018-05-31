@@ -27,6 +27,8 @@ jspm_packages/
 # Optional npm cache directory
 .npm
 
+assets/bundles/
+
 # Optional eslint cache
 .eslintcache
 
