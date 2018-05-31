@@ -471,6 +471,10 @@ html.InternetExplorer .extra-spread-box .item-content.extra-content,html.Interne
     white-space: initial;
 }
 
+.comic-slideshow-slide-content > .mdc-card__media-title > a > * {
+    width: 100%;
+}
+
 // Buttons from Slick
 #header {
     z-index: 10;

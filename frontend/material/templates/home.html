@@ -18,16 +18,18 @@
             <div class="comic-slideshow" data-target="homepage.slideshow">
                 <!--Slides-->
                 {% for chapter in chapters %}
-                <div class="comic-slideshow-slide" style="background-image: url('{% icdn chapter.comic.cover.url options='{"thumb": true}' %}');">
+                <div class="comic-slideshow-slide"style="background-image: url('{% if chapter.comic.cover %}{% icdn chapter.comic.cover.url options='{"thumb": true}' %}{% else %}{% icdn '/static/img/placeholder.svg' %}{% endif %}');">
                     <div class="comic-slideshow-slide-content mdc-card__media-content--with-title">
                         <div class="mdc-card__media-title mdc-drawer__header-text">
                             <span><a href="{% url 'series' chapter.comic.slug %}">{{ chapter.comic }}:</a>&nbsp;<a href="{% url 'read_uuid' chapter.uniqid %}">{{ chapter.custom_title }}</a></span>
                             <div class="mdc-typography--caption etext">
                                 {{ chapter.published_at|ago }}
                             </div>
-                            <a href="{% url 'read_uuid' chapter.uniqid %}" class="mdc-button read-button mdc-button--raised ripple">
-                                <i class="material-icons mdc-button__icon" aria-hidden="true">remove_red_eye</i>
-                                {% trans 'Read' %}
+                            <a href="{% url 'read_uuid' chapter.uniqid %}">
+                                <button class="mdc-button read-button mdc-button--raised ripple">
+                                        <i class="material-icons mdc-button__icon" aria-hidden="true">remove_red_eye</i>
+                                        {% trans 'Read' %}
+                                </button>
                             </a>
                         </div>
                     </div>
