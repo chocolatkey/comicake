@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% load flatpages common humanize i18n %}
+{% load flatpages common humanize i18n static %}
 {% block title %}{% tt request 'Archive' %}{% endblock %}
 {% block extra_head %}{# TODO: make into template tag you can pass objects #}
     <meta property="og:title" content="{% tt request 'Posts' %}" />
