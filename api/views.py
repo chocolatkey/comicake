@@ -33,6 +33,7 @@ class StatusViewSet(viewsets.GenericViewSet):
             "captcha": settings.PROTECTION["captcha"],
             "endpoints": {
                 "static": settings.STATIC_URL,
+                # TODO: reader a.k.a. /r endpoint
             },           
 
         }

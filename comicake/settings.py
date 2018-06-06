@@ -357,6 +357,14 @@ if not DEBUG:
         }
     }
 
+    REST_FRAMEWORK_EXTENSIONS = {
+        'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 5 # 5 minutes
+    }
+else:
+    REST_FRAMEWORK_EXTENSIONS = {
+        'DEFAULT_CACHE_RESPONSE_TIMEOUT': 0 # Dummy API cache for debugging
+    }
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
