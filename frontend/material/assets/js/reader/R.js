@@ -389,9 +389,7 @@ class R { // Bibi.Reader
             delete Item.Scale;
         } else {
             Scale = 1;
-            if(settings.S.BRL == "pre-paginated" && B.PPD == "ttb") {
-                Scale = 0.8;
-            } else if(this.Stage.Orientation == ItemRef["rendition:spread"] || ItemRef["rendition:spread"] == "both") {
+            if(this.Stage.Orientation == ItemRef["rendition:spread"] || ItemRef["rendition:spread"] == "both") {
                 var SpreadViewPort = { Width: ItemRef["viewport"].width, Height: ItemRef["viewport"].height };
                 if(Item.SpreadPair) SpreadViewPort.Width += Item.SpreadPair.ItemRef["viewport"].width;
                 else if(ItemRef["page-spread"] == "right" || ItemRef["page-spread"] == "left") SpreadViewPort.Width += SpreadViewPort.Width;
@@ -404,6 +402,18 @@ class R { // Bibi.Reader
                     PageB / ItemRef["viewport"][settings.S.SIZE.b],
                     PageL / ItemRef["viewport"][settings.S.SIZE.l]
                 );
+                console.log("lscaleL " + PageL / ItemRef["viewport"][settings.S.SIZE.l]);
+                console.log("lscaleB " + PageB / ItemRef["viewport"][settings.S.SIZE.b]);
+                console.log(PageB + "|" + PageL);
+                console.log(ItemRef["viewport"][settings.S.SIZE.b] + "||" + ItemRef["viewport"][settings.S.SIZE.l]);
+                if(settings.S.BRL == "pre-paginated" && B.PPD == "ttb") {
+                    const pratio = ItemRef["viewport"][settings.S.SIZE.l] / ItemRef["viewport"][settings.S.SIZE.b];
+                    if(pratio > 2) // Abnormally tall page
+                        if(PageB >= ItemRef["viewport"][settings.S.SIZE.b])
+                            Scale = PageB / ItemRef["viewport"][settings.S.SIZE.b] / 2;
+                        else
+                            Scale = PageB / ItemRef["viewport"][settings.S.SIZE.b];
+                }
             }
             if(Item.SpreadPair) Item.SpreadPair.Scale = Scale;
         }
