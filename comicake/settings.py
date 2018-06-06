@@ -188,14 +188,10 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django.contrib.humanize',
     'django.contrib.sitemaps',
-    #'languages',
     'rest_framework',
-    'rest_framework_cache',
     'django_filters',
     'django_cleanup',
-    #'compressor',
     'webpack_loader',
-    #'django_markdown' not d2 compatible
     #'dynamic_preferences',
     #'dynamic_preferences.users.apps.UserPreferencesConfig',
 ]
