@@ -348,8 +348,8 @@ if not DEBUG:
             'rest_framework.throttling.UserRateThrottle'
         ),
         'DEFAULT_THROTTLE_RATES': {
-            'anon': '100/hour', # Sufficient
-            'user': '5000/day'
+            'anon': '300/hour', # Sufficient
+            'user': '10000/day'
         }
     }
 
