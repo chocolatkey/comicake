@@ -82,8 +82,10 @@ def photon(request, path, options={}):
     if intru(options, 'small'):
         params["fit"] = "400,400" # Small size...
     if intru(options, 'hq'):
-        params["strip"] = "all"
         params["quality"] = "100"
+    
+    if path.endswith(".jpg") or path.endswith(".jpeg"):
+        params["strip"] = "all"
 
     url = request.build_absolute_uri("https://i{}.wp.com/{}{}".format(subdomain, request.get_host(), path))
     if len(params) > 0:
