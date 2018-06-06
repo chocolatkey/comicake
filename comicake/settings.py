@@ -84,6 +84,8 @@ DATABASES = { # Database (https://docs.djangoproject.com/en/2.0/ref/settings/#da
 ## Caching
 # Recommended you switch to memcached or file cache in production!
 XCACHE = 'django.core.cache.backends.locmem.LocMemCache'
+XCACHELOC = None
+
 if DEBUG:
     CACHE_SHORT = 0
     CACHE_MEDIUM = 0
@@ -154,7 +156,7 @@ GENERATOR = "{} v{}".format(APP_NAME, VERSION)
 CACHES = {
     'default': {
         'BACKEND': XCACHE,
-        'LOCATION': APP_NAME,
+        'LOCATION': XCACHELOC,
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"

@@ -6,6 +6,9 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.db.models.fields import CharField
 from urllib.parse import urlparse, urlencode
 
+from django.utils.cache import learn_cache_key
+from django.core.cache import cache
+
 def file_cleanup(sender, **kwargs):
     print(sender)
     print(kwargs)
@@ -64,9 +67,11 @@ def intru(store, key):
 
 def photon(request, path, options={}):
     """
-    GIF, PNG, JPG
-    Port 80/443
-    10s timeout
+    WP CDN
+    - GIF, PNG, JPG
+    - Port 80/443
+    - Auto WebP conversion based on browser support
+    - 10s timeout
     """
     # https://github.com/Automattic/jetpack/blob/master/functions.photon.php#L151
     random.seed(path) # binascii.crc32(str(path).encode('utf-8')) in original
@@ -74,6 +79,8 @@ def photon(request, path, options={}):
     params = {}
     if intru(options, 'thumb'):
         params["fit"] = "250,250" # Appropriate thumb size
+    if intru(options, 'small'):
+        params["fit"] = "400,400" # Small size...
     if intru(options, 'hq'):
         params["strip"] = "all"
         params["quality"] = "100"
@@ -89,9 +96,23 @@ def photon(request, path, options={}):
 # request.build_absolute_uri(PATH)
 def cdn_url(request, path, options={}):
     """
+    Convert image links to be behind a CDN
     Options: thumb, blur, ...
     """
     if settings.DEBUG:
         return request.build_absolute_uri(path)
     else:
         return photon(request, path, options)
+
+def cacheatron(request, response, keys):
+    """
+    Cache responses to specific keysets for purging
+    :param request: Django request object
+    :param reponse: Full response object
+    :param keys: Array of keysets to add the cache key to
+    :return Response object
+    """
+    cache_key = learn_cache_key(request, response)
+    for key in keys:
+        key.add(cache_key)
+    return response

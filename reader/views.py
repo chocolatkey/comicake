@@ -1,5 +1,5 @@
+"""Reader app views"""
 # pylint: disable=E1101
-import os
 from django.shortcuts import render
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -14,9 +14,12 @@ from django.utils.cache import learn_cache_key
 from django.urls import reverse
 from django.db.models import Q
 from django.template import loader
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 from .models import Chapter, Comic, Team, Page, Person
 from .jsonld import chapterManifest
+from .utils import cacheatron
 
 zxchapter = set()
 zxcomic = set()
@@ -24,101 +27,175 @@ zxteam = set()
 zxperson = set()
 
 
-@cache_page(settings.CACHE_LONG)
+@cache_page(settings.CACHE_MEDIUM)
 def latest(request, page=1):
+    """
+    Latest chapter releases
+    """
     chapters = Chapter.only_published().prefetch_related('team')
     paginator = Paginator(chapters, 25)
     page_chapters = paginator.get_page(page)
-    return render(request, 'reader/latest.html', {'chapters': page_chapters})
+    return cacheatron(
+        request,
+        render(request, 'reader/latest.html', {'chapters': page_chapters}),
+        (zxchapter, zxcomic) # If a chapter or comic's data is modified
+    )
 
 @cache_page(settings.CACHE_LONG)
 def directory(request, page=1):
+    """
+    Comic directory
+    """
     comics = Comic.objects.filter(published=True).prefetch_related('author', 'artist')
     paginator = Paginator(comics, 12)
     page_comics = paginator.get_page(page)
-    return render(request, 'reader/directory.html', {'comics': page_comics})
+    return cacheatron(
+        request,
+        render(request, 'reader/directory.html', {'comics': page_comics}),
+        (zxcomic, zxchapter) # If comic metadata or chapter (for latest release) modified 
+    )
+
+@cache_page(settings.CACHE_MEDIUM)
+def series(request, series_slug):
+    """
+    Individual comic series
+    """
+    comic = get_object_or_404(Comic.objects.all().prefetch_related('author', 'artist', 'tags', 'licenses'), published=True, slug=series_slug)
+    return cacheatron(
+        request,
+        render(request, 'reader/series.html', {'comic': comic}),
+        (zxcomic, zxchapter) # If comic/chapter data modified
+    )
 
 @cache_page(settings.CACHE_LONG)
-def series(request, series_slug):
-    comic = get_object_or_404(Comic.objects.all().prefetch_related('author', 'artist', 'tags', 'licenses'), published=True, slug=series_slug)
-    return render(request, 'reader/series.html', {'comic': comic})
-
-@cache_page(settings.CACHE_LONG) # todo increase?
 def read_pretty(request, series_slug, language, volume, chapter, subchapter=0, page=1):
+    """
+    Pretty URL redirect to read chapter, handles migration from FoOlSlide URL schema
+    """
     if volume == 0:
         volume = None
     if subchapter is None:
         subchapter = 0
-    
+
     comic = get_object_or_404(Comic, slug=series_slug)
     chapter = get_object_or_404(Chapter, # TODO Order by subchapter ASCENDING and choose first from it if no subchap defined
         comic=comic, published=True, language=language, volume=volume, chapter=chapter, subchapter=subchapter
-        )
-    return read_uuid(request, chapter.uniqid, page)
+    )
+    return cacheatron(
+        request,
+        read_uuid(request, chapter.uniqid, page),
+        (zxchapter,) # If chapter data modified
+    )
 
-@cache_page(settings.CACHE_LONG) # good times?
+@cache_page(settings.CACHE_MEDIUM)
 def read_uuid(request, cid, page=1):
-    # TODO: If logged in show if not published anyway
+    """
+    Reader for specific chapter
+    """
     chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
     manifest_url = request.build_absolute_uri(chapter.manifest())
-    return render(request, 'reader/read.html', {'chapter': chapter, 'page': page, 'manifest_url': manifest_url})
+    return cacheatron(
+        request,
+        render(request, 'reader/read.html', {'chapter': chapter, 'page': page, 'manifest_url': manifest_url}),
+        (zxchapter,) #  Only if chapter data modified
+    )
 
-@cache_page(settings.CACHE_LONG) # good times?
+@cache_page(settings.CACHE_MEDIUM)
 def read_manifest(request, cid):
+    """
+    Chapter WebPub manifest
+    """
     # TODO: If logged in show if not published anyway
     chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection', 'pages'), published=True, uniqid=cid)
-    return JsonResponse(chapterManifest(request, chapter))
+    return cacheatron(
+        request,
+        JsonResponse(chapterManifest(request, chapter)),
+        (zxchapter,) # Only if chapter data modifed. Other expensive data will be updated after CACHE_MEDIUM time expires anyway
+    )
 
 @cache_page(settings.CACHE_LONG) # good times?
 def read_prev(request, cid):
+    """
+    Redirect to the chapter before a chapter
+    """
     current_chapter = get_object_or_404(
         Chapter,
         published=True,
         uniqid=cid
         )
     prev_chapter = Chapter.only_published(comic=current_chapter.comic).filter(
-        Q(chapter__lt=current_chapter.chapter, volume__lte=current_chapter.volume) | Q(volume__lte=current_chapter.volume, chapter=current_chapter.chapter, subchapter__lt=current_chapter.subchapter)
+        Q(
+            chapter__lt=current_chapter.chapter,
+            volume__lte=current_chapter.volume) | Q(volume__lte=current_chapter.volume,
+            chapter=current_chapter.chapter,
+            subchapter__lt=current_chapter.subchapter
+        )
     ).first()
     if prev_chapter:
-        return redirect(prev_chapter)
+        response = redirect(prev_chapter)
     else:
-        return redirect(current_chapter.comic)
+        response = redirect(current_chapter.comic)
+    return cacheatron(request, response, (zxchapter,))
 
-@cache_page(settings.CACHE_LONG) # good times?
+@cache_page(settings.CACHE_LONG)
 def read_next(request, cid):
+    """
+    Redirect to the chapter after a chapter
+    """
     current_chapter = get_object_or_404(
         Chapter,
         published=True,
         uniqid=cid
         )
     next_chapter = Chapter.only_published(comic=current_chapter.comic).filter(
-        Q(chapter__gt=current_chapter.chapter, volume__gte=current_chapter.volume) | Q(volume__gte=current_chapter.volume, chapter=current_chapter.chapter, subchapter__gt=current_chapter.subchapter)
+        Q(
+            chapter__gt=current_chapter.chapter,
+            volume__gte=current_chapter.volume) | Q(volume__gte=current_chapter.volume,
+            chapter=current_chapter.chapter,
+            subchapter__gt=current_chapter.subchapter
+        )
     ).last()
     if next_chapter:
-        return redirect(next_chapter)
+        response = redirect(next_chapter)
     else:
-        return redirect(current_chapter.comic)
+        response = redirect(current_chapter.comic)
+    return cacheatron(request, response, (zxchapter,))
 
 @cache_page(settings.CACHE_MEDIUM)
 def search(request):
-    response = render(request, 'reader/search.html')
-    zxcomic.add(learn_cache_key(request, response))
-    zxperson.add(learn_cache_key(request, response))
-    return response
+    """
+    Search page
+    """
+    # TODO: finish search
+    return cacheatron(
+        request,
+        render(request, 'reader/search.html'),
+        (zxcomic, zxperson, zxchapter) # If any searchable data modified
+    )
 
 @cache_page(settings.CACHE_LONG)
 def team(request, team_id):
+    """
+    Team info
+    """
     team = get_object_or_404(Team, pk=team_id)
-    response = render(request, 'reader/team.html', {'team': team})
-    zxteam.add(learn_cache_key(request, response))
-    return response
+    return cacheatron(
+        request,
+        render(request, 'reader/team.html', {'team': team}),
+        (zxteam,) # If team modified
+    )
 
 @cache_page(settings.CACHE_LONG)
 def person(request, person_id):
+    """
+    Person (author/artist) info
+    """
     person = get_object_or_404(Person, pk=person_id)
-    response = render(request, 'reader/person.html', {'person': person})
-    zxcomic.add(learn_cache_key(request, response))
-    return response
+    return cacheatron(
+        request,
+        render(request, 'reader/person.html', {'person': person}),
+        (zxcomic, zxperson) # If comic or person modified
+    )
 
 ### Feeds ###
 
@@ -232,3 +309,29 @@ class AtomComicChapterFeed(RssComicChapterFeed):
         return _("Chapter Atom Feed for %s") % obj.name
 
     feed_type = Atom1Feed
+
+### Purgers ###
+
+@receiver(post_save, sender=Chapter)
+def purge_chapter_cache(sender, **kwargs):
+    from reader import views
+    cache.delete_many(views.zxchapter)
+    views.zxchapter = set()
+
+@receiver(post_save, sender=Comic)
+def purge_comic_cache(sender, **kwargs):
+    from reader import views
+    cache.delete_many(views.zxcomic)
+    views.zxcomic = set()
+
+@receiver(post_save, sender=Team)
+def purge_team_cache(sender, **kwargs):
+    from reader import views
+    cache.delete_many(views.zxteam)
+    views.zxteam = set()
+
+@receiver(post_save, sender=Person)
+def purge_person_cache(sender, **kwargs):
+    from reader import views
+    cache.delete_many(views.zxperson)
+    views.zxperson = set()
