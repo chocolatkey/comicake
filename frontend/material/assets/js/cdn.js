@@ -26,6 +26,6 @@ export default {
             hash = hash & hash; // Convert to 32bit integer
         }
 
-        return "https://i" + Math.floor(this.seededRandom(hash, 0, 2)) + ".wp.com/" + ele.authority + ele.path;
+        return "https://i" + Math.floor(this.seededRandom(hash, 0, 2)) + ".wp.com/" + ele.authority + ele.path + "?quality=100";
     }
 };

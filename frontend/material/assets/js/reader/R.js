@@ -402,10 +402,10 @@ class R { // Bibi.Reader
                     PageB / ItemRef["viewport"][settings.S.SIZE.b],
                     PageL / ItemRef["viewport"][settings.S.SIZE.l]
                 );
-                console.log("lscaleL " + PageL / ItemRef["viewport"][settings.S.SIZE.l]);
+                /*console.log("lscaleL " + PageL / ItemRef["viewport"][settings.S.SIZE.l]);
                 console.log("lscaleB " + PageB / ItemRef["viewport"][settings.S.SIZE.b]);
                 console.log(PageB + "|" + PageL);
-                console.log(ItemRef["viewport"][settings.S.SIZE.b] + "||" + ItemRef["viewport"][settings.S.SIZE.l]);
+                console.log(ItemRef["viewport"][settings.S.SIZE.b] + "||" + ItemRef["viewport"][settings.S.SIZE.l]);*/
                 if(settings.S.BRL == "pre-paginated" && B.PPD == "ttb") {
                     const pratio = ItemRef["viewport"][settings.S.SIZE.l] / ItemRef["viewport"][settings.S.SIZE.b];
                     if(pratio > 2) // Abnormally tall page
