@@ -14,7 +14,7 @@
     {% for tag in chapter.comic.tags.all %}<meta property="article:tag" content="{{ tag.name }}">{% endfor %}
     <meta property="article:section" content="{{ chapter.comic }}">
     {% if chapter.comic.cover %}
-    <meta property="og:image" content="{% icdn chapter.comic.cover.url options='{"thumb": true}' %}" />
+    <meta property="og:image" content="{% icdn chapter.comic.cover.url options='{"small": true}' %}" />
     <meta property="og:image:alt" content="{% blocktrans with comic=chapter.comic %}Cover for {{ comic }}{% endblocktrans %}" />
     {% endif %}
     <link rel="canonical" href="{% url 'read_uuid' chapter.uniqid %}">
@@ -68,7 +68,7 @@
         <nav class="mdc-drawer__drawer">
         <header class="mdc-drawer__header">
                 <div class="mdc-drawer__header-content mdc-theme--primary-bg" style="{% if chapter.comic.cover %}
-                background-image:url('{% icdn chapter.comic.cover.url %}');
+                background-image:url('{% icdn chapter.comic.cover.url options='{"small": true}' %}');
                 background-position: center;
                 background-size: cover;
                 {% endif %}">

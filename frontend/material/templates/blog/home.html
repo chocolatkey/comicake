@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
-{% load i18n cache common %}
+{% load i18n cache common static %}
 {% block title %}{% trans 'Home' %} :: {{ SITE_TITLE }}{% endblock %}
 {% cache None home_head %}{% block extra_head %}{# TODO: make into template tag you can pass objects #}
     <meta property="og:title" content="{% trans 'Home' %} :: {{ SITE_TITLE }}" />
     <meta name="description" content="{{ SITE_DESCRIPTION }}">
     <meta property="og:description" content="{{ SITE_DESCRIPTION }}" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="{% icdn '/static/img/logo.svg' %}" />
+    <meta property="og:image" content="{% static 'img/logo.svg' %}" />
     <meta property="og:image:alt" content="{% blocktrans with site=SITE_TITLE %}Logo for {{ SITE_TITLE }}{% endblocktrans %}" />
     <!--<script type="application/ld+json"></script>-->
 {% endblock %}{% endcache %}
@@ -18,7 +18,7 @@
             <div class="comic-slideshow" data-target="homepage.slideshow">
                 <!--Slides-->
                 {% for chapter in chapters %}
-                <div class="comic-slideshow-slide"style="background-image: url('{% if chapter.comic.cover %}{% icdn chapter.comic.cover.url options='{"thumb": true}' %}{% else %}{% icdn '/static/img/placeholder.svg' %}{% endif %}');">
+                <div class="comic-slideshow-slide"style="background-image: url('{% if chapter.comic.cover %}{% icdn chapter.comic.cover.url options='{"small": true}' %}{% else %}{% static 'img/placeholder.svg' %}{% endif %}');">
                     <div class="comic-slideshow-slide-content mdc-card__media-content--with-title">
                         <div class="mdc-card__media-title mdc-drawer__header-text">
                             <span><a href="{% url 'series' chapter.comic.slug %}" title="{{ chapter.comic }}">{{ chapter.comic|truncatechars:22 }}:</a>&nbsp;<a href="{% url 'read_uuid' chapter.uniqid %}">{{ chapter.custom_title }}</a></span>

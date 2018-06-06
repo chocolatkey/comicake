@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% load flatpages common humanize i18n %}
+{% load flatpages common humanize i18n static %}
 {% block title %}{% tt request 'Series List' %}{% endblock %}
 {% block extra_head %}{# TODO: make into template tag you can pass objects #}
     <meta property="og:title" content="{% tt request 'Series List' %}" />
@@ -13,7 +13,7 @@
             <div class="mdc-layout-grid__inner" data-controller="clickable">{% for comic in comics %}
                 <div class="mdc-layout-grid__cell">
                     <div class="mdc-card">
-                        <div class="mdc-card__media mdc-card__media--square" style="background-image:url('{% if comic.cover %}{% icdn comic.cover.url %}{% else %}{% icdn '/static/img/placeholder.svg' %}{% endif %}');">
+                        <div class="mdc-card__media mdc-card__media--square" style="background-image:url('{% if comic.cover %}{% icdn comic.cover.url options='{"small": true}' %}{% else %}{% static 'img/placeholder.svg' %}{% endif %}');">
                             <div class="mdc-card__media-content mdc-card__media-content--with-title" data-action="click->clickable#click">
                                 <div class="mdc-card__media-title">
                                     <a href="{% url 'series' comic.slug %}" data-target="clickable.target">
