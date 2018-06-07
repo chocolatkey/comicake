@@ -15,7 +15,7 @@
     <script type="application/ld+json">{% jsonld request post %}</script>
 {% endblock %}
 {% block body %}
-<main role="main" class="mdc-toolbar-fixed-adjust"{% if post.enable_comments %} data-controller="article" data-target="article.main"{% endif %}>
+<main role="main" class="mdc-toolbar-fixed-adjust blog--post"{% if post.enable_comments %} data-controller="article" data-target="article.main"{% endif %}>
     <h1>{{ post.title }}</h1>
     <h3 class="post-card__subtitle mdc-typography--subtitle2">{{ post.created_at|ago }} {% trans 'by'%} {{ post.author }}</h3>
     {{ post.content|safe }}
