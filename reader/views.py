@@ -254,7 +254,7 @@ class AtomChapterFeed(RssChapterFeed):
 
     feed_type = Atom1Feed
 
-class RssComicChapterFeed(RssChapterFeed):
+class RssComicChapterFeed(Feed):
     def __call__(self, request, *args, **kwargs):
         keyname = "%s-%s" % (self.__class__.__name__, kwargs['cid'])
         self.request = request

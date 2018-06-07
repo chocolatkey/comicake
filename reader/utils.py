@@ -80,10 +80,11 @@ def photon(request, path, options={}):
     if intru(options, 'thumb'):
         params["fit"] = "250,250" # Appropriate thumb size
     if intru(options, 'small'):
-        params["fit"] = "400,400" # Small size...
+        params["fit"] = "500,500" # Small size...
+        params["quality"] = "90"
     if intru(options, 'hq'):
         params["quality"] = "100"
-    
+
     if path.endswith(".jpg") or path.endswith(".jpeg"):
         params["strip"] = "all"
 
