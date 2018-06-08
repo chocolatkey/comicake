@@ -22,7 +22,7 @@
         <div class="mdc-layout-grid">
             <div class="mdc-layout-grid__inner">
                 {% if comic.cover %}<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet">
-                    <img src="{% icdn comic.cover.url options='{"small": true}' %}" style="max-width: 100%;" alt="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}" />
+                    <img src="{% icdn comic.cover.url %}" style="max-width: 100%;" alt="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}" />
                 </div>{% endif %}
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet">
                     <h1>{{ comic.name }}{% if comic.alt %}<span class="mdc-typography--title">「{{ comic.alt }}」</span>{% endif %}{% include 'partials/rss_link.html' with comic=comic %}</h1>
