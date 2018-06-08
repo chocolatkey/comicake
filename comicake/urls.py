@@ -20,11 +20,13 @@ from django.contrib.sitemaps.views import sitemap
 from django.contrib.sitemaps import GenericSitemap
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
 from django.views.decorators.cache import cache_page
-from reader.models import Chapter, Comic, Team, Person
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
-from . import settings
 from django.views.i18n import JavaScriptCatalog
+from . import settings
+from reader.models import Chapter, Comic, Team, Person
+from blog.models import Post
+
 
 # https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
 sitemaps = {
@@ -41,6 +43,9 @@ sitemaps = {
     }, priority=0.4, changefreq='daily'),
     'people': GenericSitemap({
         'queryset': Person.objects.all()
+    }, priority=0.4, changefreq='weekly'),
+    'posts': GenericSitemap({
+        'queryset': Post.objects.all()
     }, priority=0.4, changefreq='weekly'),
     'pages': FlatPageSitemap
 }
