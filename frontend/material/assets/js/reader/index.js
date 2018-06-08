@@ -158,7 +158,6 @@ E.add("bibi:opened", () => {
         return;
     commentsToggle = document.getElementById("comments-fab-icon");
     commentsToggle.addEventListener("click", () => {
-        console.warn("ToGGLED");
         I.Panel.toggle();
         if(!commentsLoaded) {
             commentsLoaded = true;
