@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from reader.models import Comic, Chapter, Team, Tag, Person, Licensee
 from rest_framework import serializers
 from django.urls import reverse
+from rest_flex_fields import FlexFieldsModelSerializer
 #from serpy import Serializer
 
 class UserSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
@@ -45,7 +46,7 @@ class TagSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
         model = Tag
         fields = ('id', 'name', 'slug', 'description')
 
-class TeamSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
+class TeamSerializer(FlexFieldsModelSerializer): #, CachedSerializerMixin
     @staticmethod
     def setup_eager_loading(queryset):
         """
@@ -60,7 +61,7 @@ class TeamSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
         model = Team
         fields = ('id', 'name', 'members', 'description')
 
-class ComicSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
+class ComicSerializer(FlexFieldsModelSerializer): #, CachedSerializerMixin
     '''
     chapters = serializers.HyperlinkedRelatedField(
         many=True,
@@ -88,9 +89,8 @@ class ComicSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
         #, 'author', 'artist', 'tags'
         fields = ('id', 'name', 'uniqid', 'slug', 'alt', 'author', 'artist', 'adult', 'tags', 'description', 'created_at', 'modified_at', 'cover', 'licenses', 'format')
 
-class ChapterSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
-    #comic = serializers.ReadOnlyField(source='comic.uniqid')
-    comic = serializers.ReadOnlyField(source='comic.id')
+class ChapterSerializer(FlexFieldsModelSerializer): #, CachedSerializerMixin
+    comic = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     protection = serializers.ReadOnlyField(source='get_protection')
     manifest = serializers.ReadOnlyField()
     title = serializers.ReadOnlyField(source='simple_title')
@@ -110,3 +110,8 @@ class ChapterSerializer(serializers.ModelSerializer): #, CachedSerializerMixin
     class Meta:
         model = Chapter
         fields = ('id', 'manifest', 'comic', 'name', 'chapter', 'subchapter', 'title', 'protection', 'uniqid', 'volume', 'team', 'language', 'published_at', 'modified_at')
+    
+    expandable_fields = {
+        'comic': (ComicSerializer, {'source': 'comic', 'fields': ['id', 'name', 'slug', 'alt', 'uniqid', 'cover']}),
+        #'team': (TeamSerializer, {'source': 'team', 'fields': ['id', 'name', 'members', 'description']})
+    }
