@@ -20,17 +20,16 @@
     <link rel="canonical" href="{% url 'read_uuid' chapter.uniqid %}">
     <link rel="alternate" type="application/rss+xml" title="{% blocktrans with comic=chapter.comic %}RSS Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_rss_comic' chapter.comic.uniqid %}" />
     <link rel="alternate" type="application/atom+xml" title="{% blocktrans with comic=chapter.comic %}Atom Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_atom_comic' chapter.comic.uniqid %}" />
-    {% if page > 0 %}<!-- Classic Fallback -->
+    <script type="application/ld+json">{% jsonld request chapter %}</script>
+    <link href="{{ manifest_url }}" rel="manifest" type="application/webpub+json">
+{% endcache %}{% if page > 0 %}
     <!--[if IE]>
-    <meta http-equiv="refresh" content="0;url={% url 'read_uuid_page' chapter.uniqid 0 %}">
+        <meta http-equiv="refresh" content="0;url={% url 'read_uuid_page' chapter.uniqid 0 %}">
     <![endif]-->
     <noscript>
         <meta http-equiv="refresh" content="0;url={% url 'read_uuid_page' chapter.uniqid 0 %}">
-    </noscript>{% else %}<meta name="robots" content="noindex, nofollow">{% endif %}
-
-    <script type="application/ld+json">{% jsonld request chapter %}</script>
-    <link href="{{ manifest_url }}" rel="manifest" type="application/webpub+json">
-{% endcache %}{% endblock %}{% block final_head %}
+    </noscript>{% else %}
+    <meta name="robots" content="noindex, nofollow">{% endif %}{% endblock %}{% block final_head %}
     {% render_bundle 'comicake' 'css' %}
     {% render_bundle 'reader' 'css' %}
     {% if page > 0 %}{% render_bundle 'reader' 'js' %}{% endif %}
