@@ -393,6 +393,7 @@ html.InternetExplorer .extra-spread-box .item-content.extra-content,html.Interne
 
 #disqus_thread.shown {
     visibility: inherit;
+    overflow: auto;
 }
 
 @media (max-width: 799px) {
