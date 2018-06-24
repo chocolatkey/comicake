@@ -7,6 +7,6 @@ export default class Article extends Controller {
     }
 
     connect() {
-        loadDisqus(this.mainTarget);
+        loadDisqus(this.mainTarget, document.URL, true);
     }
 }

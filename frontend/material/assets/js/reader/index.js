@@ -44,6 +44,7 @@ import chapterSelectTemplate from "../mst/chapterSelect.html";
 import chapterListTemplate from "../mst/chapterList.html";
 let dthread = null;
 import qs from "qs";
+import loadDisqus from "../disqus";
 
 let chaptersLoaded = false;
 let commentsLoaded = false;
@@ -161,21 +162,7 @@ E.add("bibi:opened", () => {
         I.Panel.toggle();
         if(!commentsLoaded) {
             commentsLoaded = true;
-            if(typeof COMMENTS != "string") {
-                console.error("Comment constant is not a string!");
-                return;
-            }
-            I.Panel.innerHTML += "<div id=\"disqus_thread\"></div>";
-            dthread = document.getElementById("disqus_thread");
-            window.disqus_config = function () {
-                this.page.identifier = B.ID;
-                this.page.title = document.title;
-            };
-            var d = document, s = d.createElement("script");
-            s.src = "https://" + COMMENTS + ".disqus.com/embed.js";
-            s.setAttribute("data-timestamp", + new Date());
-            (d.head || d.body).appendChild(s);
-            sML.addClass(dthread, "shown");
+            loadDisqus(I.Panel, B.ID, false);
         }
     });
     commentsToggle = new MDCIconToggle(commentsToggle);
