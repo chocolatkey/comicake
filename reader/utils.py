@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.models.fields import CharField
 from urllib.parse import urlparse, urlencode
+from django.http import JsonResponse
 
 from django.utils.cache import learn_cache_key
 from django.core.cache import cache
@@ -106,6 +107,11 @@ def cdn_url(request, path, options={}):
         return request.build_absolute_uri(path)
     else:
         return photon(request, path, options)
+
+def free_json_response(data):
+    resp = JsonResponse(data)
+    resp['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 def cacheatron(request, response, keys):
     """

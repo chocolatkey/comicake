@@ -3,7 +3,7 @@
 from django.shortcuts import render
 from django.conf import settings
 from django.utils.translation import gettext as _
-from django.http import HttpResponse, Http404, HttpResponseForbidden, HttpResponseServerError, JsonResponse
+from django.http import HttpResponse, Http404, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.syndication.views import Feed
@@ -19,7 +19,7 @@ from django.db.models.signals import post_save
 
 from .models import Chapter, Comic, Team, Page, Person
 from .jsonld import chapterManifest
-from .utils import cacheatron
+from .utils import cacheatron, free_json_response
 
 zxchapter = set()
 zxcomic = set()
@@ -109,7 +109,7 @@ def read_manifest(request, cid):
     chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection', 'pages'), published=True, uniqid=cid)
     return cacheatron(
         request,
-        JsonResponse(chapterManifest(request, chapter)),
+        free_json_response(chapterManifest(request, chapter)),
         (zxchapter,) # Only if chapter data modifed. Other expensive data will be updated after CACHE_MEDIUM time expires anyway
     )
 
