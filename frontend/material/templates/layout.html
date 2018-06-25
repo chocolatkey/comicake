@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" crossorigin="anonymous">
     <!-- Modernizr has to be synchronously loaded before body/css to prevent FOUC! -->
     <script type="text/javascript" src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
-    <script type="text/javascript" src="{% url 'jsi18n' %}"></script>
+    <script type="text/javascript" src="{% url 'jsi18n' %}" async></script>
     {% if not DEBUG %}{% load raven %}
     <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" integrity="sha256-RcIeVDrPyqnlpQMijRlDyHaxHYCgchqk4VnDr/627eA=" crossorigin="anonymous"></script>
     <script>Raven.config('{% sentry_public_dsn %}').install()</script>
