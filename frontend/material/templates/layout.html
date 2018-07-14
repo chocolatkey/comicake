@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html prefix="og: http://ogp.me/ns#{% block html_prefix %}{% endblock %}" class="no-js">
+<html prefix="og: http://ogp.me/ns#{% block html_prefix %}{% endblock %}" lang="{{ LANGUAGE_CODE }}" class="no-js">
 <head>{% load static flatpages i18n cache %}{% load render_bundle from webpack_loader %}{% get_flatpages as flatpages %}
     <title>{% block title %}{% endblock %}</title>
     <meta charset="utf-8">
@@ -48,7 +48,7 @@
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                 <a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle ripple" onclick="event.preventDefault();">menu</a>
-                <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
+                <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}" alt="{% trans 'Logo' %}"/></a>
                 <a href="/" class="mdc-toolbar__title mhide">{{ SITE_TITLE }}</a>
                 <div class="mhide">
                     <nav class="mdc-tab-bar toolbar-tab-bar">
