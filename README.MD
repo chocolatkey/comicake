@@ -1,4 +1,6 @@
 # ComiCake
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fchocolatkey%2Fcomicake.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fchocolatkey%2Fcomicake?ref=badge_shield)
+
 
 **Please do not try and install, installation flow not complete**
 
@@ -52,3 +54,6 @@ SOFTWARE.
 ```
 
 TODO add licenses
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fchocolatkey%2Fcomicake.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fchocolatkey%2Fcomicake?ref=badge_large)
