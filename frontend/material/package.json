@@ -1,7 +1,7 @@
 {
-  "name": "comicake",
-  "version": "0.0.1",
-  "description": "A comic reader for enthusiasts",
+  "name": "comicake-frontend-material",
+  "version": "0.8.1",
+  "description": "Material design frontend for comicake",
   "dependencies": {
     "@babel/core": "^7.0.0-beta.44",
     "@babel/polyfill": "^7.0.0-beta.44",
@@ -57,7 +57,8 @@
     "django",
     "python",
     "stimulus",
-    "bibi"
+    "bibi",
+    "material"
   ],
   "author": "chocolatkey",
   "license": "ISC",

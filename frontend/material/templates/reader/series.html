@@ -83,7 +83,7 @@
                                 {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
                             {% endifnotequal %}{% endwith %}</span>
                         </span>
-                        <a href="#" class="mdc-list-item__meta material-icons jss" aria-label="Download this chapter" title="Download" onclick="event.preventDefault();">
+                        <a href="#" class="mdc-list-item__meta material-icons jss" aria-label="Download this chapter" title="Download" onclick="alert('Downloads not supported yet, sorry!'); event.preventDefault();">
                             file_download
                         </a>
                     </li>{% if forloop.last %}
