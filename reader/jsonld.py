@@ -32,7 +32,7 @@ def chapterManifest(request, chapter):
             "identifier": "urn:uuid:" + str(chapter.uniqid),
             "id": chapter.id,
             "issueNumber": float(chapter.decimal()),
-            "name": chapter.simple_title(),
+            "title": chapter.simple_title(),
             "subtitle": chapter.full_title(),
             "author": [],
             "artist": [],
