@@ -74,12 +74,12 @@
                         <span class="mdc-tab-bar__indicator"></span>
                     </nav>
                 </div>
-                <a href="/r/search/" class="material-icons mdc-toolbar__icon" onclick="event.preventDefault();" aria-label="{% trans 'Search' %}" alt="{% trans 'Search' %}" data-action="click->search#toggle" data-target="search.toggler">search</a>
+                <a href="/r/search/" class="material-icons mdc-toolbar__icon" onclick="event.preventDefault();" aria-label="{% trans 'Search' %}" title="{% trans 'Search' %}" data-action="click->search#toggle" data-target="search.toggler">search</a>
                 <div data-target="search.popup" class="hide cake-search">
                     <form action="/r/search/" class="mdc-text-field mdc-text-field--box mdc-text-field--with-trailing-icon" data-target="search.wrapper">
                         <input type="text" name="q" id="ss" class="mdc-text-field__input" autocomplete="off" data-target="search.field" data-action="input->search#suggest">
                         <label for="ss" class="mdc-floating-label">{% trans 'Search comics' %}</label>
-                        <button type="submit"><i class="material-icons mdc-text-field__icon" tabindex="0">send</i></button>
+                        <button type="submit"><i class="material-icons mdc-text-field__icon">send</i></button>
                     </form>
                     <div class="mdc--theme-primary" data-target="search.results"></div>
                 </div>

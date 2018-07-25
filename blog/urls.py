@@ -14,6 +14,4 @@ urlpatterns = [
     # RSS Feeds: Support optional extension
     path('blog/feeds/rss.xml', views.RssPostFeed(), name='blog_feed_rss'),
     path('blog/feeds/atom.xml', views.AtomPostFeed(), name='blog_feed_atom'),
-    
-    #path('latest/<int:page>/', views.latest, name='latest_page')
 ]
