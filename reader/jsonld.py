@@ -62,7 +62,7 @@ def chapterManifest(request, chapter):
         },
         "links": [
             {"rel": "self", "href": request.build_absolute_uri(), "type": "application/webpub+json"},
-            {"rel": "alternate", "href": request.build_absolute_uri(reverse('read_uuid_page', args=[chapter.uniqid, 0])), "type": "text/html"},
+            {"rel": "alternate", "href": request.build_absolute_uri(reverse('read_uuid_strip', args=[chapter.uniqid])), "type": "text/html"},
             #{"rel": "alternate", "href": "TODO", "type": "application/vnd.comicbook+zip"}
         ],
         "spine": []

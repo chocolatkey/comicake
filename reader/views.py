@@ -83,12 +83,12 @@ def read_pretty(request, series_slug, language, volume, chapter, subchapter=0, p
     )
     return cacheatron(
         request,
-        read_uuid(request, chapter.uniqid, page),
+        read_uuid(request, chapter.uniqid),
         (zxchapter,) # If chapter data modified
     )
 
 @cache_page(settings.CACHE_MEDIUM)
-def read_uuid(request, cid, page=1):
+def read_uuid(request, cid):
     """
     Reader for specific chapter
     """
@@ -96,7 +96,20 @@ def read_uuid(request, cid, page=1):
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
-        render(request, 'reader/read.html', {'chapter': chapter, 'page': page, 'manifest_url': manifest_url}),
+        render(request, 'reader/read.html', {'chapter': chapter, 'manifest_url': manifest_url}),
+        (zxchapter,) #  Only if chapter data modified
+    )
+
+@cache_page(settings.CACHE_MEDIUM)
+def read_strip(request, cid):
+    """
+    Strip reader (no JavaScript required) for specific chapter
+    """
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
+    manifest_url = request.build_absolute_uri(chapter.manifest())
+    return cacheatron(
+        request,
+        render(request, 'reader/read_strip.html', {'chapter': chapter, 'manifest_url': manifest_url}),
         (zxchapter,) #  Only if chapter data modified
     )
 

@@ -150,7 +150,7 @@ ADMIN_STYLE = {
     'link-color-hover': 'lighten($link-color, 20%)'
 }
 '''
-VERSION = "0.9.0"
+VERSION = "0.10.2"
 GENERATOR = "{} v{}".format(APP_NAME, VERSION)
 
 CACHES = {

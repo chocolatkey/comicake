@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n cache static %}
+{% load render_bundle from webpack_loader %}
+{% block html_prefix %} article: http://ogp.me/ns/article#{% endblock %}
+{% block title %}{% tt request chapter %}{% endblock %}
+{% block extra_head %}{% cache 600 og_data chapter.uniqid "strip" %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt request chapter %}" />
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="{{ chapter.published_at|date:'c' }}">
+    <meta property="article:modified_time" content="{{ chapter.modified_at|date:'c' }}">
+    {% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}<meta name="author" content="{% for team in teams %}{{ team }}{% if not forloop.last %}, {% endif %}{% endfor %}">{% endifnotequal %}
+    {% for team in teams %}<meta property="article:author" content="{% url 'team' team_id=team.id %}">{% endfor %}{% endwith %}
+    {% for person in chapter.comic.people %}<meta property="article:author" content="{% url 'person' person_id=person.id %}">{% endfor %} 
+    {% for tag in chapter.comic.tags.all %}<meta property="article:tag" content="{{ tag.name }}">{% endfor %}
+    <meta property="article:section" content="{{ chapter.comic }}">
+    {% if chapter.comic.cover %}
+    <meta property="og:image" content="{% icdn chapter.comic.cover.url options='{"small": true}' %}" />
+    <meta property="og:image:alt" content="{% blocktrans with comic=chapter.comic %}Cover for {{ comic }}{% endblocktrans %}" />
+    {% endif %}
+    <link rel="canonical" href="{% url 'read_uuid' chapter.uniqid %}">
+    <link rel="alternate" type="application/rss+xml" title="{% blocktrans with comic=chapter.comic %}RSS Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_rss_comic' chapter.comic.uniqid %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% blocktrans with comic=chapter.comic %}Atom Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_atom_comic' chapter.comic.uniqid %}" />
+    <meta name="robots" content="noindex, nofollow">
+
+    <script type="application/ld+json">{% jsonld request chapter %}</script>
+    <link href="{{ manifest_url }}" rel="manifest" type="application/webpub+json">
+{% endcache %}{% endblock %}{% block final_head %}
+    {% render_bundle 'comicake' 'css' %}
+    {% render_bundle 'reader' 'css' %}
+{% endblock%}
+    {% block header %}<div class="noselect mdc-toolbar mdc--theme-primary">
+        <div class="mdc-toolbar__row">
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+                <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
+                <span class="etext mhide"><a href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name|truncatechars:50 }}</a> &rsaquo; {{ chapter.simple_title }}</span>
+            </section>
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
+                <div>
+                    <nav class="mdc-tab-bar toolbar-tab-bar mdc-tab-bar--icons-tabs">
+                        <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Latest' %}" href="/r/latest/">
+                            <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
+                        </a>
+                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Directory' %}" href="/r/directory/">
+                            <i class="material-icons mdc-tab__icon" aria-hidden="true">view_list</i>
+                        </a>
+                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Search' %}" href="/r/search/">
+                            <i class="material-icons mdc-tab__icon" aria-hidden="true">search</i>
+                        </a>
+                    </nav>
+                </div>
+            </section>
+        </div>
+    </div>{% endblock %}
+{% block body %}
+    <style>
+        html { overflow: auto; }
+        body { height: auto; }
+    </style>
+    <main role="main" id="cakeClassic">
+        {% include "partials/pages.html" with pages=chapter.pages.all %}
+        <div>{% if chapter.format is 1 %}
+            <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_prev' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Prev' %}</a>
+            <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_next' chapter.uniqid %}">{% trans 'Next' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% else %}
+            <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_next' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Next' %}</a>
+            <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_prev' chapter.uniqid %}">{% trans 'Prev' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% endif %}
+        </div>
+    </main>
+{% endblock %}
+{% block footer %}{% endblock %}
