@@ -23,6 +23,7 @@ urlpatterns = [
     path('read/<uuid:cid>/manifest.json', views.read_manifest, name='read_uuid_manifest'),
     path('read/<uuid:cid>/next', views.read_next, name='read_uuid_next'),
     path('read/<uuid:cid>/prev', views.read_prev, name='read_uuid_prev'),
+    path('read/<uuid:cid>/0', RedirectView.as_view(pattern_name='read_uuid_strip', permanent=True)), # Maintain legacy strip chapter path
     path('read/<uuid:cid>/strip', views.read_strip, name='read_uuid_strip'),
     re_path(r'^read/(?P<series_slug>[\w-]+)/(?P<language>[a-z]{2,3})/(?P<volume>[\d]{1,9})/(?P<chapter>[\d]{1,9})(?:/(?P<subchapter>[\d]{1,9}))?' + page_regex + r'/$', views.read_pretty, name='read_pretty'),
 
