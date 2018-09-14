@@ -1,0 +1,16 @@
+-i https://pypi.org/simple
+certifi==2018.8.24
+django-cleanup==2.1.0
+django-debug-toolbar==1.10.1
+django-filter==2.0.0
+django-webpack-loader==0.6.0
+django==2.1.1
+djangorestframework==3.8.2
+drf-extensions==0.4.0
+drf-flex-fields==0.3.4
+libsass==0.14.5
+pillow==5.2.0
+pytz==2018.5
+raven==6.9.0
+six==1.11.0
+sqlparse==0.2.4

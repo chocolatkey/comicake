@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = ">=2.1.1"
+raven = "*"
+django-filter = "*"
+django-cleanup = "*"
+django-webpack-loader = "*"
+djangorestframework = "*"
+django-debug-toolbar = "*"
+certifi = "*"
+drf-flex-fields = "*"
+drf-extensions = "*"
+pillow = "*"
+libsass = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
