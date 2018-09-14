@@ -15,19 +15,6 @@ from django.urls import reverse
 from django.db.models import Q
 #from django_markdown.models import MarkdownField
 
-from django.contrib.sites.models import Site
-from dynamic_preferences.models import PerInstancePreferenceModel
-
-class SitePreferenceModel(PerInstancePreferenceModel):
-
-    # note: you *have* to use the `instance` field
-    instance = models.ForeignKey(Site, on_delete=models.CASCADE)
-
-    class Meta:
-        # Specifying the app_label here is mandatory for backward
-        # compatibility reasons, see #96
-        app_label = 'reader'
-
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(unique=True, max_length=20)

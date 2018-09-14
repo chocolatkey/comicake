@@ -6,8 +6,6 @@ from django.urls import NoReverseMatch
 from rest_framework.response import Response
 from . import views
 from collections import OrderedDict
-from rest_framework_cache.registry import cache_registry
-cache_registry.autodiscover()
 
 class comicakeAPIRootView(rviews.APIView):
     """

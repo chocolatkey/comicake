@@ -104,16 +104,16 @@ PROTECTION = {
 ###########################################
 ### Don't touch anything below this! ######
 ###########################################
+
 # Get settings from the backend settings file users should be using
 try:
     from backend_settings import *
 except ImportError:
     pass
 
+VERSION = "0.11.0"
 APP_NAME = 'ComiCake' # Pls no change kthx
-admin.site.site_title = APP_NAME
-admin.site.site_header = SITE_TITLE
-admin.site.index_title = APP_NAME + ' Management System'
+
 ADMIN_LOGO = 'img/logo.svg'
 MENU_WEIGHT = {
     'Reader': 1,
@@ -150,7 +150,6 @@ ADMIN_STYLE = {
     'link-color-hover': 'lighten($link-color, 20%)'
 }
 '''
-VERSION = "0.10.2"
 GENERATOR = "{} v{}".format(APP_NAME, VERSION)
 
 CACHES = {

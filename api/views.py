@@ -12,9 +12,13 @@ from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 
 from rest_framework_extensions.etag.decorators import etag
 from rest_framework_extensions.cache.decorators import cache_response
-from rest_framework_extensions.mixins import CacheResponseAndETAGMixin, ReadOnlyCacheResponseAndETAGMixin
+from rest_framework_extensions.etag.mixins import ETAGMixin
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from raven.contrib.django.templatetags.raven import sentry_public_dsn
+
+class CacheResponseAndETAGMixin(ETAGMixin, CacheResponseMixin):
+     pass
 
 class StatusViewSet(viewsets.GenericViewSet):
     """
