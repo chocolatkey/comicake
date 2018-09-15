@@ -33,18 +33,18 @@ def make_unpublished(modeladmin, request, queryset):
 make_unpublished.short_description = _("Unpublish selected items")
 
 class AdminImageWidget(AdminFileWidget):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         output = []
         if value and getattr(value, "url", None):
             image_url = os.path.join(settings.MEDIA_URL, value.url)
             file_name=str(value)
             output.append(u' <a href="%s" target="_blank"><img src="%s" alt="%s" width="150" height="150"  style="object-fit: contain;"/></a> %s ' % \
             (image_url, image_url, file_name, _('Page')))
-        output.append(super(AdminFileWidget, self).render(name, value, attrs))
+        output.append(super(AdminFileWidget, self).render(name, value, attrs, renderer))
         return mark_safe(u''.join(output))
 
 class AdminThumbWidget(AdminFileWidget):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         output = []
         if value and getattr(value, "url", None):
             image_url = os.path.join(settings.MEDIA_URL, value.url)
@@ -52,7 +52,7 @@ class AdminThumbWidget(AdminFileWidget):
             output.append(u' <a href="%s" target="_blank"><img src="%s" alt="%s" width="150" height="150"  style="object-fit: contain;"/></a> %s ' % \
             (image_url, image_url, file_name, _('Page')))
         else:
-            output.append(super(AdminFileWidget, self).render(name, value, attrs))
+            output.append(super(AdminFileWidget, self).render(name, value, attrs, renderer))
         return mark_safe(u''.join(output))
 
 class PageInlineAdmin(admin.TabularInline):
