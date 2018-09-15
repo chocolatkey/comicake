@@ -61,7 +61,7 @@ class Comic(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     description = models.TextField(_("Synopsis"), blank=True)
     published = models.BooleanField(default=True, db_index=True)
-    adult = models.BooleanField(default=False, db_index=True, help_text=_('Show a warning when attempting to view the comic or its chapters'))
+    adult = models.BooleanField(default=False, db_index=True, help_text=_('Show NSFW warning when attempting to view the comic or its chapters'))
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
     licenses = models.ManyToManyField(Licensee, blank=True)
@@ -148,14 +148,14 @@ class Joint(models.Model):
             mlist += member.name + ", "
         return mlist
 '''
+
+def default_expiry():
+        return timezone.now() + timedelta(days=1)
+
 class Protection(models.Model):
     hslices = models.PositiveSmallIntegerField()
     vslices = models.PositiveSmallIntegerField()
     key = models.CharField(max_length=256)
-
-    def default_expiry(self):
-        return timezone.now() + timedelta(days=1)
-
     expires = models.DateTimeField(default=default_expiry)
     
 
