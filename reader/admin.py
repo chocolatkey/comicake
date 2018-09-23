@@ -69,7 +69,7 @@ class ChapterMultiuploadMixing(object):
         pprint(vars(uploaded))
         '''
         if chapter:
-            page = chapter.pages.create(file=uploaded, mime=uploaded.content_type, size=uploaded._size)
+            page = chapter.pages.create(file=uploaded, mime=uploaded.content_type, size=uploaded.size)
         else:
             # Something went horribly wrong. TODO: Raie some kind of exception
             page = Page.objects.create(file=uploaded, chapter=None)
