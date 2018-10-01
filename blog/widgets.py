@@ -22,8 +22,8 @@ class TrumbowygWidget(Textarea):
             'admin/trumbowyg/plugins/upload/trumbowyg.upload.js',
         )
 
-    def render(self, name, value, attrs=None):
-        output = super(TrumbowygWidget, self).render(name, value, attrs)
+    def render(self, name, value, attrs=None, renderer=None):
+        output = super(TrumbowygWidget, self).render(name, value, attrs, renderer)
         script = u'''
             <script>
             (function($) {
