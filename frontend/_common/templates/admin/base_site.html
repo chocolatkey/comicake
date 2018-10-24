@@ -54,6 +54,8 @@
 {% block branding %}
     {% get_custom_logo as brandmark %}
     {% if brandmark %}
-    <img src="{% static brandmark %}" id="branding" />
+    <a href="{% url 'admin:index' %}"><img src="{% static brandmark %}" title="{{ SITE_TITLE }}" id="branding" /></a>
     {% endif %}
 {% endblock %}
+
+{% block footer %}<div id="footer">{{ GENERATOR }}</div>{% endblock %}
