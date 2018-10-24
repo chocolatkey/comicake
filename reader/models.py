@@ -163,7 +163,7 @@ class Chapter(models.Model):
     comic = models.ForeignKey(Comic, on_delete=models.CASCADE)
     uniqid = models.UUIDField(_("Unique ID"), unique=True, default=uuid.uuid4, editable=False, help_text=_("Filesystem identifier for this object"))
     protection = models.OneToOneField(Protection, on_delete=models.CASCADE, blank=True, null=True, editable=False)
-    team = models.ManyToManyField(Team, blank=True)
+    team = models.ManyToManyField(Team, blank=True, default=settings.DEFAULT_TEAM)
 
     def teams(self):
         mlist = ""
