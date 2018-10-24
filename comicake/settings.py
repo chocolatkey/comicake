@@ -102,7 +102,7 @@ PROTECTION = {
 }
 
 # Database ID of the default team for chapter uploads
-DEFAULT_TEAM = 1
+HOME_TEAM = 1
 
 ###########################################
 ### Don't touch anything below this! ######
@@ -114,7 +114,7 @@ try:
 except ImportError:
     pass
 
-VERSION = "0.11.4"
+VERSION = "0.11.6"
 APP_NAME = 'ComiCake' # Pls no change kthx
 
 ADMIN_LOGO = 'img/logo.svg'

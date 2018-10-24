@@ -163,13 +163,21 @@ class Chapter(models.Model):
     comic = models.ForeignKey(Comic, on_delete=models.CASCADE)
     uniqid = models.UUIDField(_("Unique ID"), unique=True, default=uuid.uuid4, editable=False, help_text=_("Filesystem identifier for this object"))
     protection = models.OneToOneField(Protection, on_delete=models.CASCADE, blank=True, null=True, editable=False)
-    team = models.ManyToManyField(Team, blank=True, default=settings.DEFAULT_TEAM)
+    team = models.ManyToManyField(Team, blank=True, default=settings.HOME_TEAM)
 
     def teams(self):
-        mlist = ""
-        for team in self.team.all():
-            mlist += team.name + ", "
-        return mlist
+        return ""
+        teams = self.team.all()
+        team_count = teams.count()
+        if team_count > 1:
+            mlist = ""
+            for i in range(0, team_count - 1):
+                mlist += teams[i].name + ", "
+            return mlist + teams[team_count - 1].name
+        elif team_count == 1:
+            return teams[0].name
+        else:
+            return ""
 
     chapter = models.PositiveSmallIntegerField(blank=False, db_index=True)
     subchapter = models.PositiveSmallIntegerField(default=0, db_index=True)

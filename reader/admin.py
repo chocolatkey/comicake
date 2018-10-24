@@ -120,12 +120,14 @@ class ChapterAdmin(ChapterMultiuploadMixing, MultiUploadAdmin):
         if not ("comic" in request.GET.keys()):
             return super().response_add(request, obj, post_url_continue=post_url_continue)
         return redirect(reverse('admin:reader_comic_change', args=(request.GET.get('comic'),)))
-'''
+    '''
     def response_change(request, obj):
         if not ("comic" in request.GET.keys()):
             return super().response_add(request, obj)
         return redirect(reverse('admin_reader_comic_change', args=(request.GET.get('comic'),)))
-        '''
+    '''
+    def get_queryset(self, request):
+        return super(ChapterAdmin, self).get_queryset(request).select_related('comic')
 
 class PageAdmin(ChapterMultiuploadMixing, MultiUploadAdmin):
     list_display = ('file',)
@@ -179,6 +181,9 @@ class ComicAdmin(admin.ModelAdmin):
                 continue
             yield inline.get_formset(request, obj), inline
 
+    def get_queryset(self, request):
+        return super(ComicAdmin, self).get_queryset(request).prefetch_related('author', 'artist')
+
 admin.site.register(Comic, ComicAdmin)
 
 class PersonAdmin(admin.ModelAdmin):
@@ -196,7 +201,12 @@ class TagAdmin(admin.ModelAdmin):
 admin.site.register(Tag, TagAdmin)
 
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    def name_with_icon(self, obj):
+        if obj.id == settings.HOME_TEAM:
+            return "🏠 " + obj.name
+        else:
+            return obj.name
+    list_display = ('name_with_icon', 'description')
     search_fields = ['name', 'description']
     autocomplete_fields = ['members']
 admin.site.register(Team, TeamAdmin)
