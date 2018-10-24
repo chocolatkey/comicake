@@ -127,7 +127,7 @@ class ChapterAdmin(ChapterMultiuploadMixing, MultiUploadAdmin):
         return redirect(reverse('admin_reader_comic_change', args=(request.GET.get('comic'),)))
     '''
     def get_queryset(self, request):
-        return super(ChapterAdmin, self).get_queryset(request).select_related('comic')
+        return super(ChapterAdmin, self).get_queryset(request).select_related('comic').prefetch_related('team')
 
 class PageAdmin(ChapterMultiuploadMixing, MultiUploadAdmin):
     list_display = ('file',)

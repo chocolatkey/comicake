@@ -166,7 +166,6 @@ class Chapter(models.Model):
     team = models.ManyToManyField(Team, blank=True, default=settings.HOME_TEAM)
 
     def teams(self):
-        return ""
         teams = self.team.all()
         team_count = teams.count()
         if team_count > 1:

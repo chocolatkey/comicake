@@ -114,7 +114,7 @@ try:
 except ImportError:
     pass
 
-VERSION = "0.11.6"
+VERSION = "0.11.7"
 APP_NAME = 'ComiCake' # Pls no change kthx
 
 ADMIN_LOGO = 'img/logo.svg'
