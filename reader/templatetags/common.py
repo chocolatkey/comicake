@@ -68,7 +68,6 @@ def jsonld(request, item):
     """
     {% jsonld object %}
     """
-    jsonld: dict
     if type(item) is Comic:
         jsonld = comicLd(request, item)
     elif type(item) is Chapter:
