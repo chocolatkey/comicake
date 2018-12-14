@@ -18,6 +18,3 @@ pillow = "*"
 libsass = "*"
 
 [dev-packages]
-
-[requires]
-python_version = "3.7"

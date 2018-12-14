@@ -19,11 +19,13 @@ html.no-js :not(.mdc-list--non-interactive)>.mdc-list-item:hover:before {
     position: absolute;
     top: 80px;
     right: 0;
+    text-align: right;
 }
 
 .cake-search form {
     border-radius: 0;
     margin: 0;
+    text-align: left;
 }
 
 .cake-search input {
@@ -32,6 +34,7 @@ html.no-js :not(.mdc-list--non-interactive)>.mdc-list-item:hover:before {
 
 .cake-search-result {
     padding: 20px 10px;
+    text-align: left;
 }
 
 .cake-search-result:hover {

@@ -192,7 +192,7 @@ class Loupe {
             });
         }
         E.dispatch("bibi:changed-scale", R.Main.Transformation.Scale);
-    };
+    }
 
     transform(Tfm) { // Tfm: Transformation
         if(!Tfm) return;
@@ -274,14 +274,14 @@ class Loupe {
                 Y: R.Main.Transformation.Translation.Y
             }
         };
-    };
+    }
 
     onpointerup(Eve) {
         sML.removeClass(O.HTML, "dragging");
         this.Dragging = false;
         delete this.PointerDownCoord;
         delete this.PointerDownTransformation;
-    };
+    }
 
     onpointermove(Eve) {
         if(!this.isAvailable("MOVE", Eve)) return false;
