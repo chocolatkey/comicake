@@ -120,6 +120,13 @@ module.exports = {
                     ignoreCustomFragments: [/\{\{.*?}}/]
                 }
             }
+        },
+        {
+            test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+            loader: "file-loader",
+            options: {
+                name: "[name].[ext]"
+            }
         }],
     },
     plugins: [
