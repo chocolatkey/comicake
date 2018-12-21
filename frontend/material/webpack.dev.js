@@ -30,7 +30,6 @@ module.exports = {
         modules: [
             "./assets/js",
             "./assets/css",
-            "./assets/bibi",
             "node_modules",
             "node_modules/xbreader/dist",
             "bower_components"
@@ -89,14 +88,6 @@ module.exports = {
                     }
                 },
             ]
-        },
-        {
-            test: /Bibi\.js$/,
-            loader: "string-replace-loader",
-            options: {
-                search: "198106091234",
-                replace: "666",
-            }
         },
         {
             test: /\.js$/,
