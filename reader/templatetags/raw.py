@@ -11,7 +11,6 @@ try:
 except ImportError:
     # compatibility with Django < 1.5
 
-
     @register.tag(name="verbatim")
     def raw(parser, token):
         # Whatever is between {% verbatim %} and {% endverbatim %}

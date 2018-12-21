@@ -12,7 +12,7 @@ from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST,last_modified
 from django.contrib.flatpages.views import render_flatpage
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -29,6 +29,28 @@ from reader.views import zxcomic, zxchapter
 
 zxpost = set()
 zxpage = set()
+
+### Caching Helpers
+
+def latest_post(request, **kwargs):
+    latest_post = Post.objects.filter(published=True).order_by('-modified_at').only('modified_at')[0]
+    if latest_post:
+        return latest_post.modified_at
+    else:
+        return None
+
+def post_last_modified(request, year, month, day, slug):
+    try:
+        cdate = date(year, month, day)
+    except ValueError:
+        raise Http404
+    return get_object_or_404(
+        Post.objects.only("modified_at"),
+        slug=slug,
+        created_at__contains=cdate
+    ).modified_at
+
+###
 
 # FlatPages
 # TODO cache until flatpages updated
@@ -65,6 +87,7 @@ def home(request):
     )
 
 @cache_page(settings.CACHE_LONG)
+@last_modified(latest_post)
 def archive(request, page=1, year=None, month=None, day=None):
     """
     Blog post archive
@@ -79,6 +102,7 @@ def archive(request, page=1, year=None, month=None, day=None):
     )
 
 @cache_page(settings.CACHE_MEDIUM)
+@last_modified(post_last_modified)
 def post(request, year, month, day, slug):
     """
     Blog posts

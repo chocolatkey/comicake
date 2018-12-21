@@ -19,14 +19,27 @@
     <meta name="theme-color" content="#212121">
     <meta name="format-detection" content="telephone=no, email=no"/>
     <meta name="apple-mobile-web-app-title" content="{{ SITE_TITLE }}">
+    <link rel="apple-touch-icon" href="{% static SITE_FAVICON %}">
+    <link rel="shortcut icon" href="{% static SITE_FAVICON %}">
     <meta name="google" content="notranslate">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" crossorigin="anonymous">
     <!-- Modernizr has to be synchronously loaded before body/css to prevent FOUC! -->
     <script type="text/javascript" src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
     <script type="text/javascript" src="{% url 'jsi18n' %}" async></script>
+    <script>
+    window.comicake = {
+        DEBUG: {{ DEBUG|yesno:"true,false" }},
+        PATHS: {
+            api: '{% url 'api-root' %}',
+            static: '{% static '' %}',
+            reader: '{% url 'index' %}'
+        },
+        SOCIAL: {{ SOCIAL|safe }}
+    };
+    </script>
     {% if not DEBUG %}{% load raven %}
-    <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" integrity="sha256-RcIeVDrPyqnlpQMijRlDyHaxHYCgchqk4VnDr/627eA=" crossorigin="anonymous"></script>
+    <script src="https://cdn.ravenjs.com/3.27.0/raven.min.js" integrity="sha384-gnq8j+n3z7Vfgsl2ZmIRZtumzS05EKAhNoPa4vDhcq3rg1Pz6Tdg3LyYxcxTzzV8" crossorigin="anonymous"></script>
     <script>Raven.config('{% sentry_public_dsn %}').install()</script>
     <script>
         !function(s,u,g,o,i){s.GoogleAnalyticsObject=g;s[g]||(s[g]=function(){
@@ -48,7 +61,7 @@
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                 <a href="#" class="material-icons mdc-toolbar__menu-icon dhide menu-toggle ripple" onclick="event.preventDefault();">menu</a>
-                <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}" alt="{% trans 'Logo' %}"/></a>
+                <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static SITE_LOGO %}" alt="{% trans 'Logo' %}"/></a>
                 <a href="/" class="mdc-toolbar__title mhide">{{ SITE_TITLE }}</a>
                 <div class="mhide">
                     <nav class="mdc-tab-bar toolbar-tab-bar">
@@ -61,12 +74,12 @@
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end" data-controller="search">
                 <div>
                     <nav class="mdc-tab-bar toolbar-tab-bar mdc-tab-bar--icons-with-text">
-                        <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" href="/r/latest/">
+                        <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" href="{% url 'latest' %}">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
                             <span class="mdc-tab__icon-text">{% trans 'Latest' %}</span>
                             <span class="mdc-tab__indicator"></span>
                         </a>
-                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" href="/r/directory/">
+                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" href="{% url 'directory' %}">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">view_list</i>
                             <span class="mdc-tab__icon-text">{% trans 'Directory' %}</span>
                             <span class="mdc-tab__indicator"></span>
@@ -74,7 +87,7 @@
                         <span class="mdc-tab-bar__indicator"></span>
                     </nav>
                 </div>
-                <a href="/r/search/" class="material-icons mdc-toolbar__icon" onclick="event.preventDefault();" aria-label="{% trans 'Search' %}" title="{% trans 'Search' %}" data-action="click->search#toggle" data-target="search.toggler">search</a>
+                <a href="{% url 'search' %}" class="material-icons mdc-toolbar__icon" onclick="event.preventDefault();" aria-label="{% trans 'Search' %}" title="{% trans 'Search' %}" data-action="click->search#toggle" data-target="search.toggler">search</a>
                 <div data-target="search.popup" class="hide cake-search">
                     <form action="/r/search/" class="mdc-text-field mdc-text-field--box mdc-text-field--with-trailing-icon" data-target="search.wrapper">
                         <input type="text" name="q" id="ss" class="mdc-text-field__input" autocomplete="off" data-target="search.field" data-action="input->search#suggest">

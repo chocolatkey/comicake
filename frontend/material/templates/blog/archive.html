@@ -5,7 +5,7 @@
     <meta property="og:title" content="{% tt request 'Posts' %}" />
     <meta property="og:description" content="{% blocktrans with site_name=SITE_TITLE %}Post archive for {{ site_name }}{% endblocktrans %}" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="{% static 'img/logo.svg' %}" />
+    <meta property="og:image" content="{% static SITE_LOGO %}" />
     <meta property="og:image:alt" content="{% blocktrans with site=SITE_TITLE %}Logo for {{ SITE_TITLE }}{% endblocktrans %}" />
     <meta name="description" content="{% blocktrans with site_name=SITE_TITLE %}Post archive for {{ site_name }}{% endblocktrans %}">
 {% endblock %}

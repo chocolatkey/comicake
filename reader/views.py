@@ -9,6 +9,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.views.decorators.cache import cache_page
+from django.views.decorators.http import last_modified
 from django.core.cache import cache
 from django.utils.cache import learn_cache_key
 from django.urls import reverse
@@ -26,8 +27,29 @@ zxcomic = set()
 zxteam = set()
 zxperson = set()
 
+### Caching Helpers
+
+def latest_chapter(request, **kwargs):
+    latest_chap = Chapter.only_published(prefetch_comic=False).order_by('-modified_at').only('modified_at')[0]
+    if latest_chap:
+        return latest_chap.modified_at
+    else:
+        return None
+
+def latest_comic(request, **kwargs):
+    latest_comic = Comic.objects.filter(published=True).order_by('-modified_at').only('modified_at')[0]
+    if latest_comic:
+        return latest_comic.modified_at
+    else:
+        return None
+
+def chapter_last_modified(request, cid):
+    return get_object_or_404(Chapter.objects.only('modified_at'), published=True, uniqid=cid).modified_at
+
+###
 
 @cache_page(settings.CACHE_MEDIUM)
+@last_modified(latest_chapter)
 def latest(request, page=1):
     """
     Latest chapter releases
@@ -42,6 +64,7 @@ def latest(request, page=1):
     )
 
 @cache_page(settings.CACHE_LONG)
+@last_modified(latest_comic)
 def directory(request, page=1):
     """
     Comic directory
@@ -88,6 +111,21 @@ def read_pretty(request, series_slug, language, volume, chapter, subchapter=0, p
     )
 
 @cache_page(settings.CACHE_MEDIUM)
+def read_id_slug(request, id, page):
+    """
+    SEO and human-friendly reader URL for specific chapter
+    """
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, id=cid)
+    manifest_url = request.build_absolute_uri(chapter.manifest())
+    return cacheatron(
+        request,
+        render(request, 'reader/read.html', {'chapter': chapter, 'manifest_url': manifest_url, 'current_page': page if page else 1}),
+        (zxchapter,) #  Only if chapter data modified
+    )
+
+
+@cache_page(settings.CACHE_MEDIUM)
+@last_modified(chapter_last_modified)
 def read_uuid(request, cid):
     """
     Reader for specific chapter
@@ -96,7 +134,20 @@ def read_uuid(request, cid):
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
-        render(request, 'reader/read.html', {'chapter': chapter, 'manifest_url': manifest_url}),
+        render(request, 'reader/read.html', {'chapter': chapter, 'manifest_url': manifest_url, 'current_page': 1}),
+        (zxchapter,) #  Only if chapter data modified
+    )
+
+@cache_page(settings.CACHE_MEDIUM)
+def read_uuid_page(request, cid, page):
+    """
+    Reader for specific chapter at specific page
+    """
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
+    manifest_url = request.build_absolute_uri(chapter.manifest())
+    return cacheatron(
+        request,
+        render(request, 'reader/read.html', {'chapter': chapter, 'manifest_url': manifest_url, 'current_page': page}),
         (zxchapter,) #  Only if chapter data modified
     )
 

@@ -31,19 +31,19 @@
     {% block header %}<div class="noselect mdc-toolbar mdc--theme-primary">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-                <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static 'img/logo.svg' %}"/></a>
+                <a href="/" class="material-icons logo mdc-toolbar__menu-icon"><img src="{% static SITE_LOGO %}"/></a>
                 <span class="etext mhide"><a href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name|truncatechars:50 }}</a> &rsaquo; {{ chapter.simple_title }}</span>
             </section>
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
                 <div>
                     <nav class="mdc-tab-bar toolbar-tab-bar mdc-tab-bar--icons-tabs">
-                        <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Latest' %}" href="/r/latest/">
+                        <a class="mdc-tab{% if '/r/latest/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Latest' %}" href="{% url 'latest' %}">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">access_time</i>
                         </a>
-                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Directory' %}" href="/r/directory/">
+                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Directory' %}" href="{% url 'directory' %}">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">view_list</i>
                         </a>
-                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Search' %}" href="/r/search/">
+                        <a class="mdc-tab{% if '/r/directory/' == request.path %} mdc-tab--active{% endif %} ripple" title="{% trans 'Search' %}" href="{% url 'search' %}">
                             <i class="material-icons mdc-tab__icon" aria-hidden="true">search</i>
                         </a>
                     </nav>

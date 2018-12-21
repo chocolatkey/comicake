@@ -6,7 +6,7 @@
     <meta name="description" content="{{ SITE_DESCRIPTION }}">
     <meta property="og:description" content="{{ SITE_DESCRIPTION }}" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="{% static 'img/logo.svg' %}" />
+    <meta property="og:image" content="{% static SITE_LOGO %}}" />
     <meta property="og:image:alt" content="{% blocktrans with site=SITE_TITLE %}Logo for {{ SITE_TITLE }}{% endblocktrans %}" />
     <!--<script type="application/ld+json"></script>-->
 {% endblock %}{% endcache %}

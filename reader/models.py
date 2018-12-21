@@ -197,14 +197,19 @@ class Chapter(models.Model):
         3. Protection is disabled OR protection is enabled and ready
         """
         chapters = Chapter.objects.all()
+        prefetch_comic = True
         if kwargs:
+            prefetch_comic = kwargs.pop('prefetch_comic', True)
             chapters = chapters.filter(**kwargs)
-        return chapters.filter(
+        filtered = chapters.filter(
                 ~Q(Q(protected=True) & Q(protection__isnull=True)),
                 comic__published=True,
                 published=True, published_at__lte=timezone.now()
-            ).prefetch_related('comic')
-
+            )
+        if prefetch_comic:
+            return filtered.prefetch_related('comic')
+        else:
+            return filtered
     def get_protection(self):
         if self.protected and self.protection:
             return True # TODO real protection val
