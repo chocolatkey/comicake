@@ -5,7 +5,6 @@ import qs from "qs";
 import delayPromise from "delay-promise";
 
 import searchResultsTemplate from "../mst/search.html";
-import * as constants from "../constants";
 import { MDCTextField } from "@material/textfield";
 
 export default class Search extends Controller {
@@ -63,11 +62,11 @@ export default class Search extends Controller {
     }
 
     doSuggest(query) {
-        return fetch(constants.API_BASE + "/comics.json?" + qs.stringify({
+        return fetch(window.comicake.PATHS.api + "comics.json?" + qs.stringify({
             search: query
         }), {
             headers: constants.API_HEADERS,
-            credentials: constants.DEBUG ? "include" : "omit"
+            //credentials: window.comicake.DEBUG ? "include" : "omit"
         }).then(response => {
             if (!response.ok) {
                 var error = new Error(response.statusText);

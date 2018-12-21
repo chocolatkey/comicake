@@ -21,10 +21,9 @@ module.exports = {
             "./assets/css/main.scss"
         ],
         reader: [
-            "./assets/js/vendor/sML",
-            "./assets/js/reader/index",
-            "./assets/bibi/styles/-header.scss",
-            "./assets/bibi/styles/bibi.heart.scss"
+            "xbreader-en", // TODO multilingual
+            "xbstyles.css",
+            "./assets/css/reader/styles.scss"
         ]
     },
     resolve: {
@@ -33,6 +32,7 @@ module.exports = {
             "./assets/css",
             "./assets/bibi",
             "node_modules",
+            "node_modules/xbreader/dist",
             "bower_components"
         ]
     },
@@ -50,12 +50,12 @@ module.exports = {
         rules: [{
             test: /\.(s*)css$/,
             use: [
-                /*{
+                {
                     loader: "file-loader",
                     options: {
                         name: "[name]-[hash].css",
                     },
-                },*/
+                },
                 MiniCssExtractPlugin.loader,
                 //{ loader: "extract-loader" },
                 { loader: "css-loader", options:
@@ -113,6 +113,13 @@ module.exports = {
                     attrs: [":data-src"],
                     ignoreCustomFragments: [/\{\{.*?}}/]
                 }
+            }
+        },
+        {
+            test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+            loader: "file-loader",
+            options: {
+                name: "[name].[ext]"
             }
         }],
     },

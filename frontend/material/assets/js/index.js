@@ -15,7 +15,6 @@ import "core-js/fn/set";
 import "element-closest";
 import "mutation-observer-inner-html-shim";
 
-import { READER_VERSION, DEBUG } from "./constants";
 import { Application } from "stimulus";
 import { definitionsFromContext } from "stimulus/webpack-helpers";
 import { onLoadMDC } from "./mdc";
@@ -29,7 +28,7 @@ document.addEventListener("DOMContentLoaded",function(){
 });
 
 // Check that service workers are registered
-if ("serviceWorker" in navigator && !DEBUG) {
+if ("serviceWorker" in navigator && !window.comicake.DEBUG) {
 // Use the window load event to keep the page load performant
     window.addEventListener("load", () => {
         navigator.serviceWorker.register("/sw.js").then(reg => {
@@ -49,4 +48,3 @@ document.addEventListener("turbolinks:load", function(event) {
         ga("send", "pageview");
     }
 });
-console.log("Reader client v" + READER_VERSION);

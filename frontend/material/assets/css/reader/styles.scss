@@ -1,0 +1,104 @@
+@import "./common.scss";
+
+[class^="br-i-"], [class*=" br-i-"] {
+    color: $primaryForeground;
+}
+
+div#br-topbar, div#br-botbar {
+    transition-property: all;
+	transition-duration: .05s;
+    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    background-color: rgba($primaryBackground, 0.9) !important;
+
+    &:hover {
+        background-color: rgba($primaryBackground, 0.95) !important;
+    }
+}
+
+.br__notifier {
+	background: $primaryBackground;
+	color: $primaryForeground;
+}
+
+div#br-topbar {
+    color: $primaryForeground;
+
+    & #br-chapter {
+        color: $primaryForeground;
+        & option, & optgroup {
+            color: $secondaryForeground;
+            background: $secondaryBackground;
+        }
+    }
+}
+
+.br-tab {
+    &:hover {
+		background-color: darken($primaryBackground, 10%);
+		border-color: $hoverColor;
+	}
+
+	&:active {
+		background-color: darken($primaryBackground, 20%);
+		border-color: $activeColor;
+	}
+}
+
+div.br-botbar-controls button {
+    background: $primaryBackground;
+}
+
+$colorTrack: darken($secondaryBackground, 20%) !default;
+$colorThumb: lighten($tertiaryForeground, 10%) !default;
+@mixin thumb() {
+    background: $colorThumb;
+}
+.br-slider {
+    &::-webkit-slider-thumb {
+        @include thumb();
+    }
+    &::-moz-range-thumb {
+        @include thumb();
+    }
+    &::-ms-thumb {
+        @include thumb();
+    }
+    &__lgo, &__rgo {
+        color: $colorTrack;    
+        & a {
+            color: $primaryForeground;
+        }
+    }
+    &__pagenum, &__pagenum-last {
+        font-size: 10px;
+        color: $tertiaryForeground;
+        margin-top: 4px;
+    }
+}
+
+@media (max-width: 699px) {
+    .br-cmenu {
+        background: $primaryBackground;
+    }
+}
+
+// Fallback view
+main#cakeClassic {
+	width: 100%;
+	height: auto;
+	//margin-top: 64px;
+	& div {
+		text-align: center;
+	}
+	& img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+    	margin: auto;
+	}
+	& .cakeChapSwitch {
+		top: auto;
+		position: relative;
+		margin: 10px;
+	}
+}

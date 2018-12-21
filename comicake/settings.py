@@ -31,11 +31,15 @@ FRONTEND_CONFIG = {
         "name": "material" # Site's template theme directory
     },
     "paths": {
-        # Should have trailing slashes. Make sure to apply in JS too!
-        # TODO apply through ini in webpack
+        # MUST have trailing slashes
         "admin": "a/",
         "api": "api/",
         "reader": "r/", # Could be set to just '/' to make reader primary app
+        "static": "/static/"
+    },
+    "social": {
+        "discord": "",
+        "disqus": ""
     }
 }
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -50,6 +54,8 @@ except Exception as e:
 
 DEBUG = True # SECURITY WARNING: don't run with debug turned on in production!
 SITE_TITLE = 'ComiCake' # Your site's title
+SITE_LOGO = 'img/logo.svg' # Your site's logo (displayed to user)
+SITE_FAVICON = 'img/logo.png' # Your site's favicon (cannot be an SVG, should be square)
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]'] # Add your domain
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'America/Los_Angeles'
@@ -59,7 +65,7 @@ GA_ID = None # Google Analytics ID (starts with "UA-")
 SENTRY_DSN = None # e.g. https://abc:123@sentry.example.com/1
 SECRET_KEY = 'GENERATE_YOUR_OWN_VERY_IMPORTANT!' # SECURITY WARNING: keep the secret key used in production secret!
 ## Paths & Static files # https://docs.djangoproject.com/en/2.0/howto/static-files/
-STATIC_URL = '/static/' # Set to absolute path of nginx/apache mapped static dir!
+STATIC_URL = FRONTEND_CONFIG["paths"]["static"] # Set to absolute path of nginx/apache mapped static dir!
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_URL = os.path.join(STATIC_URL, 'media/')
 MEDIA_ROOT = BASE_DIR + MEDIA_URL
@@ -114,10 +120,8 @@ try:
 except ImportError:
     pass
 
-VERSION = "0.11.8"
+VERSION = "0.13.0"
 APP_NAME = 'ComiCake' # Pls no change kthx
-
-ADMIN_LOGO = 'img/logo.svg'
 MENU_WEIGHT = {
     'Reader': 1,
     'Blog': 2,
@@ -194,6 +198,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_cleanup',
     'webpack_loader',
+    'django_extensions',
     #'dynamic_preferences',
     #'dynamic_preferences.users.apps.UserPreferencesConfig',
 ]

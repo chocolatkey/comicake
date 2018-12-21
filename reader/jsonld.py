@@ -49,12 +49,11 @@ def chapterManifest(request, chapter):
             "modified": tti(chapter.modified_at),
             "language": chapter.language,
             "subject": [],
-            "belongs_to": {
+            "belongsTo": {
                 "series": {
                     "name": chapter.comic.name,
                     "slug": chapter.comic.slug,
                     "identifier": request.build_absolute_uri(chapter.comic.get_absolute_url()),
-                    "id": chapter.comic.id, # mazui
                     "position": chapter.decimal()
                 }
             },
@@ -65,7 +64,7 @@ def chapterManifest(request, chapter):
             {"rel": "alternate", "href": request.build_absolute_uri(reverse('read_uuid_strip', args=[chapter.uniqid])), "type": "text/html"},
             #{"rel": "alternate", "href": "TODO", "type": "application/vnd.comicbook+zip"}
         ],
-        "spine": []
+        "readingOrder": []
     }
 
     # 'pub page-progression-direction & rendition
@@ -79,10 +78,10 @@ def chapterManifest(request, chapter):
         rdir = "ttb"
         rspread = "none"
 
-    manifest['metadata']['direction'] = rdir
+    manifest['metadata']['readingProgression'] = rdir
     manifest['metadata']['rendition'] = {
         "layout": "pre-paginated",
-        "orientation": "portrait",
+        "orientation": "auto",
         "spread": rspread
     }
 
@@ -95,7 +94,7 @@ def chapterManifest(request, chapter):
 
     # Pages
     for page in pages:
-        manifest['spine'].append({
+        manifest['readingOrder'].append({
             "href": request.build_absolute_uri(page.file.url), # Leave CDN issue up to JS: cdn_url(request, page.file.url, {'hq': True})
             "type": page.mime,
             "height": page.height,
@@ -106,7 +105,7 @@ def chapterManifest(request, chapter):
 
     # Volume
     if chapter.volume:
-        manifest['metadata']['belongs_to']['collection'] = {
+        manifest['metadata']['belongsTo']['collection'] = {
             "name": _("Volume %d") % chapter.volume,
             "identifier": chapter.volume # TODO IMPROVE
         }

@@ -1033,7 +1033,6 @@ div.bibi-subpanel {
 // --------------------------------------------------------------------------------
 
 div#bibi-menu {
-	z-index: 4000;
 	html.without-menubar & { display: none !important; }
 	html.bibi &, html.bibi & .mdc-tab, html.bibi & img, html.bibi & .material-icons {
 		color: rgba(255, 255, 255, 0.05);
