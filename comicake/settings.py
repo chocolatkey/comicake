@@ -120,7 +120,7 @@ try:
 except ImportError:
     pass
 
-VERSION = "0.13.0"
+VERSION = "0.13.1"
 APP_NAME = 'ComiCake' # Pls no change kthx
 MENU_WEIGHT = {
     'Reader': 1,

@@ -139,6 +139,7 @@ def read_uuid(request, cid):
     )
 
 @cache_page(settings.CACHE_MEDIUM)
+#@last_modified(chapter_last_modified) TODO page
 def read_uuid_page(request, cid, page):
     """
     Reader for specific chapter at specific page
@@ -152,6 +153,7 @@ def read_uuid_page(request, cid, page):
     )
 
 @cache_page(settings.CACHE_MEDIUM)
+@last_modified(chapter_last_modified)
 def read_strip(request, cid):
     """
     Strip reader (no JavaScript required) for specific chapter
@@ -165,6 +167,7 @@ def read_strip(request, cid):
     )
 
 @cache_page(settings.CACHE_MEDIUM)
+@last_modified(chapter_last_modified)
 def read_manifest(request, cid):
     """
     Chapter WebPub manifest
@@ -226,6 +229,7 @@ def read_next(request, cid):
     return cacheatron(request, response, (zxchapter,))
 
 @cache_page(settings.CACHE_MEDIUM)
+#@last_modified(TODO)
 def search(request):
     """
     Search page
@@ -238,6 +242,7 @@ def search(request):
     )
 
 @cache_page(settings.CACHE_LONG)
+#@last_modified(TODO)
 def team(request, team_id):
     """
     Team info
@@ -250,6 +255,7 @@ def team(request, team_id):
     )
 
 @cache_page(settings.CACHE_LONG)
+#@last_modified(TODO)
 def person(request, person_id):
     """
     Person (author/artist) info

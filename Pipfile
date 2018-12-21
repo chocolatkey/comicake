@@ -16,5 +16,6 @@ drf-flex-fields = "*"
 drf-extensions = "*"
 pillow = "*"
 libsass = "*"
+django_extensions = "*"
 
 [dev-packages]
