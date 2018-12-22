@@ -5,7 +5,7 @@
 {% block extra_head %}{# TODO: make into template tag you can pass objects #}
     <meta property="og:title" content="{% tt request flatpage.title %}" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="{% static SITE_LOGO %}" />
+    <meta property="og:image" content="{% static SITE_FAVICON %}" />
     <meta property="og:image:alt" content="{% blocktrans with site=SITE_TITLE %}Logo for {{ SITE_TITLE }}{% endblocktrans %}" />
     <script type="application/ld+json">{% jsonld request flatpage %}</script>
 {% endblock %}

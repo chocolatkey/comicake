@@ -65,7 +65,7 @@ urlpatterns = [
     )), name='sw.js'),
     path(paths["admin"], admin.site.urls),
     path(paths["api"], include('api.urls')),
-    path('', include('blog.urls')),
+    path(paths["cms"], include('blog.urls')),
     path(paths["reader"], include('reader.urls')),
     path('sitemap.xml', cache_page(3600)(sitemap), {'sitemaps': sitemaps},
      name='django.contrib.sitemaps.views.sitemap')

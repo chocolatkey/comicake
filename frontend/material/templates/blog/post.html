@@ -10,7 +10,7 @@
     <meta property="article:published_time" content="{{ post.created_at|date:'c' }}">
     <meta property="article:modified_time" content="{{ post.modified_at|date:'c' }}">
     <meta property="article:author" content="{{ post.author }}">
-    <meta property="og:image" content="{% static SITE_LOGO %}" />
+    <meta property="og:image" content="{% static SITE_FAVICON %}" />
     <meta property="og:image:alt" content="{% blocktrans with site=SITE_TITLE %}Logo for {{ SITE_TITLE }}{% endblocktrans %}" />
     <script type="application/ld+json">{% jsonld request post %}</script>
 {% endblock %}

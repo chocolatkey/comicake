@@ -31,7 +31,8 @@ FRONTEND_CONFIG = {
         "name": "material" # Site's template theme directory
     },
     "paths": {
-        # MUST have trailing slashes
+        # MUST have trailing slashes (except when root path)
+        "cms": ""
         "admin": "a/",
         "api": "api/",
         "reader": "r/", # Could be set to just '/' to make reader primary app
@@ -120,7 +121,7 @@ try:
 except ImportError:
     pass
 
-VERSION = "0.13.1"
+VERSION = "0.13.2"
 APP_NAME = 'ComiCake' # Pls no change kthx
 MENU_WEIGHT = {
     'Reader': 1,
