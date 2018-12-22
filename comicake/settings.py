@@ -32,7 +32,7 @@ FRONTEND_CONFIG = {
     },
     "paths": {
         # MUST have trailing slashes (except when root path)
-        "cms": ""
+        "cms": "",
         "admin": "a/",
         "api": "api/",
         "reader": "r/", # Could be set to just '/' to make reader primary app
