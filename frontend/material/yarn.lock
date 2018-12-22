@@ -968,6 +968,15 @@
   dependencies:
     "@stimulus/multimap" "^1.1.0"
 
+"@stimulus/polyfills@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@stimulus/polyfills/-/polyfills-1.1.0.tgz#cac83e4e43557f9192ce5f67f2c9ac00f3abe910"
+  integrity sha512-cXFoC1L7g8CtGD5vSXwCVeJk1JjXmhZWfiMhWlCSuJAKySmg2N5thOEsGVtBwZNSJ2+jG+Rv9QhdO3J+B1d5dw==
+  dependencies:
+    core-js ">=2.5.3"
+    element-closest ">=2.0.2"
+    mutation-observer-inner-html-shim ">=1.0.0"
+
 "@stimulus/webpack-helpers@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@stimulus/webpack-helpers/-/webpack-helpers-1.1.0.tgz#17f00ea6eaa38b490ba84fec6f6c436c604a4a85"
@@ -2556,7 +2565,7 @@ copy-descriptor@^0.1.0:
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
-core-js@^2.4.0, core-js@^2.5.0, core-js@^2.5.5, core-js@^2.5.7:
+core-js@>=2.5.3, core-js@^2.4.0, core-js@^2.5.0, core-js@^2.5.5, core-js@^2.5.7:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.1.tgz#87416ae817de957a3f249b3b5ca475d4aaed6042"
   integrity sha512-L72mmmEayPJBejKIWe2pYtGis5r0tQ5NaJekdhyXgeMQTpJoBsH0NL4ElY2LfSoV15xeQWKQ+XTTOZdyero5Xg==
@@ -2972,6 +2981,11 @@ electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.92:
   version "1.3.95"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.95.tgz#79fac438813ca7f3db182a525c2ab432934f6484"
   integrity sha512-0JZEDKOQAE05EO/4rk3vLAE+PYFI9OLCVLAS4QAq1y+Bb2y1N6MyQJz62ynzHN/y0Ka/nO5jVJcahbCEdfiXLQ==
+
+element-closest@>=2.0.2:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/element-closest/-/element-closest-3.0.0.tgz#4ce78e5b8c6db775cc5fa596193ad86f05ddc3e6"
+  integrity sha512-xZEbz0M1lTvqHUKg7gRLcAjZjx0DZs5kyzauxZJ3+jDVj0Xo8/p7BcCiVqnKoVnKXmaQhd1g7DGQs2OxovgeKA==
 
 element-closest@^2.0.2:
   version "2.0.2"
@@ -4926,7 +4940,7 @@ mustache@^3.0.1:
   resolved "https://registry.yarnpkg.com/mustache/-/mustache-3.0.1.tgz#873855f23aa8a95b150fb96d9836edbc5a1d248a"
   integrity sha512-jFI/4UVRsRYdUbuDTKT7KzfOp7FiD5WzYmmwNwXyUVypC0xjoTL78Fqc0jHUPIvvGD+6DQSPHIt1NE7D1ArsqA==
 
-mutation-observer-inner-html-shim@^1.0.0:
+mutation-observer-inner-html-shim@>=1.0.0, mutation-observer-inner-html-shim@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/mutation-observer-inner-html-shim/-/mutation-observer-inner-html-shim-1.0.0.tgz#8129c5e3a98ec9d473d8e10a05dc97a70fde5530"
   integrity sha512-7qPFYrSTiyI95rSElQ7Vsfh4XyLnlf6qTnYpio+O3jr1u54ONW7uYWyECv1UBB537xMPKRRRUGcWAUFTlMtpgg==
