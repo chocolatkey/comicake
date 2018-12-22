@@ -18,7 +18,7 @@
     "stimulus": "^1.0.1",
     "turbolinks": "^5.1.1",
     "whatwg-fetch": "^2.0.4",
-    "xbreader": "^0.27.11"
+    "xbreader": "^0.27.12"
   },
   "devDependencies": {
     "babel-loader": "^8.0.0-beta",

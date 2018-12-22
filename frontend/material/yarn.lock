@@ -7684,10 +7684,10 @@ ws@^6.0.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xbreader@^0.27.11:
-  version "0.27.11"
-  resolved "https://registry.yarnpkg.com/xbreader/-/xbreader-0.27.11.tgz#4f18778a89f3f6286a734ea64869c7f6637ce8db"
-  integrity sha512-79TL7qOQOxVzBt8qwZWxV5srrru1lYu5E4NWg7ZdX9d09N0fK4NE/PNMNHr5WOKwxTMzbSC5mz1HMpUZQ2L2cA==
+xbreader@^0.27.12:
+  version "0.27.12"
+  resolved "https://registry.yarnpkg.com/xbreader/-/xbreader-0.27.12.tgz#12e28d70bf7b40709b1aec478f81d077647d8479"
+  integrity sha512-ex8dK8cAhBB41PP8WkHzNPI30icWLQWCdA1FNcwFMs32pIX80FhvjUUAhiHmQHllO6Fky+3sca64xGFnobK8zQ==
   dependencies:
     babel-core "^6.26.3"
     babel-loader "^7.1.4"
