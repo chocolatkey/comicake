@@ -18,7 +18,7 @@ import raven
 '''
 STOP!
 
-Are you setting ComiCake up with your own settings? Place a file named "local_settings.py"
+Are you setting ComiCake up with your own settings? Place a file named "backend_settings.py"
 in the root folder (one directory up from here) and add settings there. You can copy every line
 below in the "Important configuration" section to start with. Leave out stuff you don't change.
 '''
