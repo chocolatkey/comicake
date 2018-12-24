@@ -64,7 +64,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # For reverse prox
 ## Services
 GA_ID = None # Google Analytics ID (starts with "UA-")
 SENTRY_DSN = None # e.g. https://abc:123@sentry.example.com/1
-SECRET_KEY = 'GENERATE_YOUR_OWN_VERY_IMPORTANT!' # SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = None # SECURITY WARNING: keep the secret key used in production secret!
 ## Paths & Static files # https://docs.djangoproject.com/en/2.0/howto/static-files/
 STATIC_URL = FRONTEND_CONFIG["paths"]["static"] # Set to absolute path of nginx/apache mapped static dir!
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
