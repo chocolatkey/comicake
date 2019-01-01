@@ -98,7 +98,7 @@ export default class Reader extends Controller {
                 });
             }).catch(error => {
                 console.error(error);
-                document.body.innerHTML = `<noscript class="br__notifier">Error: ${error.message}</noscript>`;
+                document.body.innerHTML = `<span class="br__notifier">Error: ${error.message}</span>`;
             });
         };
 
