@@ -6,6 +6,7 @@ import delayPromise from "delay-promise";
 
 import searchResultsTemplate from "../mst/search.html";
 import { MDCTextField } from "@material/textfield";
+import { API_HEADERS, seriesLink } from "../constants";
 
 export default class Search extends Controller {
     static get targets() {
@@ -65,7 +66,7 @@ export default class Search extends Controller {
         return fetch(window.comicake.PATHS.api + "comics.json?" + qs.stringify({
             search: query
         }), {
-            headers: constants.API_HEADERS,
+            headers: API_HEADERS,
             //credentials: window.comicake.DEBUG ? "include" : "omit"
         }).then(response => {
             if (!response.ok) {
@@ -80,7 +81,7 @@ export default class Search extends Controller {
                 let mdata = {"results": []};
                 suggestions.forEach(comic => {
                     mdata["results"].push({
-                        "link": constants.seriesLink(comic.slug),
+                        "link": seriesLink(comic.slug),
                         "name": comic.name,
                         //"cover": comic.cover
                     });

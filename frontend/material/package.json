@@ -1,6 +1,6 @@
 {
   "name": "comicake-frontend-material",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Material design frontend for comicake",
   "dependencies": {
     "@babel/core": "^7.0.0-beta.44",
@@ -17,7 +17,7 @@
     "siema": "^1.5.1",
     "stimulus": "^1.0.1",
     "turbolinks": "^5.1.1",
-    "whatwg-fetch": "^2.0.4",
+    "whatwg-fetch": "^3.0.0",
     "xbreader": "^0.27.12"
   },
   "devDependencies": {
