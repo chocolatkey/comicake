@@ -10,7 +10,7 @@ export default class Reader extends Controller {
             return;
         }
         const __STORAGE_PREFIX__ = `xbr/${ this.data.get("comicUuid") }/`;
-        window.xbconfig.mount = document.getElementById("XBContainer")
+        window.xbconfig.mount = document.getElementById("XBContainer");
 
         // Add callback functions for XBReader
         window.xbconfig.onPublicationLoad = (reader) => {
@@ -33,7 +33,7 @@ export default class Reader extends Controller {
         };
         window.xbconfig.onLastPage = (series) => {
             if(!series.next) {
-                window.location = series.metadata.identifier;
+                window.location = series.metadata.Identifier;
                 return false;
             }
             return true;
