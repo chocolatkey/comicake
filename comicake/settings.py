@@ -121,7 +121,7 @@ try:
 except ImportError:
     pass
 
-VERSION = "0.13.2"
+VERSION = "0.13.3"
 APP_NAME = 'ComiCake' # Pls no change kthx
 MENU_WEIGHT = {
     'Reader': 1,
@@ -213,6 +213,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'blog.middleware.FlatpageFallbackMiddleware', # todo optional
+    'comicake.middleware.TurbolinksMiddleware' # For processing of turbolinks
 ]
 
 if DEBUG:

@@ -45,8 +45,9 @@ class StatusViewSet(viewsets.GenericViewSet):
 
 class IdSetPagination(PageNumberPagination):
     page_size = 25
-    #page_size_query_param = 'page_size'
     ordering = '-id' # '-creation' is default
+    page_size_query_param = 'n'
+    max_page_size = 100
 
 class UserViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     """
@@ -60,8 +61,6 @@ class UserViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     pagination_class = IdSetPagination
-    page_size_query_param = 'n'
-    max_page_size = 100
 
     def get_queryset(self):
         queryset = User.objects.all()
@@ -78,8 +77,6 @@ class PersonViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
     pagination_class = IdSetPagination
-    page_size_query_param = 'n'
-    max_page_size = 100
     filter_backends = (SearchFilter,)
     search_fields = ('name', 'alt')
     # TODO: possibly filter by is_active or show is_active
@@ -112,8 +109,6 @@ class TeamViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
     pagination_class = IdSetPagination
-    page_size_query_param = 'n'
-    max_page_size = 1000
     filter_backends = (DjangoFilterBackend, SearchFilter)
     search_fields = ('name',)
     filter_fields = ('members',)
@@ -142,8 +137,6 @@ class ComicViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     queryset = Comic.objects.all()
     serializer_class = ComicSerializer
     pagination_class = IdSetPagination
-    page_size_query_param = 'n'
-    max_page_size = 100
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('slug', 'uniqid', 'author', 'artist', 'adult', 'licenses', 'format')
     search_fields = ('name', 'alt')
@@ -159,6 +152,8 @@ class ComicViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
 
 class ChapterSetPagination(PageNumberPagination):
     page_size = 25
+    page_size_query_param = 'n'
+    max_page_size = 1000
 
 class ChapterViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     """
@@ -169,8 +164,6 @@ class ChapterViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     queryset = Chapter.objects.all()
     serializer_class = ChapterSerializer
     pagination_class = ChapterSetPagination
-    page_size_query_param = 'n'
-    max_page_size = 1000
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_fields = ('comic', 'volume', 'team', 'language')
     ordering_fields = ('published_at', 'modified_at', 'volume', 'chapter', 'subchapter')
