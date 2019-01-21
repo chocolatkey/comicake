@@ -33,7 +33,7 @@ export default class Reader extends Controller {
         };
         window.xbconfig.onLastPage = (series) => {
             if(!series.next) {
-                window.location = series.metadata.Identifier;
+                window.location = series.metadata[0].Identifier;
                 return false;
             }
             return true;
