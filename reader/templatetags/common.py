@@ -13,7 +13,7 @@ from datetime import date, datetime
 from django.utils.timezone import is_aware, utc
 from django.utils.dateformat import format
 from reader.utils import cdn_url
-from reader.jsonld import chapterLd, comicLd, teamLd, personLd, postLd, pageLd
+from reader.jsonld import chapterLd, comicLd, teamLd, personLd, postLd, pageLd, chapterReadingOrder, comicFormat
 from django.contrib.sites.shortcuts import get_current_site
 
 import json
@@ -62,6 +62,14 @@ def cpath(item):
         return reverse('read_uuid', kwargs={'cid': item.uniqid})
     else:
         raise template.TemplateSyntaxError("cpath argument not of type Comic or Chapter")
+
+@register.simple_tag(name='spine')
+def spine(request, pages):
+    return json.dumps(chapterReadingOrder(request, pages))
+
+@register.simple_tag(name='comic_progression')
+def comic_progression(comic):
+    return comicFormat(comic)
 
 @register.simple_tag(name='jsonld')
 def jsonld(request, item):
@@ -143,6 +151,28 @@ def gravatar(user):
     else:
         # Blank email, returns "Myster Man"
         return gravatar_url.format("")
+
+@register.simple_tag(name='page_button_range', takes_context=True)
+def page_button_range(context, count, current):
+    val = current + 2
+    start = count if val >= count else val
+    context['pbrange'] = range(start, max(0, current - 3), -1)
+    return ""
+
+@register.simple_tag(name='azpad')
+def azpad(count, current):
+    if count / 100 > 1 and current / 100 < 1:
+        return "00{}".format(current)
+    elif count / 10 > 1 and current / 10 < 1:
+        return "0{}".format(current)
+    else:
+        return current
+
+@register.filter
+def index(List, i):
+    if(len(List) < (i + 1)):
+        return None
+    return List[int(i)]
 
 #############
 

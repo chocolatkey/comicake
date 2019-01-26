@@ -12,6 +12,30 @@ def tti(t):
     '''
     return t.replace(microsecond=0).isoformat()
 
+def chapterReadingOrder(request, pages):
+    # Pages
+    readingOrder = []
+    for page in pages:
+        readingOrder.append({
+            "href": request.build_absolute_uri(page.file.url), # Leave CDN issue up to JS: cdn_url(request, page.file.url, {'hq': True})
+            "type": page.mime,
+            "height": page.height,
+            "width": page.width,
+            # "properties": {"page": "right"},
+            # "title": "Cover"
+        })
+    return readingOrder
+
+def comicFormat(comic):
+    if comic.format is 0: # Comic
+        return "ltr"
+    elif comic.format is 1: # Manga
+        return "rtl"
+    elif comic.format is 2: # Toon (long strip)
+        return "ttb"
+    else:
+        return "auto"
+
 def chapterManifest(request, chapter):
     '''
     WebPub Manifest for items
@@ -64,21 +88,15 @@ def chapterManifest(request, chapter):
             {"rel": "alternate", "href": request.build_absolute_uri(reverse('read_uuid_strip', args=[chapter.uniqid])), "type": "text/html"},
             #{"rel": "alternate", "href": "TODO", "type": "application/vnd.comicbook+zip"}
         ],
-        "readingOrder": []
+        "readingOrder": chapterReadingOrder(request, pages)
     }
 
     # 'pub page-progression-direction & rendition
-    rdir = "auto"
     rspread = "landscape"
-    if chapter.comic.format is 0: # Comic
-        rdir = "ltr"
-    elif chapter.comic.format is 1: # Manga
-        rdir = "rtl"
-    elif chapter.comic.format is 2: # Toon (long strip)
-        rdir = "ttb"
+    if chapter.comic.format is 2: # No spreads in ttb
         rspread = "none"
 
-    manifest['metadata']['readingProgression'] = rdir
+    manifest['metadata']['readingProgression'] = comicFormat(chapter.comic)
     manifest['metadata']['rendition'] = {
         "layout": "pre-paginated",
         "orientation": "auto",
@@ -90,17 +108,6 @@ def chapterManifest(request, chapter):
         manifest['metadata'].update({
             "image": request.build_absolute_uri(chapter.comic.cover.url),
             "thumbnailUrl": cdn_url(request, chapter.comic.cover.url, {'thumb': True})
-        })
-
-    # Pages
-    for page in pages:
-        manifest['readingOrder'].append({
-            "href": request.build_absolute_uri(page.file.url), # Leave CDN issue up to JS: cdn_url(request, page.file.url, {'hq': True})
-            "type": page.mime,
-            "height": page.height,
-            "width": page.width,
-            # "properties": {"page": "right"},
-            # "title": "Cover"
         })
 
     # Volume

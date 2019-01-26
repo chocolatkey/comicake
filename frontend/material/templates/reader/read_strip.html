@@ -58,7 +58,7 @@
     </style>
     <main role="main" id="cakeClassic">
         {% include "partials/pages.html" with pages=chapter.pages.all %}
-        <div>{% if chapter.format is 1 %}
+        <div>{% if chapter.comic.format is 1 %}
             <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_prev' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Prev' %}</a>
             <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeRightChap" href="{% url 'read_uuid_next' chapter.uniqid %}">{% trans 'Next' %}<i class="material-icons mdc-button__icon">arrow_forward</i></a>{% else %}
             <a class="mdc-button mdc-button--unelevated cakeChapSwitch" id="cakeLeftChap" href="{% url 'read_uuid_next' chapter.uniqid %}"><i class="material-icons mdc-button__icon">arrow_back</i>{% trans 'Next' %}</a>
