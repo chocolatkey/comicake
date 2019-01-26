@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n cache %}
+{% block html_prefix %} book: http://ogp.me/ns/book#{% endblock %}
+{% block title %}{% tt request comic %}{% endblock %}
+{% cache 600 og_data comic.uniqid %}{% block extra_head %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt request comic.name %}" />
+    <meta name="description" content="{{ comic.description }}">
+    <meta property="og:description" content="{{ comic.description }}" />
+    <meta property="og:type" content="book" />
+    {% for person in comic.author.all %}<meta property="book:author" content="{% url 'person' person.id %}">{% endfor %}
+    {% for tag in comic.tags.all %}<meta property="book:tag" content="{{ tag.name }}">{% endfor %}
+    {% if comic.cover %}
+    <meta property="og:image" content="{% icdn comic.cover.url options='{"small": true}' %}" />
+    <meta property="og:image:alt" content="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}" />
+    {% endif %}
+    <link rel="alternate" type="application/rss+xml" title="{% blocktrans with comic=comic %}RSS Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_rss_comic' comic.uniqid %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% blocktrans with comic=comic %}Atom Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_atom_comic' comic.uniqid %}" />
+    <script type="application/ld+json">{% jsonld request comic %}</script>
+{% endblock %}{% endcache %}
+{% block body %}
+    <div class="panel" data-controller="article" data-target="article.main">
+        <div class="comic info">
+            {% if comic.cover %}<div class="thumbnail">
+                <img src="{% icdn comic.cover.url %}" alt="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}" />
+            </div>{% endif %}
+
+            <div class="large comic">
+                <h1 class="title">
+                    {{ comic.name }}{% if comic.alt %}<span class="mdc-typography--title">「{{ comic.alt }}」</span>{% endif %}&nbsp;{% include 'partials/rss_link.html' with comic=comic innerclass='fa fa-rss rss-here' %}
+                </h1>
+                <table class="info">
+                    {% with comic.author.all as authors %}{% if authors|length > 0 %}
+                    <tr>
+                        <td>{% if authors|length == 1 %}{% trans 'Author' %}{% else %}{% trans 'Authors' %}{% endif %}:</td>
+                        <td>{% for person in authors %}
+                            <a class="mdc-chip mdc-theme--secondary-bg" href="{% url 'person' person.id %}" title="{{ person.name }}{% if person.alt %} ({{ person.alt }}){% endif %}" tabindex="0">
+                                <div class="mdc-chip__text">{{ person.name }}</div>
+                            </a>{% endfor %}
+                        </td>
+                    </tr>{% endif %}{% endwith %}{% with comic.artist.all as artists %}{% if artists|length > 0 %}
+                    <tr>
+                        <td>{% if artists|length == 1 %}{% trans 'Artist' %}{% else %}{% trans 'Artists' %}{% endif %}:</td>
+                        <td>{% for person in artists %}
+                            <a class="mdc-chip mdc-theme--secondary-bg" href="{% url 'person' person.id %}" title="{{ person.name }}{% if person.alt %} ({{ person.alt }}){% endif %}" tabindex="0">
+                                <div class="mdc-chip__text">{{ person.name }}</div>
+                            </a>{% endfor %}
+                        </td>
+                    </tr>{% endif %}{% endwith %}{% with comic.licenses.all as licensees %}{% if licensees|length > 0 %}
+                    <tr>
+                        <td>{% trans 'Licensed by' %}:</td>
+                        <td>{% for licensee in licensees %}
+                            <a class="mdc-chip mdc-theme--secondary-bg" href="{{ licensee.homepage }}" target="_blank" title="{{ licensee.name }}" tabindex="0">
+                                {% if licensee.logo %}<img class="minithumb" src="{% icdn licensee.logo.url options='{"thumb": true}' %}" />{% endif %}
+                                <div class="mdc-chip__text">{{ licensee.name }}</div>
+                            </a>{% endfor %}
+                        </td>
+                    </tr>{% endif %}{% endwith %}
+                </table>
+                {% with comic.tags.all as tags %}{% if tags|length > 0 %}
+                <div class="tags info">
+                    <ul>{% for tag in tags %}
+                        <li><a href="{% url 'search' %}?tag={{ tag.slug }}" title="{{ tag.description }}"><i><em></em></i>{{ tag.name }}</a></li>
+                    {% endfor %}</ul>
+                </div>{% endif %}{% endwith %}
+                <pre class="info description">{{ comic.description }}</pre>
+            </div>
+        </div>
+        <div class="list">
+            <div class="title"></div>
+            {% for chapter in comic.chapters %}{% ifchanged chapter.volume %}{% if not forloop.first %}
+            </div>{% endif %}
+            <div class="group">
+                <div class="title">{% if chapter.volume %}{% blocktrans with volume=chapter.volume %}Volume {{ volume }}{% endblocktrans %}{% else %}{% trans 'Chapters' %}{% endif %}</div>{% endifchanged %}
+                    <div class="element"><!--TODO download button-->
+                            <div class="title">{% spaceless %}
+                                <a href="{% cpath chapter %}">
+                                    {{ chapter.simple_title }}
+                                </a>
+                            {% endspaceless %}</div>
+                            <div class="meta_r">{{ chapter.published_at|ago }}{% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}
+                                {% trans 'by' %}
+                                {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                            {% endifnotequal %}{% endwith %}</div>
+                    </div>{% if forloop.last %}
+            </div>{% endif %}{% empty %}
+        <span>{% trans 'No chapters available' %}</span>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

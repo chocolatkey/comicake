@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#{% block html_prefix %}{% endblock %}" lang="{{ LANGUAGE_CODE }}" class="no-js">
+<head>{% load static flatpages i18n cache %}{% load render_bundle from webpack_loader %}{% get_flatpages as flatpages %}
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <!-- OpenGraph -->
+    <meta property="og:site_name" content="{{ SITE_TITLE }}" />
+    <meta property="og:locale" content="{{ OG_LOCALE }}">
+    {% block extra_head %}{% endblock %}{% cache None head %}
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="{% url 'django.contrib.sitemaps.views.sitemap' %}" />
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'RSS Chapter Feed' %}" href="{% url 'feed_rss' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'Atom Chapter Feed' %}" href="{% url 'feed_atom' %}" />
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'RSS Blog Feed' %}" href="{% url 'blog_feed_rss' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'Atom Blog Feed' %}" href="{% url 'blog_feed_atom' %}" />
+    <meta name="generator" content="{{ GENERATOR }}" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="theme-color" content="#212121">
+    <meta name="format-detection" content="telephone=no, email=no"/>
+    <meta name="apple-mobile-web-app-title" content="{{ SITE_TITLE }}">
+    <link rel="apple-touch-icon" href="{% static SITE_FAVICON %}">
+    <link rel="shortcut icon" href="{% static SITE_FAVICON %}">
+    <meta name="google" content="notranslate">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
+    <!-- Modernizr has to be synchronously loaded before body/css to prevent FOUC! -->
+    <script type="text/javascript" src="{% static 'js/vendor/modernizr-custom.js' %}"></script>
+    <script type="text/javascript" src="{% url 'jsi18n' %}" async></script>
+    <script>
+    window.comicake = {
+        DEBUG: {{ DEBUG|yesno:"true,false" }},
+        PATHS: {
+            api: '{% url 'api-root' %}',
+            static: '{% static '' %}',
+            reader: '{% url 'index' %}'
+        },
+        SOCIAL: {{ SOCIAL|safe }}
+    };
+    </script>
+    {% if not DEBUG %}{% load raven %}
+    <script src="https://cdn.ravenjs.com/3.27.0/raven.min.js" integrity="sha384-gnq8j+n3z7Vfgsl2ZmIRZtumzS05EKAhNoPa4vDhcq3rg1Pz6Tdg3LyYxcxTzzV8" crossorigin="anonymous"></script>
+    <script>Raven.config('{% sentry_public_dsn %}').install()</script>
+    <script>
+        !function(s,u,g,o,i){s.GoogleAnalyticsObject=g;s[g]||(s[g]=function(){
+        (s[g].q=s[g].q||[]).push(arguments)});s[g].l=+new Date;o=u.createElement('script');
+        i=u.scripts[0];o.src='//www.google-analytics.com/analytics.js';
+        i.parentNode.insertBefore(o,i)}(window,document,'ga');
+        ga('create', '{{ GA_ID }}', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <link rel="preconnect" href="//i0.wp.com">
+    <link rel="preconnect" href="//i1.wp.com">
+    <link rel="preconnect" href="//i2.wp.com">
+    {% endif %}{% endcache %}{% block final_head %}
+    {% render_bundle 'comicake' 'css' %}
+    {% render_bundle 'comicake' 'js' %}{% endblock%}
+</head>
+<body{% block extrabody %}{% endblock %}>
+    <div id="wrapper">
+            {% block header %}<div id="header">
+                    <a href="/"><img id="titl" src="{% static SITE_LOGO %}" alt="{{ SITE_TITLE }}"></a>
+                <!--<a href="/forum" style="display: inline-block; padding: 10px;"><div id="title">Forums</div><sup style="color: #FFCC00;">New!</sup></a>-->
+                    <div role="navigation" id="navig">
+                        <ul>
+                            <li>
+                                <a href="{% url 'latest' %}"><i class="fa fa-clock-o"></i><span class="mh"> {% trans 'Latest' %}</span></a>
+                            </li>
+                            <li>
+                                <a href="{% url 'directory' %}"><i class="fa fa-list"></i><span class="mh"> {% trans 'Directory' %}</span></a>
+                            </li>
+                            <li class="dh">
+                                <a href="{% url 'search' %}"><i class="fa fa-search"></i><span class="mh"> {% trans 'Search' %}</span></a>
+                            </li>
+                            <li>
+                                <form action="{% url 'search' %}">
+                                    <input type="text" placeholder="To search series, type and hit enter" id="searchbox" class="fright">
+                                </form>
+                            </li>
+                            <li>
+                            <!--<a style="padding:0;" href=""><img height="28" width="28" style="position:relative; top:1px;" src="rss img" /></a>-->
+                            </li>
+            
+                            <div class="clearer"></div>
+                        </ul>
+                    </div>
+            
+            
+                    <div class="clearer"></div>
+            </div>{% endblock %}
+            <article id="content">{% block body %}
+            {% endblock %}</article>
+    </div>
+    {% block footer %}<footer class="noselect">
+            <div class="text">{% trans 'All comics featured on this website are property of their publishers. If you liked any of the comics you obtained here, consider buying the original versions, or the local translation, when available. Thanks for your support.' %}</div>
+    </footer>{% endblock %}
+</body>
+</html>

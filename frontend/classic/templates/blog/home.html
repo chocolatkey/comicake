@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% load i18n cache common static %}
+{% block title %}{% trans 'Home' %} :: {{ SITE_TITLE }}{% endblock %}
+{% cache None home_head %}{% block extra_head %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% trans 'Home' %} :: {{ SITE_TITLE }}" />
+    <meta name="description" content="{{ SITE_DESCRIPTION }}">
+    <meta property="og:description" content="{{ SITE_DESCRIPTION }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="{% static SITE_FAVICON %}" />
+    <meta property="og:image:alt" content="{% blocktrans with site=SITE_TITLE %}Logo for {{ SITE_TITLE }}{% endblocktrans %}" />
+    <!--<script type="application/ld+json"></script>-->
+{% endblock %}{% endcache %}
+{% block body %}
+    <main role="main" class="mdc-toolbar-fixed-adjust" data-controller="homepage">
+        <div class="comic-slideshow-container">
+            <button class="slick-prev slick-arrow" aria-label="{% trans 'Prev' %}" type="button" data-target="homepage.prevslide" data-action="click->homepage#prev">Previous</button>
+            <button class="slick-next slick-arrow" aria-label="{% trans 'Next' %}" type="button" data-target="homepage.nextslide" data-action="click->homepage#next">Next</button>
+            <div class="comic-slideshow" data-target="homepage.slideshow">
+                <!--Slides-->
+                {% for chapter in chapters %}
+                <div class="comic-slideshow-slide"style="background-image: url('{% if chapter.comic.cover %}{% icdn chapter.comic.cover.url options='{"small": true}' %}{% else %}{% static 'img/placeholder.svg' %}{% endif %}');">
+                    <div class="comic-slideshow-slide-content mdc-card__media-content--with-title">
+                        <div class="mdc-card__media-title mdc-drawer__header-text">
+                            <span><a href="{% url 'series' chapter.comic.slug %}" title="{{ chapter.comic }}">{{ chapter.comic|truncatechars:22 }}:</a>&nbsp;<a href="{% url 'read_uuid' chapter.uniqid %}">{{ chapter.custom_title }}</a></span>
+                            <div class="mdc-typography--caption etext">
+                                {{ chapter.published_at|ago }}
+                            </div>
+                            <a href="{% url 'read_uuid' chapter.uniqid %}">
+                                <button class="mdc-button read-button mdc-button--raised ripple">
+                                        <i class="material-icons mdc-button__icon" aria-hidden="true">remove_red_eye</i>
+                                        {% trans 'Read' %}
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>{% endfor %}
+                <div class="comic-slideshow-slide" style="background-color: #333;">
+                    <a href="{% url 'latest_page' 2 %}" class="ripple comic-slideshow-slide-content mdc-card__media-content--with-title">
+                        <div class="comic-slideshow-more">
+                            <span class="mdc-typography--headline4	">{% trans 'More' %}</span><i class="material-icons" aria-hidden="true">arrow_forward</i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="mdc-layout-grid">
+            <div class="mdc-layout-grid__inner">
+                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-9" data-target="homepage.main">
+                    {% include "partials/posts.html" with posts=posts %}
+                </div>
+                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                    <div data-target="homepage.discord"></div>
+                    {% include "partials/sidebar.html" %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

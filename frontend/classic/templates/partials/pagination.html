@@ -1,0 +1,15 @@
+{% load i18n %}{% if subject.has_other_pages %}
+        <div class="prevnext">
+            {% if subject.has_previous %}
+            <div class="prev">
+                <a class="gbutton fleft" href="{% url page 1 %}">&laquo;&laquo; {% trans 'first' %}</a>
+                <a class="gbutton fleft" href="{% url page subject.previous_page_number %}">&laquo; {% trans 'previous' %}</a>
+            </div>
+            {% endif %}{% if subject.has_next %}
+            <div class="prev">
+                <a class="gbutton fright" href="{% url page subject.paginator.num_pages %}">{% trans 'last' %} &raquo;&raquo;</a>
+                <a class="gbutton fright" href="{% url page subject.next_page_number %}">{% trans 'next' %} &raquo;</a>
+            </div>
+            {% endif %}
+            <div class="clearer"></div>
+        </div>{% endif %}

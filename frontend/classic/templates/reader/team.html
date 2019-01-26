@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n %}
+{% block html_prefix %} profile: http://ogp.me/ns/profile#{% endblock %}
+{% block title %}{% tt request team %}{% endblock %}
+{% block extra_head %}
+    <meta property="og:title" content="{% tt request team %}" />
+    {% if team.description %}<meta property="og:description" content="{{ team.description }}" />{% endif %}
+    <meta property="og:type" content="profile" />
+    <meta property="profile:first_name" content="{{ team.name }}">
+    {% if team.description %}<meta name="description" content="{{ team.description }}">{% endif %}
+    <script type="application/ld+json">{% jsonld request team %}</script>
+{% endblock %}
+{% block body %}
+    <div class="panel">
+        <div class="list">
+            <div class="title">
+                <a href="{% url 'team' team.id %}">{{ team.name }}</a>
+            </div>
+            <div class="group">
+                <div>
+                    {{ team.description }}
+                </div>
+            </div>
+            <div class="group">
+                <div class="title">{% trans 'Members' %}</div>{% for member in team.members.all %}
+                <div class="element">
+                    <div class="image">
+                        <img src="{% gravatar member %}" width="75" height="75" alt="{% blocktrans with member=member %}{{ member }}'s gravatar{% endblocktrans %}">
+                    </div>
+                    <div class="info">
+                        <b>{{ member.username }}</b>
+                    </div>
+                </div>{% empty %}
+                <span>{% trans 'No one is a member of this team' %}</span>{% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

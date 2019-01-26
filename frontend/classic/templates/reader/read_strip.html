@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n cache static %}
+{% load render_bundle from webpack_loader %}
+{% block html_prefix %} article: http://ogp.me/ns/article#{% endblock %}
+{% block title %}{% tt request chapter %}{% endblock %}
+{% block extra_head %}{% cache 600 og_data chapter.uniqid "strip" %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt request chapter %}" />
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="{{ chapter.published_at|date:'c' }}">
+    <meta property="article:modified_time" content="{{ chapter.modified_at|date:'c' }}">
+    {% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}<meta name="author" content="{% for team in teams %}{{ team }}{% if not forloop.last %}, {% endif %}{% endfor %}">{% endifnotequal %}
+    {% for team in teams %}<meta property="article:author" content="{% url 'team' team_id=team.id %}">{% endfor %}{% endwith %}
+    {% for person in chapter.comic.people %}<meta property="article:author" content="{% url 'person' person_id=person.id %}">{% endfor %} 
+    {% for tag in chapter.comic.tags.all %}<meta property="article:tag" content="{{ tag.name }}">{% endfor %}
+    <meta property="article:section" content="{{ chapter.comic }}">
+    {% if chapter.comic.cover %}
+    <meta property="og:image" content="{% icdn chapter.comic.cover.url options='{"small": true}' %}" />
+    <meta property="og:image:alt" content="{% blocktrans with comic=chapter.comic %}Cover for {{ comic }}{% endblocktrans %}" />
+    {% endif %}
+    <link rel="canonical" href="{% url 'read_uuid' chapter.uniqid %}">
+    <link rel="alternate" type="application/rss+xml" title="{% blocktrans with comic=chapter.comic %}RSS Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_rss_comic' chapter.comic.uniqid %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% blocktrans with comic=chapter.comic %}Atom Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_atom_comic' chapter.comic.uniqid %}" />
+    <meta name="robots" content="noindex, nofollow">
+
+    <script type="application/ld+json">{% jsonld request chapter %}</script>
+    <link href="{{ manifest_url }}" rel="manifest" type="application/webpub+json">
+{% endcache %}{% endblock %}{% block final_head %}
+    {% render_bundle 'comicake' 'css' %}
+{% endblock%}
+{% block body %}
+    <main role="main" id="cakeClassic">
+        <div class="text">
+            <a class="mmh" href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name|truncatechars:50 }}</a><br />
+            <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% else %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% endif %}><i class="fa fa-arrow-left"></i></a>
+            <a href="{% url 'read_uuid' chapter.uniqid %}">{% if chapter.full_title|length > 58 %}{{ chapter.full_title|truncatechars:50 }}...{% else %}{{ chapter.full_title }}{% endif %}</a>
+            <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% else %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% endif %}><i class="fa fa-arrow-right"></i></a>
+        </div>
+        <br />
+        {% include "partials/pages.html" with pages=chapter.pages.all %}
+        <br />
+        <div class="text">
+            <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% else %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% endif %}><i class="fa fa-arrow-left"></i></a>
+            <a href="{% url 'read_uuid' chapter.uniqid %}">{% if chapter.full_title|length > 58 %}{{ chapter.full_title|truncatechars:50 }}...{% else %}{{ chapter.full_title }}{% endif %}</a>
+            <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% else %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% endif %}><i class="fa fa-arrow-right"></i></a>
+        </div>
+    </main>
+{% endblock %}
+{% block footer %}{% endblock %}

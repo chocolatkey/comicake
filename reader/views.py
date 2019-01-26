@@ -115,7 +115,7 @@ def read_id_slug(request, id, page):
     """
     SEO and human-friendly reader URL for specific chapter
     """
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, id=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, id=cid)
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
@@ -130,7 +130,7 @@ def read_uuid(request, cid):
     """
     Reader for specific chapter
     """
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid)
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
@@ -144,7 +144,7 @@ def read_uuid_page(request, cid, page):
     """
     Reader for specific chapter at specific page
     """
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid)
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
@@ -158,7 +158,7 @@ def read_strip(request, cid):
     """
     Strip reader (no JavaScript required) for specific chapter
     """
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection'), published=True, uniqid=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid)
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
@@ -189,7 +189,7 @@ def read_prev(request, cid):
         Chapter,
         published=True,
         uniqid=cid
-        )
+    )
     prev_chapter = Chapter.only_published(comic=current_chapter.comic).filter(
         Q(
             chapter__lt=current_chapter.chapter,
@@ -213,7 +213,17 @@ def read_next(request, cid):
         Chapter,
         published=True,
         uniqid=cid
+    )
+    '''
+    print(Chapter.only_published(comic=current_chapter.comic).filter(
+        Q(
+            chapter__gt=current_chapter.chapter,
+            volume__gte=current_chapter.volume) | Q(volume__gte=current_chapter.volume,
+            chapter=current_chapter.chapter,
+            subchapter__gt=current_chapter.subchapter
         )
+    ))#http://127.0.0.1:8000/r/read/88ed2a0b-d281-4b47-bb08-4571c9cfb5cd/next'
+    '''
     next_chapter = Chapter.only_published(comic=current_chapter.comic).filter(
         Q(
             chapter__gt=current_chapter.chapter,

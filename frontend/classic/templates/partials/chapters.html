@@ -1,0 +1,17 @@
+{% load common i18n %}
+{% for chapter in chapters %}{% ifchanged chapter.comic %}{% if not forloop.first %}
+        </div>{% endif %}
+        <div class="group">
+            <div class="title"><a href="{% cpath chapter.comic %}">{{ chapter.comic }}</a></div>{% endifchanged %}
+            <div class="element">
+                <div class="title"><a href="{% cpath chapter %}" data-target="clickable.target">{{ chapter }}</a></div>
+                <div class="meta_r">{{ chapter.published_at|ago }}{% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}
+                    {% trans 'by' %}
+                    {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                {% endifnotequal %}{% endwith %}</div>
+                <!--<a href="#" class="mdc-list-item__meta material-icons" aria-label="Download this chapter" title="Download" onclick="alert('Downloads not supported yet, sorry!'); event.preventDefault();">
+                    file_download
+                </a>--></div>{% if forloop.last %}
+        </div>{% endif %}{% empty %}
+        <span>{% trans 'No chapters available' %}</span>
+{% endfor %}

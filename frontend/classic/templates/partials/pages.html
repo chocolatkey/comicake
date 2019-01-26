@@ -1,0 +1,1 @@
+{% load i18n common %}{% for page in pages %}<img src="{% icdn page.file.url options='{"hq": true}' %}" alt="{% blocktrans with number=forloop.counter %}Page {{ number }}{% endblocktrans %}"/>{% endfor %}

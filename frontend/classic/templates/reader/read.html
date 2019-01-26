@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n cache static %}
+{% load render_bundle from webpack_loader %}
+{% block html_prefix %} article: http://ogp.me/ns/article#{% endblock %}
+{% block title %}{% tt request chapter %}{% endblock %}
+{% block extra_head %}{% cache 600 og_data chapter.uniqid %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt request chapter %}" />
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="{{ chapter.published_at|date:'c' }}">
+    <meta property="article:modified_time" content="{{ chapter.modified_at|date:'c' }}">
+    {% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}<meta name="author" content="{% for team in teams %}{{ team }}{% if not forloop.last %}, {% endif %}{% endfor %}">{% endifnotequal %}
+    {% for team in teams %}<meta property="article:author" content="{% url 'team' team_id=team.id %}">{% endfor %}{% endwith %}
+    {% for person in chapter.comic.people %}<meta property="article:author" content="{% url 'person' person_id=person.id %}">{% endfor %} 
+    {% for tag in chapter.comic.tags.all %}<meta property="article:tag" content="{{ tag.name }}">{% endfor %}
+    <meta property="article:section" content="{{ chapter.comic }}">
+    {% if chapter.comic.cover %}
+    <meta property="og:image" content="{% icdn chapter.comic.cover.url options='{"small": true}' %}" />
+    <meta property="og:image:alt" content="{% blocktrans with comic=chapter.comic %}Cover for {{ comic }}{% endblocktrans %}" />
+    {% endif %}
+    <link rel="canonical" href="{% url 'read_uuid' chapter.uniqid %}">
+    <link rel="alternate" type="application/rss+xml" title="{% blocktrans with comic=chapter.comic %}RSS Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_rss_comic' chapter.comic.uniqid %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% blocktrans with comic=chapter.comic %}Atom Feed for '{{ comic }}'{% endblocktrans %}" href="{% url 'feed_atom_comic' chapter.comic.uniqid %}" />
+    <!--[if IE]>
+    <meta http-equiv="refresh" content="0;url={% url 'read_uuid_strip' chapter.uniqid %}">
+    <![endif]-->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url={% url 'read_uuid_strip' chapter.uniqid %}">
+    </noscript>
+
+    <script type="application/ld+json">{% jsonld request chapter %}</script>
+    <link href="{{ manifest_url }}" rel="manifest" type="application/webpub+json">
+{% endcache %}{% endblock %}{% block final_head %}
+    {% render_bundle 'comicake' 'css' %}
+    {% render_bundle 'comicake' 'js' %}
+{% endblock%}
+{% block extrabody %} data-controller="reader" data-reader-chapter-base="{% url 'read_uuid' chapter.uniqid %}" data-reader-comic-progression="{% comic_progression chapter.comic %}" data-reader-chapter-spine="{% spine request chapter.pages.all %}" data-reader-next-chapter="{% url 'read_uuid_next' chapter.uniqid %}" data-reader-page="{{ current_page }}" data-action="keydown@window->reader#keydown scroll@window->reader#scroll keyup@window->reader#keyup resize@window->reader#resize"{% endblock %}
+{% block body %}{% with cchapters=chapter.comic.chapters pages=chapter.pages.all page_count=chapter.pages.count current_page_index=current_page|add:"-1" %}
+    <div class="panel">
+        <div class="topbar" data-target="reader.topbar">
+            <div>
+                <div class="topbar_left">
+                    <a class="mmh" href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}"><h1 class="tbtitle ttitle">{{ chapter.comic.name|truncatechars:50 }}</h1></a>
+                    <span class="spacer mmh ttitle">›</span>
+                    <div class="tbtitle dropdown_parent mmh"><div class="text"><a href="{% url 'read_uuid' chapter.uniqid %}">{% if chapter.full_title|length > 58 %}{{ chapter.full_title|truncatechars:50 }}...{% else %}{{ chapter.full_title }}{% endif %}</a> ⤵</div>
+                        <ul class="dropdown">
+                        {% for ch in cchapters %}
+                            <li><a href="{% url 'read_uuid' ch.uniqid %}">{{ ch.full_title|truncatechars:50 }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <span class="dh">
+                        <a href="{% url 'series' chapter.comic.slug %}"><span class="icon_wrapper medi fleft xms"><i class="fa fa-arrow-left" style="padding: 3px;"></i></span> <span class="xmh">{{ chapter.comic.name|truncatechars:35 }}</span></a>
+                        <span class="spacer ttitle xmh">›</span>
+                        <select id="csel" class="asel selecto" data-action="change->reader#asel">
+                        {% for ch in cchapters %}
+                            <option value="{% url 'read_uuid' ch.uniqid %}"{% if ch.id == chapter.id %} selected{% endif %}>{{ ch.simple_title }}</option>
+                        {% endfor %}
+                        </select>
+                    </span>
+                    {% if not chapter.protected %}
+                        <!--<div class="icon_wrapper fleft medi"><a href="download url" title="{{ _('Download Chapter') }}" onClick="downloadChapter();"><i class="fa fa-download"></i></a></div>-->
+                    {% endif %}
+                </div>
+                <div class="topbar_right">{% if chapter.comic.format != 2 %}
+                    <a href="{% url 'read_uuid_strip' chapter.uniqid %}"><div class="icon_wrapper fright medi" title="{% trans 'Toggle reading direction' %}"><i class="fa fa-arrows-v"></i></div></a>
+                    <div class="divider mmh"></div>
+                    <div class="tbtitle dropdown_parent dropdown_right mmh"><div class="text">{{ page_count }} ⤵</div>
+                        <ul class="dropdown" style="width:90px;">
+                        {% for page in pages %}
+                            <li><a href="{% url 'read_uuid_page' chapter.uniqid forloop.counter %}" data-action="click->reader#changeNumber">Page {{ forloop.counter }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="divider mmh"></div>{% endif %}
+                    <span class="numbers mmh{% if chapter.comic.format == 2 %} dnone{% endif %}" data-target="reader.numbers">{% if chapter.comic.format != 2 %}{% page_button_range page_count current_page %}{% for i in pbrange %}
+                        <div class="number number_{{ i }}{% if i is current_page %} current_page{% endif %}"><a href="{% url 'read_uuid_page' chapter.uniqid i %}">{% azpad page_count i %}</a></div>{% endfor %}
+                    {% endif %}</span>
+                </div>
+            </div>
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+    <div id="page" data-target="reader.pagecontainer">{% with pg=pages|index:current_page_index %}
+        <div class="inner">{% if chapter.comic.format == 2 %}{% for page in pages %}
+            <a data-target="reader.pagelink" href="{% url 'read_uuid_page' chapter.uniqid current_page|add:"1" %}" data-action="click->reader#nextPage contextmenu->reader#prevPage">
+                <img data-target="reader.page" id="page-{{ forloop.counter }}" src="{% icdn page.file.url %}" />
+            </a>
+            {% endfor %}{% else %}<a data-target="reader.pagelink" href="{% url 'read_uuid_page' chapter.uniqid current_page|add:"1" %}" data-action="click->reader#nextPage contextmenu->reader#prevPage">
+                <img data-target="reader.page" class="open" src="{% if pg == None %}{% static 'img/broken.svg' %}{% else %}{% icdn pg.file.url %}{% endif %}" />
+            </a>{% endif%}
+        </div>
+    {% endwith %}</div>
+
+    <div class="clearer"></div>
+
+    <div id="bottombar">
+        <div class="pagenumber mmh{% if chapter.comic.format == 2 %} dnone{% endif %}">
+            {% trans 'Page' %} <span data-target="reader.pagenum">{{ number }}</span>
+        </div>
+        <span class="{% if chapter.comic.format == 2 %}dnone{% else %}dh{% endif %}">
+            {% trans 'Page' %}:&nbsp;
+            <select id="psel" class="selecto" data-target="reader.pageselector" data-action="change->reader#psel">
+                {% for page in pages %}
+                    <option{% if i is current_page %} selected{% endif %}>{{ forloop.counter }}</option>
+                {% endfor %}
+            </select>
+        </span>
+        <div class="socialbuttons">
+            <div class="tweet">
+                <script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+                <a href="https://twitter.com/share" class="twitter-share-button" data-url="{{ request.build_absolute_uri }}" data-count="horizontal" data-via="{# todo twitter #}" data-related="{# todo twitter #}">Tweet</a>
+            </div>
+            <div class="facebook">
+                <iframe src="https://www.facebook.com/plugins/like.php?href={{ request.build_absolute_uri|urlencode }}&amp;layout=button_count&amp;show_faces=false&amp;width=60&amp;action=like&amp;font=arial&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:60px; height:21px;" allowTransparency="true"></iframe>
+            </div>
+            <div class="googleplus">
+                <g:plusone size="medium" href="{{ request.build_absolute_uri }}"></g:plusone>
+            </div>
+            <script async>
+                (function() {
+                    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                    po.src = 'https://apis.google.com/js/plusone.js';
+                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+                })();
+            </script>
+        </div>
+    </div>
+{% endwith %}{% endblock %}
+{% block footer %}{% endblock %}

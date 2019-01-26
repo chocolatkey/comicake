@@ -1,0 +1,105 @@
+::selection {
+    /* Webkit */
+    background: #fff;
+    color: #000;
+}
+::-moz-selection {
+    /* Firefox */
+    background: #fff;
+    color: #000;
+}
+
+:not(.material-icons) {
+    font-family: Roboto, "游ゴシック", YuGothic, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif !important;
+}
+
+// To fix above
+.mdc-fab__icon {
+    font-family: 'Material Icons' !important;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.logo {
+    height: 50px;
+    width: 50px;
+    padding: 0;
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+}
+
+.rss-button {
+    /*font-size: 20px !important;*/
+    vertical-align: middle;
+}
+
+.rss-button:hover, .rss-here {
+    color: #ff6e00 !important;
+}
+
+.fright {
+    float: right!important
+}
+
+.fleft {
+    float: left!important
+}
+
+.dnone {
+    display: none!important
+}
+
+.nooverflow {
+    overflow: visible!important
+}
+
+footer .text {
+    font-size: 11px;
+    color: #666;
+}
+footer {
+    text-align: center;
+    margin: 0 5px;
+}
+
+.pagination:after {
+    clear: both;
+    height: 0;
+    width: 100%;
+    content: '';
+    display: block;
+}
+
+table td {
+    line-height: 2;
+}
+
+body {
+    width: inherit;
+    height: inherit;
+}
+
+.etext {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.etext a:hover {
+    text-decoration: underline;
+}
+
+.blog--post img {
+    max-width: 100%;
+    height: auto;
+}

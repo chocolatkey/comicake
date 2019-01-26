@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n cache %}
+{% block title %}{% tt request 'Latest Releases' %}{% endblock %}
+{% block extra_head %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt request 'Latest Releases' %}" />
+    <meta property="og:description" content="{% blocktrans with site_name=SITE_TITLE %}Latest releases by {{ site_name }}{% endblocktrans %}" />
+    <meta property="og:type" content="website" />
+    <meta name="description" content="{% blocktrans with site_name=SITE_TITLE %}Latest releases by {{ site_name }}{% endblocktrans %}">
+{% endblock %}
+{% block body %}{% cache 60 latest chapters.number %}
+    <div class="panel">
+        <div class="list">
+            <div class="title">
+                <a href="{% url 'latest' %}">{% trans 'Latest Releases' %}</a>
+                <a href="{% url 'feed_rss' %}" title="{% blocktrans %}RSS Feed{% endblocktrans %}" data-turbolinks="false"><i class="fa fa-rss" aria-hidden="true"></i></a>
+            </div>
+            {% include 'partials/chapters.html' with chapters=chapters %}
+            {% include 'partials/pagination.html' with subject=chapters page="latest_page" %}
+        </div>
+    </div>
+{% endcache %}{% endblock %}

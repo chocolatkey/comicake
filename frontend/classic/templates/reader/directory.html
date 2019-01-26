@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% load flatpages common humanize i18n static %}
+{% block title %}{% tt request 'Series List' %}{% endblock %}
+{% block extra_head %}{# TODO: make into template tag you can pass objects #}
+    <meta property="og:title" content="{% tt request 'Series List' %}" />
+    <meta property="og:description" content="{% blocktrans with site_name=SITE_TITLE %}Series list for {{ site_name }}{% endblocktrans %}" />
+    <meta property="og:type" content="website" />
+    <meta name="description" content="{% blocktrans with site_name=SITE_TITLE %}Series List for {{ site_name }}{% endblocktrans %}">
+{% endblock %}
+{% block body %}
+    <div class="panel">
+        <div class="list series">
+            <div class="title">
+                <a href="{% url 'directory' %}">{% trans 'Comic Directory' %}</a>
+            </div>{% for comic in comics %}
+                <div class="group">
+                    <a href="{% url 'series' comic.slug %}"><img class="preview" src="{% if comic.cover %}{% icdn comic.cover.url options='{"small": true}' %}{% else %}{% static 'img/placeholder.svg' %}{% endif %}" /></a>
+                    <div class="title"><a href="{% url 'series' comic.slug %}">{{ comic.name }}{% if comic.alt %}<span class="mdc-typography--caption">「{{ comic.alt }}」</span>{% endif %}</a>&nbsp;{% include 'partials/rss_link.html' with comic=comic %}<span class="meta"><!--TODO: edit url--></span></div>
+                        <div class="element">{% with comic.latest_chapter as chapter %}
+                            <div class="title">{% trans 'Latest Release' %}: {% if chapter %}<a href="{% cpath chapter %}">{{ chapter.full_title }}</a>{% else %}{% trans 'No chapters available' %}{% endif %}</div>
+                            <div class="meta_r">{{ chapter.published_at|ago }}{% with chapter.team.all as teams %}{% ifnotequal teams|length 0 %}
+                                {% trans 'by' %}
+                                {% for team in teams %}<a href="{% url 'team' team_id=team.id %}">{{ team }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                            {% endifnotequal %}{% endwith %}</div>{% endwith %}
+                        </div>
+                </div>{% empty %}
+            <div><span>{% trans 'No series have been published' %}</span></div>
+            {% endfor %}
+            {% include 'partials/pagination.html' with subject=comics page="directory_page" %}
+        </div>
+    </div>
+{% endblock %}

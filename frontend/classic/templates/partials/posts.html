@@ -1,0 +1,14 @@
+{% load common i18n %}{% for post in posts %}
+                    <div class="mdc-card">
+                        <div class="post-card__primary">
+                            <a class="post-card__title mdc-typography--headline5" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                            <h3 class="post-card__subtitle mdc-typography--subtitle2">{{ post.created_at|ago }} {% trans 'by'%} {{ post.author }}</h3>
+                        </div>
+                        <div class="post-card__secondary mdc-typography--body2">
+                            {{ post.content|truncatewords_html:50|safe }}
+                        </div>
+                        <div class="mdc-card__actions">
+                            <div class="mdc-card__action-buttons"><a class="mdc-button mdc-button--raised mdc-card__action mdc-card__action--button ripple" href="{{ post.get_absolute_url }}">{% trans 'Read more' %}</a></div>
+                        </div>
+                    </div>
+{% endfor %}

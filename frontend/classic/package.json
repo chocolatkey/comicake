@@ -1,0 +1,67 @@
+{
+  "name": "comicake-frontend-classic",
+  "version": "0.1.0",
+  "description": "FoOlSlide2/X-base design frontend for comicake",
+  "dependencies": {
+    "@babel/core": "^7.0.0-beta.44",
+    "@babel/polyfill": "^7.0.0-beta.44",
+    "@babel/preset-env": "^7.0.0-beta.44",
+    "@stimulus/polyfills": "^1.1.0",
+    "babel-loader": "^8.0.0-beta",
+    "css-loader": "^0.28.11",
+    "extract-loader": "^2.0.1",
+    "file-loader": "^1.1.11",
+    "html-loader": "^0.5.5",
+    "ini": "^1.3.5",
+    "mini-css-extract-plugin": "^0.4.0",
+    "mustache": "^2.3.0",
+    "node-sass": "^4.8.3",
+    "pre-loader": "^0.5.0",
+    "qs": "^6.5.2",
+    "sass-loader": "^7.0.1",
+    "siema": "^1.5.1",
+    "stimulus": "^1.1.0",
+    "turbolinks": "^5.1.1",
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webpack": "^4.6.0",
+    "webpack-bundle-tracker": "^0.4.0-beta",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "string-replace-loader": "^2.1.1",
+    "webpack-bundle-analyzer": "^2.12.0",
+    "webpack-cli": "^2.0.14",
+    "webpack-dev-server": "^3.1.3",
+    "workbox-webpack-plugin": "^3.1.0"
+  },
+  "engines": {
+    "yarn": ">= 1.0.0"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --mode development --config webpack.dev.js",
+    "build": "webpack -p --config webpack.prod.js",
+    "analyze": "webpack -p --config webpack.prod.js --profile --json > stats.json && webpack-bundle-analyzer stats.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chocolatkey/comicake.git"
+  },
+  "keywords": [
+    "comic",
+    "reader",
+    "manga",
+    "toon",
+    "slide",
+    "foolslide",
+    "django",
+    "python",
+    "stimulus",
+    "turbolinks"
+  ],
+  "author": "chocolatkey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chocolatkey/comicake/issues"
+  },
+  "homepage": "https://github.com/chocolatkey/comicake#readme"
+}

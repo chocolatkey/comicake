@@ -1,0 +1,1 @@
+{% for person in people %}<a href="{% url 'person' person.id %}" title="{{ person }}{% if person.alt %} ({{ person.alt }}){% endif %}">{{ person }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
