@@ -40,8 +40,7 @@ module.exports = {
         modules: [
             "./assets/js",
             "./assets/css",
-            "node_modules",
-            "bower_components"
+            "node_modules"
         ]
     },
     output: {
@@ -78,15 +77,7 @@ module.exports = {
                         includePaths: [
                             "./assets/css",
                             "./node_modules"
-                        ],
-                        importer: function(url, prev) {
-                            if(url.indexOf("@material") === 0) {
-                                var filePath = url.split("@material")[1];
-                                var nodeModulePath = `./node_modules/@material/${filePath}`;
-                                return { file: require("path").resolve(nodeModulePath) };
-                            }
-                            return { file: url };
-                        }
+                        ]
                     }
                 },
             ]
@@ -97,9 +88,10 @@ module.exports = {
             query: {
                 presets: [
                     ["@babel/preset-env", {
-                        /*targets: {
+                        targets: {
+                            chrome: 44,
                             ie: 11
-                        }*/
+                        }
                     }]
                 ]
             }
@@ -122,15 +114,6 @@ module.exports = {
             // both options are optional
             filename: "[name]-[hash].css",
             chunkFilename: "[id].css"
-        }),
-        new UglifyJsPlugin({
-            parallel: true,
-            uglifyOptions: {
-                toplevel: true,
-                mangle: {
-                    toplevel: true,
-                }
-            }
         }),
         new WorkboxPlugin.GenerateSW({
             swDest: "./templates/sw.js",

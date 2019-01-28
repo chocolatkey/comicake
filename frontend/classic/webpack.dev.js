@@ -6,7 +6,6 @@ const path = require("path"),
     BundleTracker = require("webpack-bundle-tracker"),
     pp = "http://localhost:3000/static/bundles/";
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 const config = ini.parse(fs.readFileSync("../../frontend_settings.ini", "utf-8"));
 
