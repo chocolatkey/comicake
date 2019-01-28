@@ -138,7 +138,7 @@ export default class Reader extends Controller {
                     return false;
                 page = arraydata[idx];
                 if(!page) {
-                    console.warn("Not page");
+                    console.warn("Not page", page, arraydata, idx);
                     return;
                 }
                 this.spine[page].loaded = true;
