@@ -137,7 +137,10 @@ export default class Reader extends Controller {
                 if(index == page)
                     return false;
                 page = arraydata[idx];
-                if(!page) return;
+                if(!page) {
+                    console.warn("Not page");
+                    return;
+                }
                 this.spine[page].loaded = true;
                 this.spine[page].href = src;
                 const num = this.getNumberButton("number_" + (page + 1));
