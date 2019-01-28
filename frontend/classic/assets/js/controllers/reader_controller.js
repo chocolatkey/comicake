@@ -125,7 +125,7 @@ export default class Reader extends Controller {
             if(id + i >= 0 && id + i < this.spine.length)
             {
                 if(this.spine[(id+i)].loaded) continue;
-                array.push(cdn.image(this.spine[(id+i)].href));
+                array.push(cdn.image(this.spine[(id+i)].href, id));
                 this.spine[(id+i)].href = window.comicake.PATHS.static + "img/placeholder.svg";
                 arraydata.push(id+i);
             }
@@ -137,6 +137,7 @@ export default class Reader extends Controller {
                 if(index == page)
                     return false;
                 page = arraydata[idx];
+                if(!page) return;
                 this.spine[page].loaded = true;
                 this.spine[page].href = src;
                 const num = this.getNumberButton("number_" + (page + 1));

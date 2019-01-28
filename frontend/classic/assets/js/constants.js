@@ -10,5 +10,4 @@ export function readerLink(uuid) {
 }
 export const COMMENTS = window.comicake.SOCIAL.disqus; // Either disqus code or false/null
 export const DISCORD = window.comicake.SOCIAL.discord; // Discord group ID, optional
-export const DEBUG = window.comicake.DEBUG;
-export const USECDN = true;
+export const USECDN = !window.comicake.DEBUG;
