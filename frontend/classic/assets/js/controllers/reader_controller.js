@@ -137,8 +137,8 @@ export default class Reader extends Controller {
                 if(index == page)
                     return false;
                 page = arraydata[idx];
-                if(!page) {
-                    console.warn("Not page", page, arraydata, idx);
+                if(!this.spine[page]) {
+                    console.warn("No page for", page);
                     return;
                 }
                 this.spine[page].loaded = true;

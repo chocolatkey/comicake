@@ -1,6 +1,6 @@
 {
   "name": "comicake-frontend-classic",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "FoOlSlide2/X-base design frontend for comicake",
   "dependencies": {
     "@babel/core": "^7.0.0-beta.44",
