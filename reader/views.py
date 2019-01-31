@@ -43,7 +43,7 @@ def latest_comic(request, **kwargs):
     else:
         return None
 
-def chapter_last_modified(request, cid):
+def chapter_last_modified(request, cid, page=1):
     return get_object_or_404(Chapter.objects.only('modified_at'), published=True, uniqid=cid).modified_at
 
 ###
@@ -139,7 +139,7 @@ def read_uuid(request, cid):
     )
 
 @cache_page(settings.CACHE_MEDIUM)
-#@last_modified(chapter_last_modified) TODO page
+@last_modified(chapter_last_modified)
 def read_uuid_page(request, cid, page):
     """
     Reader for specific chapter at specific page
