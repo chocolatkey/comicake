@@ -114,16 +114,6 @@
             <div class="facebook">
                 <iframe src="https://www.facebook.com/plugins/like.php?href={{ request.build_absolute_uri|urlencode }}&amp;layout=button_count&amp;show_faces=false&amp;width=60&amp;action=like&amp;font=arial&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:60px; height:21px;" allowTransparency="true"></iframe>
             </div>
-            <div class="googleplus">
-                <g:plusone size="medium" href="{{ request.build_absolute_uri }}"></g:plusone>
-            </div>
-            <script async>
-                (function() {
-                    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-                    po.src = 'https://apis.google.com/js/plusone.js';
-                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-                })();
-            </script>
         </div>
     </div>
 {% endwith %}{% endblock %}
