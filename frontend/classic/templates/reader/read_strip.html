@@ -28,21 +28,21 @@
     {% render_bundle 'comicake' 'css' %}
 {% endblock%}
 {% block body %}
-    <main role="main" id="cakeClassic">
-        <div class="text">
-            <a class="mmh" href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name|truncatechars:50 }}</a><br />
-            <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% else %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% endif %}><i class="fa fa-arrow-left"></i></a>
-            <a href="{% url 'read_uuid' chapter.uniqid %}">{% if chapter.full_title|length > 58 %}{{ chapter.full_title|truncatechars:50 }}...{% else %}{{ chapter.full_title }}{% endif %}</a>
-            <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% else %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% endif %}><i class="fa fa-arrow-right"></i></a>
-        </div>
-        <br />
-        {% include "partials/pages.html" with pages=chapter.pages.all %}
-        <br />
-        <div class="text">
-            <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% else %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% endif %}><i class="fa fa-arrow-left"></i></a>
-            <a href="{% url 'read_uuid' chapter.uniqid %}">{% if chapter.full_title|length > 58 %}{{ chapter.full_title|truncatechars:50 }}...{% else %}{{ chapter.full_title }}{% endif %}</a>
-            <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% else %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% endif %}><i class="fa fa-arrow-right"></i></a>
-        </div>
-    </main>
+                <main role="main" id="cakeClassic">
+                    <div class="text">
+                        <a class="mmh" href="{% url 'series' chapter.comic.slug %}" title="{{ chaper.comic.name }}{% if comic.alt %} ({{ chapter.comic.alt }}){% endif %}">{{ chapter.comic.name|truncatechars:50 }}</a><br />
+                        <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% else %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% endif %}><i class="fa fa-arrow-left"></i></a>
+                        <a href="{% url 'read_uuid' chapter.uniqid %}">{% if chapter.full_title|length > 58 %}{{ chapter.full_title|truncatechars:50 }}...{% else %}{{ chapter.full_title }}{% endif %}</a>
+                        <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% else %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% endif %}><i class="fa fa-arrow-right"></i></a>
+                    </div>
+                    <br />
+                    {% include "partials/pages.html" with pages=chapter.pages.all %}
+                    <br />
+                    <div class="text">
+                        <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% else %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% endif %}><i class="fa fa-arrow-left"></i></a>
+                        <a href="{% url 'read_uuid' chapter.uniqid %}">{% if chapter.full_title|length > 58 %}{{ chapter.full_title|truncatechars:50 }}...{% else %}{{ chapter.full_title }}{% endif %}</a>
+                        <a href="{% if chapter.comic.format is 1 %}{% url 'read_uuid_prev' chapter.uniqid %}" title="{% trans 'Prev' %}"{% else %}{% url 'read_uuid_next' chapter.uniqid %}" title="{% trans 'Next' %}"{% endif %}><i class="fa fa-arrow-right"></i></a>
+                    </div>
+                </main>
 {% endblock %}
 {% block footer %}{% endblock %}

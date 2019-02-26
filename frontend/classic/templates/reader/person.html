@@ -11,33 +11,33 @@
     <script type="application/ld+json">{% jsonld request person %}</script>
 {% endblock %}
 {% block body %}
-    <div class="panel">
-        <div class="list">
-            <div class="title">
-                <a href="{% url 'person' person.id %}">{{ person.name }}{% if person.alt %}<span class="mdc-typography--title">「{{ person.alt }}」</span>{% endif %}</a>
-            </div>
-            <div class="group">
-                <div>
-                    {{ team.description }}
+                <div class="panel">
+                    <div class="list">
+                        <div class="title">
+                            <a href="{% url 'person' person.id %}">{{ person.name }}{% if person.alt %}<span class="mdc-typography--title">「{{ person.alt }}」</span>{% endif %}</a>
+                        </div>
+                        <div class="group">
+                            <div>
+                                {{ team.description }}
+                            </div>
+                        </div>
+                        <div class="group">
+                            <div class="title">{% trans 'Works' %}</div>{% for comic in person.comics.all %}
+                            <div class="element">
+                                <div class="image">
+                                    <img class="preview" src="{% icdn comic.cover.url options='{"thumb": true}' %}" alt="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}">
+                                </div>
+                                <div class="info">
+                                    <a href="{% url 'series' comic.slug %}"><b>{{ comic.name }}</b></a>
+                                </div>
+                                <div class="info">{% spaceless %}
+                                    {% with authors=comic.author.all artists=comic.artist.all %}
+                                    {% if person in authors %}{% trans 'Author' %}{% endif %}{% if person in authors and person in artists %}{% trans ' & ' %}{% endif %}{% if person in artists %}{% trans 'Artist' %}{% endif %}
+                                    {% endwith %}
+                                {% endspaceless %}</div>
+                            </div>{% empty %}
+                            <span>{% trans 'This person has no works' %}</span>{% endfor %}
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="group">
-                <div class="title">{% trans 'Works' %}</div>{% for comic in person.comics.all %}
-                <div class="element">
-                    <div class="image">
-                        <img class="preview" src="{% icdn comic.cover.url options='{"thumb": true}' %}" alt="{% blocktrans with comic=comic %}Cover for {{ comic }}{% endblocktrans %}">
-                    </div>
-                    <div class="info">
-                        <a href="{% url 'series' comic.slug %}"><b>{{ comic.name }}</b></a>
-                    </div>
-                    <div class="info">{% spaceless %}
-                        {% with authors=comic.author.all artists=comic.artist.all %}
-                        {% if person in authors %}{% trans 'Author' %}{% endif %}{% if person in authors and person in artists %}{% trans ' & ' %}{% endif %}{% if person in artists %}{% trans 'Artist' %}{% endif %}
-                        {% endwith %}
-                    {% endspaceless %}</div>
-                </div>{% empty %}
-                <span>{% trans 'This person has no works' %}</span>{% endfor %}
-            </div>
-        </div>
-    </div>
 {% endblock %}

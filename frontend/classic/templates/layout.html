@@ -57,38 +57,38 @@
 </head>
 <body{% block extrabody %}{% endblock %}>
     <div id="wrapper">
-            {% block header %}<div id="header">
-                    <a href="/"><img id="titl" src="{% static SITE_LOGO %}" alt="{{ SITE_TITLE }}"></a>
-                <!--<a href="/forum" style="display: inline-block; padding: 10px;"><div id="title">Forums</div><sup style="color: #FFCC00;">New!</sup></a>-->
-                    <div role="navigation" id="navig">
-                        <ul>
-                            <li>
-                                <a href="{% url 'latest' %}"><i class="fa fa-clock-o"></i><span class="mh"> {% trans 'Latest' %}</span></a>
-                            </li>
-                            <li>
-                                <a href="{% url 'directory' %}"><i class="fa fa-list"></i><span class="mh"> {% trans 'Directory' %}</span></a>
-                            </li>
-                            <li class="dh">
-                                <a href="{% url 'search' %}"><i class="fa fa-search"></i><span class="mh"> {% trans 'Search' %}</span></a>
-                            </li>
-                            <li>
-                                <form action="{% url 'search' %}">
-                                    <input type="text" placeholder="To search series, type and hit enter" id="searchbox" class="fright">
-                                </form>
-                            </li>
-                            <li>
-                            <!--<a style="padding:0;" href=""><img height="28" width="28" style="position:relative; top:1px;" src="rss img" /></a>-->
-                            </li>
-            
-                            <div class="clearer"></div>
-                        </ul>
-                    </div>
-            
-            
-                    <div class="clearer"></div>
-            </div>{% endblock %}
-            <article id="content">{% block body %}
-            {% endblock %}</article>
+        {% block header %}<div id="header">
+                <a href="/"><img id="titl" src="{% static SITE_LOGO %}" alt="{{ SITE_TITLE }}"></a>
+            <!--<a href="/forum" style="display: inline-block; padding: 10px;"><div id="title">Forums</div><sup style="color: #FFCC00;">New!</sup></a>-->
+                <div role="navigation" id="navig">
+                    <ul>
+                        <li>
+                            <a href="{% url 'latest' %}"><i class="fa fa-clock-o"></i><span class="mh"> {% trans 'Latest' %}</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'directory' %}"><i class="fa fa-list"></i><span class="mh"> {% trans 'Directory' %}</span></a>
+                        </li>
+                        <li class="dh">
+                            <a href="{% url 'search' %}"><i class="fa fa-search"></i><span class="mh"> {% trans 'Search' %}</span></a>
+                        </li>
+                        <li>
+                            <form action="{% url 'search' %}">
+                                <input type="text" placeholder="To search series, type and hit enter" id="searchbox" class="fright">
+                            </form>
+                        </li>
+                        <li>
+                        <!--<a style="padding:0;" href=""><img height="28" width="28" style="position:relative; top:1px;" src="rss img" /></a>-->
+                        </li>
+        
+                        <div class="clearer"></div>
+                    </ul>
+                </div>
+        
+        
+                <div class="clearer"></div>
+        </div>{% endblock %}
+        <article id="content">{% block body %}{% endblock %}
+        </article>
     </div>
     {% block footer %}<footer class="noselect">
             <div class="text">{% trans 'All comics featured on this website are property of their publishers. If you liked any of the comics you obtained here, consider buying the original versions, or the local translation, when available. Thanks for your support.' %}</div>
