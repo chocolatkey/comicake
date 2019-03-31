@@ -14,7 +14,6 @@ from django.utils.timezone import is_aware, utc
 from django.utils.dateformat import format
 from reader.utils import cdn_url
 from reader.jsonld import chapterLd, comicLd, teamLd, personLd, postLd, pageLd, chapterReadingOrder, comicFormat
-from django.contrib.sites.shortcuts import get_current_site
 
 import json
 import hashlib
@@ -135,7 +134,7 @@ def tt(request, item):
         title = _(item)
     else:
         title = str(item)
-    return "{} :: {}".format(title, get_current_site(request).name)
+    return "{} :: {}".format(title, request.site.name)
 
 @register.simple_tag(name='gravatar')
 def gravatar(user):

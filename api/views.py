@@ -29,7 +29,7 @@ class StatusViewSet(viewsets.GenericViewSet):
     @cache_response()
     def list(self, request, format=None):
         status = {
-            "site": settings.SITE_TITLE,
+            "site": request.site.name,
             "version": settings.VERSION,
             "language": settings.LANGUAGE_CODE,
             "analytics": settings.GA_ID,
@@ -134,7 +134,7 @@ class ComicViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     """
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     throttle_classes = (UserRateThrottle, AnonRateThrottle)
-    queryset = Comic.objects.all()
+    queryset = Comic.only_published()
     serializer_class = ComicSerializer
     pagination_class = IdSetPagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
@@ -145,7 +145,7 @@ class ComicViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         #pprint(vars(super().get_throttles()[1]))
-        queryset = Comic.objects.filter(published=True)
+        queryset = Comic.only_published()
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)  
         return queryset
@@ -161,7 +161,7 @@ class ChapterViewSet(CacheResponseAndETAGMixin, viewsets.ModelViewSet):
     """
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     throttle_classes = (UserRateThrottle, AnonRateThrottle)
-    queryset = Chapter.objects.all()
+    queryset = Chapter.only_published()
     serializer_class = ChapterSerializer
     pagination_class = ChapterSetPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter)

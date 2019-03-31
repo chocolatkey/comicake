@@ -4,6 +4,8 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.contrib.sites.managers import CurrentSiteManager
 from django.utils import timezone
 from datetime import timedelta, datetime
 import uuid
@@ -43,7 +45,7 @@ class Person(models.Model):
     alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'), db_index=True)
 
     def comics(self):
-        return Comic.objects.filter(Q(artist=self) | Q(author=self), published=True).order_by('-modified_at')
+        return Comic.only_published(Q(artist=self) | Q(author=self)).order_by('-modified_at')
 
     def get_absolute_url(self):
         return reverse('person', args=[self.id])
@@ -65,6 +67,17 @@ class Comic(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
     licenses = models.ManyToManyField(Licensee, blank=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, default=settings.SITE_ID)
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
+
+    @staticmethod
+    def only_published(**kwargs):
+        comics = Comic.on_site.all()
+        if kwargs:
+            comics = comics.filter(**kwargs)
+        return comics.filter(published=True)
 
     def authors(self):
         mlist = ""
@@ -195,6 +208,7 @@ class Chapter(models.Model):
         1. The comic the chapter belongs to is published
         2. Published field is true and publish date has passed
         3. Protection is disabled OR protection is enabled and ready
+        4. Chapter belongs to a comic on this site (obviously)
         """
         chapters = Chapter.objects.all()
         prefetch_comic = True
@@ -203,13 +217,14 @@ class Chapter(models.Model):
             chapters = chapters.filter(**kwargs)
         filtered = chapters.filter(
                 ~Q(Q(protected=True) & Q(protection__isnull=True)),
-                comic__published=True,
+                comic__published=True, comic__site=settings.SITE_ID,
                 published=True, published_at__lte=timezone.now()
             )
         if prefetch_comic:
             return filtered.prefetch_related('comic')
         else:
             return filtered
+
     def get_protection(self):
         if self.protected and self.protection:
             return True # TODO real protection val

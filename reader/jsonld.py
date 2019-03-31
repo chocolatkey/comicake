@@ -1,7 +1,6 @@
 from django.utils.translation import gettext as _
 from django.conf import settings
 from django.urls import reverse
-from django.contrib.sites.shortcuts import get_current_site
 from .utils import cdn_url
 
 # TODO: make this a nice class sometime
@@ -168,7 +167,7 @@ def websiteBase(request):
             "itemListElement": [{
                 "@type": "ListItem",
                 "position": 1,
-                "item": get_current_site(request).name
+                "item": request.site.name
             }]
         },
         "provider": settings.GENERATOR,
@@ -205,7 +204,7 @@ def postLd(request, post):
         "author": post.author.username,
         "dateCreated": tti(post.created_at),
         "dateModified": tti(post.modified_at),
-        "publisher": get_current_site(request).name
+        "publisher": request.site.name
     }
     return me
 

@@ -2,7 +2,6 @@ import os
 import random
 import binascii
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
 from django.db.models.fields import CharField
 from urllib.parse import urlparse, urlencode
 from django.http import JsonResponse
@@ -39,13 +38,13 @@ def global_settings(request):
         'DEBUG': settings.DEBUG,
         'SENTRY_DSN': settings.SENTRY_DSN,
         'GA_ID': settings.GA_ID,
-        'SITE_TITLE': settings.SITE_TITLE,
+        'SITE_TITLE': request.site.name,
         'SITE_LOGO': settings.SITE_LOGO,
         'SITE_FAVICON': settings.SITE_FAVICON,
         'SITE_DESCRIPTION': settings.SITE_DESCRIPTION,
         'VERSION': settings.VERSION,
         'GENERATOR': settings.GENERATOR,
-        'BASE_URL': "http://localhost:8000" if settings.DEBUG else request.scheme + "://" + get_current_site(None).domain, # baka, this is so bad
+        'BASE_URL': "http://localhost:8000" if settings.DEBUG else request.scheme + "://" + request.site.domain,
         'OG_LOCALE': settings.LANGUAGE_CODE.replace("-", "_"),
         'SOCIAL': dict(settings.FRONTEND_CONFIG["social"])
     }

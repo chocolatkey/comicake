@@ -37,14 +37,14 @@ def latest_chapter(request, **kwargs):
         return None
 
 def latest_comic(request, **kwargs):
-    latest_comic = Comic.objects.filter(published=True).order_by('-modified_at').only('modified_at')[0]
+    latest_comic = Comic.only_published().order_by('-modified_at').only('modified_at')[0]
     if latest_comic:
         return latest_comic.modified_at
     else:
         return None
 
 def chapter_last_modified(request, cid, page=1):
-    return get_object_or_404(Chapter.objects.only('modified_at'), published=True, uniqid=cid).modified_at
+    return get_object_or_404(Chapter.objects.only('modified_at'), published=True, uniqid=cid, comic__site=request.site).modified_at
 
 ###
 
@@ -69,7 +69,7 @@ def directory(request, page=1):
     """
     Comic directory
     """
-    comics = Comic.objects.filter(published=True).prefetch_related('author', 'artist')
+    comics = Comic.only_published().prefetch_related('author', 'artist')
     paginator = Paginator(comics, 12)
     page_comics = paginator.get_page(page)
     return cacheatron(
@@ -83,7 +83,7 @@ def series(request, series_slug):
     """
     Individual comic series
     """
-    comic = get_object_or_404(Comic.objects.all().prefetch_related('author', 'artist', 'tags', 'licenses'), published=True, slug=series_slug)
+    comic = get_object_or_404(Comic.only_published().prefetch_related('author', 'artist', 'tags', 'licenses'), slug=series_slug)
     return cacheatron(
         request,
         render(request, 'reader/series.html', {'comic': comic}),
@@ -115,7 +115,7 @@ def read_id_slug(request, id, page):
     """
     SEO and human-friendly reader URL for specific chapter
     """
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, id=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, id=cid, comic__site=request.site)
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
@@ -130,7 +130,7 @@ def read_uuid(request, cid):
     """
     Reader for specific chapter
     """
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid, comic__site=request.site)
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
@@ -144,7 +144,7 @@ def read_uuid_page(request, cid, page):
     """
     Reader for specific chapter at specific page
     """
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid, comic__site=request.site)
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
@@ -158,7 +158,7 @@ def read_strip(request, cid):
     """
     Strip reader (no JavaScript required) for specific chapter
     """
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'comic__author', 'comic__artist', 'comic__tags', 'team', 'protection'), published=True, uniqid=cid, comic__site=request.site)
     manifest_url = request.build_absolute_uri(chapter.manifest())
     return cacheatron(
         request,
@@ -173,7 +173,7 @@ def read_manifest(request, cid):
     Chapter WebPub manifest
     """
     # TODO: If logged in show if not published anyway
-    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection', 'pages'), published=True, uniqid=cid)
+    chapter = get_object_or_404(Chapter.objects.prefetch_related('comic', 'team', 'protection', 'pages'), published=True, uniqid=cid, comic__site=request.site)
     return cacheatron(
         request,
         free_json_response(chapterManifest(request, chapter)),

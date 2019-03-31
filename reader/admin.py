@@ -151,6 +151,7 @@ class ComicAdmin(admin.ModelAdmin):
         (_('Advanced'), {
             'classes': ('collapse', ),
             'fields': (
+                'site',
                 'adult',
                 'chapter_title',
                 'created_at',

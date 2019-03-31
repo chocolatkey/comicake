@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.conf import settings
 from django.utils.translation import gettext as _
 from django.shortcuts import get_object_or_404
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest, Http404, HttpResponsePermanentRedirect
 from django.contrib.syndication.views import Feed
@@ -61,7 +60,7 @@ def page(request, url):
     """
     if not url.startswith('/'):
         url = '/' + url
-    site_id = get_current_site(request).id
+    site_id = request.site.id
     try:
         f = get_object_or_404(Page, url=url, sites=site_id)
     except Http404:

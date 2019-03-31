@@ -30,7 +30,7 @@ from blog.models import Post
 # Admin  site settings
 admin.site.site_title = settings.APP_NAME
 admin.site.site_header = settings.SITE_TITLE
-admin.site.index_title = settings.APP_NAME + ' Management System'
+admin.site.index_title = settings.APP_NAME + ' Management System' # TODO translate
 
 
 # https://docs.djangoproject.com/en/2.0/ref/contrib/sitemaps/
@@ -40,7 +40,7 @@ sitemaps = {
         'date_field: ': 'modified_at'
     }, priority=0.6, changefreq='daily'),
     'comics': GenericSitemap({
-        'queryset': Comic.objects.filter(published=True),
+        'queryset': Comic.only_published(),
         'date_field: ': 'modified_at'
     }, priority=0.4, changefreq='weekly'),
     'teams': GenericSitemap({

@@ -111,6 +111,9 @@ PROTECTION = {
 # Database ID of the default team for chapter uploads
 HOME_TEAM = 1
 
+# Site ID of the default/current site
+SITE_ID = 1
+
 ###########################################
 ### Don't touch anything below this! ######
 ###########################################
@@ -211,6 +214,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'blog.middleware.FlatpageFallbackMiddleware', # todo optional
     'comicake.middleware.TurbolinksMiddleware' # For processing of turbolinks
@@ -384,7 +388,6 @@ LANGUAGE_COOKIE_NAME = "comicake_language"
 #COMPRESS_ENABLED = True
 
 INTERNAL_IPS = '127.0.0.1'
-SITE_ID = 1
 
 ## DEPRECATED FOR WEBPACK
 #COMPRESS_OUTPUT_DIR = 'assets/cache' # Compressed JS/CSS
