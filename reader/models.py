@@ -45,7 +45,7 @@ class Person(models.Model):
     alt = models.CharField(max_length=100, blank=True, help_text=_('Name in native language'), db_index=True)
 
     def comics(self):
-        return Comic.only_published(Q(artist=self) | Q(author=self)).order_by('-modified_at')
+        return Comic.only_published().filter(Q(artist=self) | Q(author=self)).order_by('-modified_at')
 
     def get_absolute_url(self):
         return reverse('person', args=[self.id])
