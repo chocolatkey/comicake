@@ -30,14 +30,14 @@ zxperson = set()
 ### Caching Helpers
 
 def latest_chapter(request, **kwargs):
-    latest_chap = Chapter.only_published(prefetch_comic=False).order_by('-modified_at').only('modified_at')[0]
+    latest_chap = Chapter.only_published(prefetch_comic=False).order_by('-modified_at').only('modified_at').first()
     if latest_chap:
         return latest_chap.modified_at
     else:
         return None
 
 def latest_comic(request, **kwargs):
-    latest_comic = Comic.only_published().order_by('-modified_at').only('modified_at')[0]
+    latest_comic = Comic.only_published().order_by('-modified_at').only('modified_at').first()
     if latest_comic:
         return latest_comic.modified_at
     else:
