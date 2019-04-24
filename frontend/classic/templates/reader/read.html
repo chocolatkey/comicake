@@ -78,10 +78,10 @@
             <div id="page" data-target="reader.pagecontainer">{% with pg=pages|index:current_page_index %}
                 <div class="inner">{% if chapter.comic.format == 2 %}{% for page in pages %}
                     <a data-target="reader.pagelink" href="{% url 'read_uuid_page' chapter.uniqid current_page|add:"1" %}" data-action="click->reader#nextPage contextmenu->reader#prevPage">
-                        <img class="open" data-target="reader.page" id="page-{{ forloop.counter }}" src="{% icdn page.file.url %}" />
+                        <img class="open" data-target="reader.page" id="page-{{ forloop.counter }}" src="{% icdn page.file.url options='{"hq": true}' %}" />
                     </a>
                     {% endfor %}{% else %}<a data-target="reader.pagelink" href="{% url 'read_uuid_page' chapter.uniqid current_page|add:"1" %}" data-action="click->reader#nextPage contextmenu->reader#prevPage">
-                        <img data-target="reader.page" class="open" src="{% if pg == None %}{% static 'img/broken.svg' %}{% else %}{% icdn pg.file.url %}{% endif %}" />
+                        <img data-target="reader.page" class="open" src="{% if pg == None %}{% static 'img/broken.svg' %}{% else %}{% icdn pg.file.url options='{"hq": true}' %}{% endif %}" />
                     </a>{% endif%}
                 </div>
             {% endwith %}</div>
