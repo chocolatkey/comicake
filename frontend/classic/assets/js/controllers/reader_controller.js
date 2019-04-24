@@ -180,6 +180,20 @@ export default class Reader extends Controller {
         }
         if(!this.ttb) this.preload(id);
 
+        if(this.pageData.loaded !== true) {
+            this.pageTarget.style.opacity = 0;
+            this.pageTarget.src = window.comicake.PATHS.static + "img/placeholder.svg";
+        } else {
+            this.pageTarget.style.opacity = 1;
+            this.pageTarget.src = this.pageData.href;
+        }
+
+        if(!this.ttb) {
+            this.resizePage(id);
+            this.pagelinkTarget.href = `${this.data.get("chapterBase")}page/${this.page + 1}`;
+            this.update_numberPanel();
+        }
+
         if(!noscroll) {
             let y = 0;
             if(this.ttb && this.page > 1) {
@@ -192,20 +206,6 @@ export default class Reader extends Controller {
             if(this.ttb) return;
         }
 
-        if(this.pageData.loaded !== true) {
-            this.pageTarget.style.opacity = 0;
-            this.pageTarget.src = window.comicake.PATHS.static + "img/placeholder.svg";
-        } else {
-            this.pageTarget.style.opacity = 1;
-            this.pageTarget.src = this.pageData.href;
-        }
-
-        this.resizePage(id);
-        this.pagelinkTarget.href = `${this.data.get("chapterBase")}page/${this.page + 1}`;
-
-        if(!this.ttb)
-            this.update_numberPanel();
-        //$('#pagelist .current').removeClass('current');
         return false;
     }
 
