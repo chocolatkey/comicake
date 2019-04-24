@@ -27,7 +27,7 @@
         <meta http-equiv="refresh" content="0;url={% url 'read_uuid_strip' chapter.uniqid %}">
     </noscript>
 
-    {% for page in chapter.pages.all %}{% if forloop.counter <= 10 %}<link rel="{% if forloop.counter < 5 %}preload{% else %}prefetch{% endif %}" href="{% icdn page.file.url options='{"hq": true} %}" as="image">{% endif %}{% endfor %}
+    {% for page in chapter.pages.all %}{% if forloop.counter <= 10 %}<link rel="{% if forloop.counter < 5 %}preload{% else %}prefetch{% endif %}" href="{% icdn page.file.url options='{"hq": true}' %}" as="image">{% endif %}{% endfor %}
 
     <script type="application/ld+json">{% jsonld request chapter %}</script>
     <link href="{{ manifest_url }}" rel="manifest" type="application/webpub+json">
