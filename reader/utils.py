@@ -15,13 +15,7 @@ from django.core.cache import cache
 
 def getfiles(cid, filenames, ch_n):
     BDIR = os.path.dirname(os.path.realpath(__file__))
-    # Files (local path) to put in the .zip
-    # FIXME: Change this (get paths from DB etc)
-
     zipfile_name = str(ch_n[0]['chapter'])+(("."+str(ch_n[0]['subchapter'])) if ch_n[0]['subchapter']!=0 else '')
-    # Folder name in ZIP archive which contains the above files
-    # E.g [thearchive.zip]/somefiles/file2.txt
-    # FIXME: Set this to something better
     response = HttpResponse(content_type='application/zip')
     zip_file = zipfile.ZipFile(response, 'w')
     with NamedTemporaryFile(mode='w+b', delete=True, dir=settings.BASE_DIR) as htemp:
