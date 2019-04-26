@@ -1,14 +1,35 @@
 import os
 import random
 import binascii
+import zipfile
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.models.fields import CharField
+from django.http import JsonResponse, HttpResponse
 from urllib.parse import urlparse, urlencode
-from django.http import JsonResponse
+from tempfile import NamedTemporaryFile
 
 from django.utils.cache import learn_cache_key
 from django.core.cache import cache
+
+
+def getfiles(cid, filenames, ch_n):
+    BDIR = os.path.dirname(os.path.realpath(__file__))
+    # Files (local path) to put in the .zip
+    # FIXME: Change this (get paths from DB etc)
+
+    zipfile_name = str(ch_n[0]['chapter'])+(("."+str(ch_n[0]['subchapter'])) if ch_n[0]['subchapter']!=0 else '')
+    # Folder name in ZIP archive which contains the above files
+    # E.g [thearchive.zip]/somefiles/file2.txt
+    # FIXME: Set this to something better
+    response = HttpResponse(content_type='application/zip')
+    zip_file = zipfile.ZipFile(response, 'w')
+    with NamedTemporaryFile(mode='w+b', delete=True, dir=settings.BASE_DIR) as htemp:
+        for filename in filenames:
+            zfname = filename[filename.rfind('/')+1:]
+            zip_file.write(filename, zfname)
+    response['Content-Disposition'] = 'attachment; filename={}'.format("Chapter "+zipfile_name+".zip")
+    return response
 
 def file_cleanup(sender, **kwargs):
     print(sender)
@@ -79,7 +100,7 @@ def photon(request, path, options={}):
     """
     # https://github.com/Automattic/jetpack/blob/master/functions.photon.php#L151
     random.seed(path) # binascii.crc32(str(path).encode('utf-8')) in original
-    subdomain = random.randrange(0, 3) # 0-2 
+    subdomain = random.randrange(0, 3) # 0-2
     params = {}
     if intru(options, 'thumb'):
         params["fit"] = "250,250" # Appropriate thumb size

@@ -8,7 +8,7 @@ from django.shortcuts import get_list_or_404, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.http import last_modified
 from django.core.cache import cache
 from django.utils.cache import learn_cache_key
@@ -20,7 +20,7 @@ from django.db.models.signals import post_save
 
 from .models import Chapter, Comic, Team, Page, Person
 from .jsonld import chapterManifest
-from .utils import cacheatron, free_json_response
+from .utils import cacheatron, free_json_response, getfiles
 
 zxchapter = set()
 zxcomic = set()
@@ -75,7 +75,7 @@ def directory(request, page=1):
     return cacheatron(
         request,
         render(request, 'reader/directory.html', {'comics': page_comics}),
-        (zxcomic, zxchapter) # If comic metadata or chapter (for latest release) modified 
+        (zxcomic, zxchapter) # If comic metadata or chapter (for latest release) modified
     )
 
 @cache_page(settings.CACHE_MEDIUM)
@@ -267,6 +267,12 @@ def person(request, person_id):
         (zxcomic, zxperson) # If comic or person modified
     )
 
+@never_cache
+def dl(request, cid):
+    ch_n = list(Chapter.objects.filter(uniqid=cid).values('chapter','subchapter','comic__name'))
+    filenames = [str(settings.BASE_DIR + settings.MEDIA_URL + fname) for fname in Page.objects.filter(chapter__uniqid=cid).values_list('file',flat=True)]
+    return getfiles(cid, filenames, ch_n)
+
 ### Feeds ###
 
 def make_feed_chapter(request, item):
@@ -294,25 +300,25 @@ class RssChapterFeed(Feed):
 
     def items(self):
         return Chapter.only_published().prefetch_related('team', 'pages')[:25]
-    
+
     def item_title(self, item):
         return "{} {}".format(item.comic.name, item.full_title())
-    
+
     def item_description(self, item):
         return make_feed_chapter(self.request, item)
-    
+
     def item_guid(self, item):
         return item.uniqid
-    
+
     def item_author_name(self, item):
         return item.teams()
-    
+
     def item_pubdate(self, item):
         return item.published_at
-    
+
     def item_updateddate(self, item):
         return item.modified_at
-    
+
     def item_categories(self, item):
         return item.comic.tags.all()
 
@@ -349,25 +355,25 @@ class RssComicChapterFeed(Feed):
 
     def items(self, obj):
         return Chapter.only_published(comic=obj).prefetch_related('team', 'pages')[:50]
-    
+
     def item_title(self, item):
         return "{} {}".format(item.comic.name, item.full_title())
-    
-    def item_description(self, item):   
+
+    def item_description(self, item):
         return make_feed_chapter(self.request, item)
-    
+
     def item_guid(self, item):
         return item.uniqid
-    
+
     def item_author_name(self, item):
         return item.teams()
-    
+
     def item_pubdate(self, item):
         return item.published_at
-    
+
     def item_updateddate(self, item):
         return item.modified_at
-    
+
     def item_categories(self, item):
         return item.comic.tags.all()
 

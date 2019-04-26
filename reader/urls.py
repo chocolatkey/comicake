@@ -27,6 +27,7 @@ urlpatterns = [
     path('read/<uuid:cid>/0', RedirectView.as_view(pattern_name='read_uuid_strip', permanent=True)), # Maintain legacy strip chapter path
     path('read/<uuid:cid>/strip', views.read_strip, name='read_uuid_strip'),
     path('read/<uuid:cid>/page/<int:page>', views.read_uuid_page, name='read_uuid_page'),
+    path('dl/<uuid:cid>/', views.dl, name='dl_chapter'),
     re_path(r'^read/(?P<id>[\d]{1,9})/[\w-]+' + page_regex, views.read_id_slug, name='read_id_slug'),
     re_path(r'^read/(?P<series_slug>[\w-]+)/(?P<language>[a-z]{2,3})/(?P<volume>[\d]{1,9})/(?P<chapter>[\d]{1,9})(?:/(?P<subchapter>[\d]{1,9}))?' + page_regex + r'/$', views.read_pretty, name='read_pretty'),
 
