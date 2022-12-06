@@ -13,7 +13,7 @@
     "material-components-web": "^0.35.1",
     "mustache": "^3.0.1",
     "mutation-observer-inner-html-shim": "^1.0.0",
-    "qs": "^6.5.2",
+    "qs": "^6.6.1",
     "siema": "^1.5.1",
     "stimulus": "^1.0.1",
     "turbolinks": "^5.1.1",
